@@ -16,7 +16,7 @@
     { id: 'darkroom',  name: 'Darkroom',       fonts: { heading: 'Bricolage Grotesque', body: 'Instrument Sans', code: 'JetBrains Mono' }, sw: ['#0e0f12', '#ece8df', '#ffb454'] },
     { id: 'editorial', name: 'Editorial',      fonts: { heading: 'Fraunces', body: 'Newsreader', code: 'IBM Plex Mono' }, sw: ['#f2ece1', '#1c1915', '#b3301c'] },
     { id: 'arcade',    name: 'Arcade',         fonts: { heading: 'Press Start 2P', body: 'Space Mono', code: 'Space Mono' }, sw: ['#0a0720', '#e6f6ff', '#ff3ea5'] },
-    { id: 'extra',     name: 'Extra Extra',    fonts: { heading: 'Anton', body: 'Old Standard TT', code: 'Courier Prime' }, sw: ['#ece7dc', '#1c1814', '#ad1f18'] },
+    { id: 'extra',     name: 'Extra! Extra!',    fonts: { heading: 'Anton', body: 'Old Standard TT', code: 'Courier Prime' }, sw: ['#ece7dc', '#1c1814', '#ad1f18'] },
     { id: 'creepy-carousel', name: 'Something Wicked', fonts: { heading: 'Rye', body: 'IM Fell English', code: 'Cutive Mono' }, sw: ['#120d11', '#ecdcb8', '#b3342c'] },
     { id: 'html1',     name: 'HTML 1.0',       fonts: { heading: 'browser default', body: 'browser default', code: 'browser default' }, sw: ['#ffffff', '#000000', '#0000ee'] },
     { id: 'dangerous-forest', name: 'Dangerous Forest', fonts: { heading: 'Gloock', body: 'Alegreya', code: 'Overpass Mono' }, sw: ['#0b120e', '#e6dcc0', '#e3b23c'] },

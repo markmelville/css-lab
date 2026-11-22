@@ -1,4 +1,4 @@
-/* EXTRA EXTRA: a 1940s front page.
+/* EXTRA! EXTRA!: a 1940s front page.
    Inspired by an image search for "1940s newspaper headlines": blackletter
    nameplates with boxed "ears", huge ultra-condensed all-caps banner headlines,
    italic decks, ink column rules, red EXTRA stamps, yellowed newsprint, and
@@ -6,8 +6,9 @@
 
    - Paper: pure CSS, no images. Layered gradients for toning, foxing stains,
      fibres, grain and a fold crease.
-   - Layout: a front page. A lead story spans 4 of 6 columns, then sidebars and
-     a boxed bulletin, divided by ink rules instead of cards in boxes.
+   - Layout: a front page for any number of stories (filtered too). A lead
+     story spans 4 of 6 columns, a sidebar, rows of three, and a boxed Late
+     Bulletin, divided by ink rules instead of cards in boxes.
    - Photos: demo previews print in black-and-white halftone; hover a story to
      see it in colour.
    - Motion: each story is stamped onto the page as it scrolls into view. */
@@ -233,15 +234,37 @@ main.gallery {
   border-left: 1px solid var(--text);
   counter-increment: fig;
 }
-.demo:nth-child(1) { grid-column: span 4; padding-left: 0; border-left: 0; }  /* lead story */
-.demo:nth-child(2) { padding-right: 0; }
-/* Then rows of three stories (24 demos: 1 lead + 1 sidebar, 7 rows of 3, 1 bulletin) */
-.demo:nth-child(3n) { padding-left: 0; border-left: 0; }        /* first in each row */
-.demo:nth-child(3n+2) { padding-right: 0; }                     /* last in each row */
-.demo:nth-child(n+3) { border-top: 1px solid var(--text); }
+/* The front page, for any number of stories, filtered or not. site.js
+   numbers the stories that are showing (data-vis = 1..n, data-vis-end = 1 for
+   the last, --vis-k = 0-based position, --vis-n = how many):
+   - 1: the lead story (4 columns) · 2: the sidebar (2 columns)
+   - last: the Late Bulletin, full width in a double-ruled box
+   - the rest: rows of three. When they don't divide by three, the first row
+     after the lead takes the leftovers as wider stories (one full width, or
+     two halves), so every row is full. Widths and the column rules between
+     stories are worked out with mod() and clamp(). */
+@media (min-width: 861px) {
+  main.gallery > .demo[data-vis="1"] { grid-column: span 4; padding-left: 0; border-left: 0; }
+  main.gallery > .demo[data-vis="1"][data-vis-end="1"] { grid-column: 1 / -1; padding-right: 0; }   /* the only story */
+  main.gallery > .demo[data-vis="2"] { padding-right: 0; }
+  main.gallery > .demo[data-vis]:not([data-vis="1"], [data-vis="2"], [data-vis-end="1"]) {
+    --xx-j: calc(var(--vis-k) - 2);                        /* position among these stories */
+    --xx-r: mod(var(--vis-n) - 3, 3);                      /* leftovers (0, 1 or 2) */
+    --xx-short: clamp(0, var(--xx-r) - var(--xx-j), 1);    /* 1 = in the leftover row */
+    --xx-len: calc(var(--xx-short) * var(--xx-r) + (1 - var(--xx-short)) * 3);   /* stories in its row */
+    --xx-pos: calc(var(--xx-short) * var(--xx-j) + (1 - var(--xx-short)) * mod(var(--xx-j) - var(--xx-r), 3));
+    --xx-not-first: min(var(--xx-pos), 1);
+    --xx-not-last: min(var(--xx-len) - 1 - var(--xx-pos), 1);
+    grid-column: span calc(6 / var(--xx-len));
+    padding-left: calc(var(--xx-not-first) * 16px);
+    padding-right: calc(var(--xx-not-last) * 16px);
+    border-left-width: calc(var(--xx-not-first) * 1px);
+    border-top: 1px solid var(--text);
+  }
+}
 
 /* Late bulletin: full width, double-ruled box */
-main.gallery > .demo:last-child {
+main.gallery > .demo[data-vis-end="1"]:not([data-vis="1"], [data-vis="2"]) {
   grid-column: 1 / -1;
   margin-top: 14px;
   padding: 22px 26px;
@@ -249,33 +272,10 @@ main.gallery > .demo:last-child {
   outline: 4px double var(--text);
   outline-offset: -8px;
 }
-main.gallery > .demo:last-child > h2 { text-align: center; }
-main.gallery > .demo:last-child > h2::before { content: "Late Bulletin: "; color: var(--accent); }
-main.gallery > .demo:last-child .tags,
-main.gallery > .demo:last-child .credit { justify-content: center; text-align: center; }
-
-/* Filtered (search or section chip): the front-page layout assumes all six
-   stories, so fall back to plain two-column news briefs. */
-body:has(#feat-all:not(:checked)) main.gallery,
-main.gallery:has(> .demo[hidden]) {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  column-gap: 32px;
-}
-body:has(#feat-all:not(:checked)) main.gallery .demo,
-main.gallery:has(> .demo[hidden]) .demo {
-  grid-column: auto;
-  margin: 0;
-  padding: 14px 0 12px;
-  border: 0;
-  border-top: 1px solid var(--text);
-  outline: 0;
-}
-body:has(#feat-all:not(:checked)) main.gallery .demo > h2,
-main.gallery:has(> .demo[hidden]) .demo > h2 { font-size: 2.1rem; text-align: left; }
-body:has(#feat-all:not(:checked)) main.gallery .demo > h2::before,
-main.gallery:has(> .demo[hidden]) .demo > h2::before { content: none; }
-body:has(#feat-all:not(:checked)) main.gallery .demo .tags,
-main.gallery:has(> .demo[hidden]) .demo .tags { justify-content: flex-start; }
+main.gallery > .demo[data-vis-end="1"]:not([data-vis="1"], [data-vis="2"]) > h2 { text-align: center; }
+main.gallery > .demo[data-vis-end="1"]:not([data-vis="1"], [data-vis="2"]) > h2::before { content: "Late Bulletin: "; color: var(--accent); }
+main.gallery > .demo[data-vis-end="1"]:not([data-vis="1"], [data-vis="2"]) .tags,
+main.gallery > .demo[data-vis-end="1"]:not([data-vis="1"], [data-vis="2"]) .credit { justify-content: center; text-align: center; }
 
 /* Headlines */
 .demo > h2 {
@@ -285,7 +285,7 @@ main.gallery:has(> .demo[hidden]) .demo .tags { justify-content: flex-start; }
   text-transform: uppercase;
   text-wrap: balance;
 }
-.demo:nth-child(1) > h2 { font-size: clamp(2.8rem, 6vw, 4.8rem); }
+main.gallery > .demo[data-vis="1"] > h2 { font-size: clamp(2.8rem, 6vw, 4.8rem); }
 
 /* Decks: italic sub-headlines under each headline */
 .demo .tags {
@@ -364,16 +364,14 @@ main.gallery .demo .preview { cursor: auto; }
   .theme-menu { grid-column: 1 / -1; grid-row: 4; justify-self: center; margin-top: 12px; }
   header.site h1 { grid-column: 1 / -1; }
   header.site h1::after { right: 0; }
-  main.gallery,
-  body:has(#feat-all:not(:checked)) main.gallery,
-  main.gallery:has(> .demo[hidden]) { grid-template-columns: 1fr; }
-  .demo, .demo:nth-child(n) {
+  main.gallery { grid-template-columns: 1fr; }
+  .demo {
     grid-column: 1 / -1;
     padding-inline: 0;
     border-left: 0;
     border-top: 1px solid var(--text);
   }
-  main.gallery > .demo:last-child { padding: 22px 20px; border-top: 0; }
+  main.gallery > .demo[data-vis-end="1"]:not([data-vis="1"], [data-vis="2"]) { padding: 22px 20px; border-top: 0; }
 }
 
 /* ---------------- THE OPEN STORY ----------------
