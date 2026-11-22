@@ -353,6 +353,6 @@ document.addEventListener('DOMContentLoaded', () => {
   // Theme fonts and colours arrive with the theme stylesheet, so re-read them once loaded
   document.fonts.ready.then(syncFields);
   window.addEventListener('load', syncFields);
-  document.getElementById('theme-css')?.addEventListener('load', syncFields);
+  document.addEventListener('lab:themeready', syncFields); // the new theme's fonts and colours are in
   sync();
 });

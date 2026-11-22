@@ -347,11 +347,11 @@ main.gallery .demo .preview { cursor: auto; }
 @media (prefers-reduced-motion: no-preference) {
   @supports (animation-timeline: view()) {
     .demo {
-      animation: stamp linear both;
+      animation: xx-stamp linear both;
       animation-timeline: view();
       animation-range: entry 0% entry 70%;
     }
-    @keyframes stamp {
+    @keyframes xx-stamp {
       from { opacity: 0; transform: translateY(50px) rotate(-1.5deg) scale(1.05); filter: blur(3px); }
       to   { opacity: 1; transform: none; filter: none; }
     }
@@ -394,9 +394,9 @@ main.gallery .demo .preview { cursor: auto; }
 .card-modal::backdrop { background: radial-gradient(circle, #2a2118d9, #0d0a07f5); }
 /* Constant speed, no easing, then a dead stop: like a paper landing on the desk */
 @media (prefers-reduced-motion: no-preference) {
-  .card-modal[open] { animation: spin-in 0.85s linear both; }
+  .card-modal[open] { animation: xx-spin-in 0.85s linear both; }
 }
-@keyframes spin-in {
+@keyframes xx-spin-in {
   from { transform: rotate(-1080deg) scale(0.05); opacity: 0; }
   12%  { opacity: 1; }
   to   { transform: none; }

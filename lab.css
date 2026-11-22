@@ -50,3 +50,15 @@ main.gallery .instructions { display: none !important; }
 /* The header is a size container, so themes can change the filter bar's
    layout based on the room available (see themes/_base.css) */
 header.site { container: site / inline-size; }
+
+/* Theme switches (lab.js) run in a View Transition: the old frame stays up
+   until the new theme is ready, then a short cross-fade. Clicks pass through
+   while it plays, so you can keep flipping through themes. */
+::view-transition { pointer-events: none; }
+::view-transition-old(root),
+::view-transition-new(root) { animation-duration: 0.22s; }
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) { animation: none !important; }
+}

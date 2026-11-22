@@ -138,18 +138,90 @@
   }
 
   // ---------- apply ----------
+  const themeCss = base => `@layer core, theme;\n@import url("lab.css") layer(core);\n@import url("themes/${base}.css") layer(theme);\n`;
+  const sleep = ms => new Promise(r => setTimeout(r, ms));
+  const themeReady = () => document.dispatchEvent(new CustomEvent('lab:themeready'));
+
+  // A theme's images are all listed in its credits (credits-data.js), so they
+  // can be fetched and decoded before the theme is shown.
+  function themeImages(base) {
+    const list = (window.THEME_CREDITS || {})[base] || [];
+    return list.map(c => { const img = new Image(); img.src = `themes/${base}/${c.file}`; return img.decode().catch(() => {}); });
+  }
+  // Wait (up to a limit) for what makes a theme look "ready": its web fonts
+  // (layout must have run, so the fonts it uses have started loading) and images.
+  async function settle(base, images = themeImages(base)) {
+    void document.body?.offsetWidth;
+    await Promise.race([Promise.all([document.fonts.ready, ...images]), sleep(1500)]);
+  }
+
+  // Switching themes without a flash of half-styled page:
+  // 1. load the new theme into a second, disabled <style> (the old theme stays
+  //    on screen and usable meanwhile), with its images;
+  // 2. then swap inside a View Transition, which keeps showing the old frame
+  //    until the new theme's fonts are in, and cross-fades to it.
+  let swapSeq = 0;
+  async function swapTheme(base, afterSwap) {
+    const seq = ++swapSeq;
+    const next = document.createElement('style');
+    next.media = 'not all';
+    next.textContent = themeCss(base);
+    const loaded = new Promise(r => { next.onload = next.onerror = r; });
+    document.getElementById('theme-css').after(next);
+    const images = themeImages(base);
+    await Promise.race([loaded, sleep(4000)]);
+    if (seq !== swapSeq) { next.remove(); return; } // a newer switch took over
+    const update = async () => {
+      const old = document.getElementById('theme-css');
+      next.removeAttribute('media');
+      old.remove();
+      next.id = 'theme-css';
+      afterSwap();
+      await settle(base, images);
+    };
+    if (document.startViewTransition) await document.startViewTransition(update).updateCallbackDone.catch(() => {});
+    else await update();
+    themeReady();
+  }
+
+  let booted = false;
   function apply() {
     const cur = current();
-    const sheet = document.getElementById('theme-css');
-    const css = `@layer core, theme;\n@import url("lab.css") layer(core);\n@import url("themes/${cur.base}.css") layer(theme);\n`;
-    if (sheet && sheet.textContent.trim() !== css.trim()) sheet.textContent = css;
     const s = settings();
-    for (const f of Object.values(s.fonts || {})) loadFont(f.family, f.weights);
-    const out = document.getElementById('theme-overrides');
-    if (out) out.textContent = generateCss(s);
-    document.documentElement.dataset.theme = cur.base;
+    const finish = () => {
+      for (const f of Object.values(s.fonts || {})) loadFont(f.family, f.weights);
+      const out = document.getElementById('theme-overrides');
+      if (out) out.textContent = generateCss(s);
+      document.documentElement.dataset.theme = cur.base;
+    };
+    const sheet = document.getElementById('theme-css');
+    const css = themeCss(cur.base);
+    if (!booted) {
+      // First run, while <head> is still being parsed: nothing is on screen
+      // yet and the theme sheet is render-blocking, so set it directly.
+      booted = true;
+      if (sheet.textContent.trim() !== css.trim()) sheet.textContent = css;
+      sheet.addEventListener('load', themeReady, { once: true });
+      finish();
+    } else if (sheet.textContent.trim() !== css.trim()) {
+      swapTheme(cur.base, finish);
+    } else {
+      finish();
+    }
     document.dispatchEvent(new CustomEvent('lab:change'));
   }
+
+  // ---------- first load: hidden until ready ----------
+  // index.html hides the page (and pauses animations) while <html> has
+  // .lab-loading, so the first thing you see is the finished page, not one
+  // still swapping in fonts. Revealed once fonts + theme images are in (max
+  // 1.5s; a CSS fallback in index.html reveals it after 3s regardless).
+  document.documentElement.classList.add('lab-loading');
+  document.addEventListener('DOMContentLoaded', async () => {
+    await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+    await settle(current().base);
+    document.documentElement.classList.remove('lab-loading');
+  });
   function commit() { write(); apply(); }
 
   // ---------- actions ----------

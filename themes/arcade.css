@@ -39,8 +39,8 @@ header.site h1 {
   text-shadow: 4px 4px 0 var(--accent-2);
 }
 header.site h1::before { content: "> "; color: var(--accent-2); }
-header.site h1::after { content: "_"; animation: blink 1s steps(1) infinite; }
-@keyframes blink { 50% { opacity: 0; } }
+header.site h1::after { content: "_"; animation: ar-blink 1s steps(1) infinite; }
+@keyframes ar-blink { 50% { opacity: 0; } }
 
 .filter-bar {
   border: 3px solid var(--line);
@@ -80,8 +80,8 @@ header.site h1::after { content: "_"; animation: blink 1s steps(1) infinite; }
 .theme-menu-list button[aria-pressed="true"]::before { content: "> "; color: var(--accent-2); }
 .card-modal { border: 3px solid var(--line); border-radius: 0; box-shadow: 8px 8px 0 var(--accent-2), 0 0 80px #2ef2ff22; }
 .card-modal::backdrop { background: #030111e6; }
-.card-modal[open] { animation: crt-on 0.6s ease-out; }
-@keyframes crt-on {
+.card-modal[open] { animation: ar-crt-on 0.6s ease-out; }
+@keyframes ar-crt-on {
   0%   { scale: 0.02 0.004; filter: brightness(6); }
   35%  { scale: 1 0.006; filter: brightness(4); }
   70%  { scale: 1 1; filter: brightness(1.6); }

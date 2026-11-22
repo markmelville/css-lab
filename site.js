@@ -54,6 +54,34 @@ document.addEventListener('DOMContentLoaded', () => {
     card.setAttribute('aria-label', `Open ${card.querySelector('h2').textContent}`);
   }
 
+  // ---------- numbering the visible cards ----------
+  // CSS can count siblings (:nth-child, sibling-index()) but not only the ones
+  // a filter has hidden with display:none. So the visible cards are numbered
+  // here, for themes whose layout depends on position (pairs, rings, rows):
+  //   data-vis="1".."n"  data-vis-end="1" (last).."n"  data-vis-parity="odd|even"
+  //   --vis-k: 0-based position (on the card)   --vis-n: count (on <html>)
+  // Works for any number of cards; renumbered on every search/filter change.
+  function numberVisible() {
+    const cards = [...gallery.children].filter(c => c.matches('.demo'));
+    const shown = cards.filter(c => c.checkVisibility());
+    for (const c of cards) {
+      const k = shown.indexOf(c);
+      if (k < 0) {
+        delete c.dataset.vis; delete c.dataset.visEnd; delete c.dataset.visParity;
+        c.style.removeProperty('--vis-k');
+        continue;
+      }
+      c.dataset.vis = k + 1;
+      c.dataset.visEnd = shown.length - k;
+      c.dataset.visParity = k % 2 ? 'even' : 'odd';
+      c.style.setProperty('--vis-k', k);
+    }
+    document.documentElement.style.setProperty('--vis-n', shown.length);
+  }
+  document.getElementById('demo-search').addEventListener('input', numberVisible);
+  document.querySelector('.filter-chips').addEventListener('change', numberVisible);
+  numberVisible();
+
   // FLIP: make the card look like it's still at `from`, then animate to where it is
   function flip(card, from, to, reverse = false) {
     const dx = from.left - to.left, dy = from.top - to.top, s = from.width / to.width;
@@ -79,6 +107,7 @@ document.addEventListener('DOMContentLoaded', () => {
     placeholder.setAttribute('aria-hidden', 'true');
     placeholder.style.height = card.offsetHeight + 'px';
     card.replaceWith(placeholder);
+    numberVisible();
     card.removeAttribute('aria-label');
     modal.append(card);
     open = { card, placeholder, mode };
@@ -105,6 +134,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // drop the zoom-out animation that's holding the card in its shrunk pose
     card.getAnimations().forEach(a => { if (!(a instanceof CSSAnimation)) a.cancel(); });
     placeholder.replaceWith(card);
+    numberVisible();
     card.querySelectorAll('.tools details').forEach(d => { d.open = false; }); // editor starts closed next time
     card.setAttribute('aria-label', `Open ${card.querySelector('h2').textContent}`);
     (selectByLink() ? card.querySelector('.demo-link') : card).focus({ preventScroll: true });
@@ -116,7 +146,7 @@ document.addEventListener('DOMContentLoaded', () => {
     for (const card of gallery.querySelectorAll('.demo:not(.demo-placeholder)')) card.tabIndex = byLink ? -1 : 0;
   }
   document.addEventListener('lab:change', syncCardFocus);
-  document.getElementById('theme-css')?.addEventListener('load', syncCardFocus);
+  document.addEventListener('lab:themeready', syncCardFocus);
   window.addEventListener('load', syncCardFocus);
 
   // How a card is selected is the theme's choice too (--card-select):

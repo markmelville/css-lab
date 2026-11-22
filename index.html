@@ -7,6 +7,18 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tilt+Neon&display=swap">
+<!-- Hidden until ready: lab.js adds .lab-loading to <html> and removes it once
+     the theme's fonts and images are in, so the first paint is the finished
+     page. Animations wait too, so they start from the beginning when it shows.
+     Safety net: the page shows after 3s even if lab.js never finishes. -->
+<style>
+@layer core {
+  html.lab-loading body { opacity: 0; animation: lab-reveal 0s 3s forwards; }
+  html.lab-loading body :is(*, ::before, ::after) { animation-play-state: paused !important; }
+  body { transition: opacity 0.2s ease-out; }
+  @keyframes lab-reveal { to { opacity: 1; } }
+}
+</style>
 <!-- Core + theme load into cascade layers; customizations (#theme-overrides)
      are unlayered, so they always win. lab.js swaps the theme line. -->
 <style id="theme-css">

@@ -6,13 +6,16 @@
 
    THE CAROUSEL IS THE GALLERY: the cards ride a 3D ring that turns as you
    scroll. It stops at each card (so the one facing you is usable), then
-   lurches on to the next. Cards bob like horses; cards turned away dim.
-   - @property registers --step as a <number>, so a scroll-driven animation
-     (animation-timeline: scroll(root)) can animate it, and every card can read
-     it to work out how far it's turned away: cos() sets its brightness.
-   - Falls back to a plain grid when filtered (the ring is laid out for all six
-     cards), with reduced motion, on narrow screens, or without scroll-driven
-     animations.
+   lurches on to the next. Cards turned away dim.
+   - A scroll-driven animation (animation-timeline: scroll(root)) runs a
+     registered <number>, --sw-p, from 0 to 1. --step (which card faces you)
+     is worked out from it with mod(), round() and cos(): dwell on a card,
+     ease on to the next. Every card reads --step to work out how far it's
+     turned away: cos() sets its brightness.
+   - Any number of cards, filtered or not: site.js numbers the cards that are
+     showing (--vis-k on each, --vis-n in all), and the ring and the scroll
+     length follow. Falls back to a plain grid with reduced motion, on narrow
+     screens, or without scroll-driven animations.
 
    Images: two public-domain (CC0) 1930s-40s watercolours of carousel horses
    from the National Gallery of Art's Index of American Design, cut out and
@@ -21,7 +24,12 @@
 @import url("https://fonts.googleapis.com/css2?family=Sancreek&family=Rye&family=IM+Fell+English:ital@0;1&family=IM+Fell+English+SC&family=Cutive+Mono&display=swap");
 
 @property --step {
-  syntax: "<number>";   /* which card faces you: 0 = first, 23 = last */
+  syntax: "<number>";   /* which card faces you: 0 = first, n - 1 = last */
+  inherits: true;
+  initial-value: 0;
+}
+@property --sw-p {
+  syntax: "<number>";   /* how far through the ride: 0 to 1, driven by scrolling */
   inherits: true;
   initial-value: 0;
 }
@@ -78,9 +86,9 @@ body::before {
   background: url("creepy-carousel/img/ghost-horse.webp") center / contain no-repeat;
   mix-blend-mode: screen;
   pointer-events: none;
-  animation: haunt 16s ease-in-out infinite alternate;
+  animation: sw-haunt 16s ease-in-out infinite alternate;
 }
-@keyframes haunt {
+@keyframes sw-haunt {
   from { translate: 0 0; opacity: 0.06; }
   to   { translate: -4vw -3vh; opacity: 0.2; }
 }
@@ -97,9 +105,9 @@ body::after {
     radial-gradient(ellipse 45% 100% at 25% 100%, #7fb3a930, #0000 70%),
     radial-gradient(ellipse 40% 90% at 70% 100%, #7fb3a926, #0000 70%),
     radial-gradient(ellipse 30% 70% at 50% 100%, #7fb3a91c, #0000 70%);
-  animation: fog 20s ease-in-out infinite alternate;
+  animation: sw-fog 20s ease-in-out infinite alternate;
 }
-@keyframes fog { to { background-position: 9vw 0, -7vw 0, 4vw 0; } }
+@keyframes sw-fog { to { background-position: 9vw 0, -7vw 0, 4vw 0; } }
 
 /* ---------------- CANOPY (header) ---------------- */
 header.site {
@@ -137,10 +145,10 @@ header.site::before {
   background:
     radial-gradient(circle at 12px 9px, #fff4c8 0 3px, #ffbf5a 4px, #ffb84d55 6px, #0000 9px) 0 0 / 72px 18px repeat-x,
     radial-gradient(circle at 12px 9px, #6d5a36 0 3px, #0000 4px) 0 0 / 24px 18px repeat-x;
-  animation: chase 0.9s steps(3) infinite, brownout 9s infinite;
+  animation: sw-chase 0.9s steps(3) infinite, sw-brownout 9s infinite;
 }
-@keyframes chase { to { background-position: 72px 0, 0 0; } }
-@keyframes brownout {
+@keyframes sw-chase { to { background-position: 72px 0, 0 0; } }
+@keyframes sw-brownout {
   0%, 61%, 63%, 65%, 100% { opacity: 1; }
   62%, 64% { opacity: 0.15; }
   64.5%    { opacity: 0.5; }
@@ -302,9 +310,9 @@ main.gallery {
 /* ---------------- THE RIDE ---------------- */
 @media (prefers-reduced-motion: no-preference) and (min-width: 860px) {
   @supports (animation-timeline: scroll()) {
-    /* Only when all six cards are showing (no search, no section ticket) */
-    body:not(:has(.demo[hidden], #feat-all:not(:checked))) {
-      min-height: 2000vh;  /* scroll length that drives the ride (24 cards) */
+    /* Once site.js has numbered the cards that are showing */
+    body:has(main.gallery > .demo[data-vis]) {
+      min-height: calc(var(--vis-n) * 83.4vh);  /* scroll length that drives the ride */
 
       /* The ring: a sticky 3D stage, turned by scrolling */
       & main.gallery {
@@ -318,16 +326,23 @@ main.gallery {
         padding: 0;
         transform-style: preserve-3d;
         transform: perspective(1900px) translateZ(calc(-1 * var(--r))) rotateX(-3deg) rotateY(calc(var(--step) * -60deg));
-        animation: ride linear both;
+        animation: sw-ride linear both;
         animation-timeline: scroll(root);
+        /* The ride: --sw-p (0 to 1) along n - 1 turns. In each turn the ring
+           dwells on a card for the first and last 22%, and eases round in
+           between (a half cosine), so it stops at every card. */
+        --sw-x: calc(var(--sw-p) * (var(--vis-n) - 1));
+        --sw-t: clamp(0, (mod(var(--sw-x), 1) - 0.22) / 0.56, 1);
+        --step: calc(round(down, var(--sw-x), 1) + (1 - cos(var(--sw-t) * 180deg)) / 2);
       }
 
-      /* Six cards spaced 60deg apart around the ring */
+      /* Cards spaced 60deg apart around the ring */
       & main.gallery > .demo {
         /* How far this card is from the front, in cards (negative = left).
-           All 24 sit 60deg apart, so only the front card and its two
+           They all sit 60deg apart, so only the front card and its two
            neighbours are ever in view; any card further round shrinks to
            nothing (scale 0), so it can't show through or catch clicks. */
+        --i: var(--vis-k, 0);
         --d: calc(var(--i) - var(--step));
         --far: max(var(--d), calc(-1 * var(--d)));
         position: absolute;
@@ -340,33 +355,7 @@ main.gallery {
         /* full brightness facing you, fading into the dark as it turns away */
         filter: brightness(calc(0.3 + 0.7 * max(0, cos(var(--d) * 60deg))));
         scale: clamp(0, (1.6 - var(--far)) * 4, 1);
-        animation: bob 3.4s ease-in-out infinite alternate;
-        animation-delay: calc(var(--i) * -0.6s);
       }
-      & main.gallery > .demo:nth-child(1) { --i: 0; }
-      & main.gallery > .demo:nth-child(2) { --i: 1; }
-      & main.gallery > .demo:nth-child(3) { --i: 2; }
-      & main.gallery > .demo:nth-child(4) { --i: 3; }
-      & main.gallery > .demo:nth-child(5) { --i: 4; }
-      & main.gallery > .demo:nth-child(6) { --i: 5; }
-      & main.gallery > .demo:nth-child(7) { --i: 6; }
-      & main.gallery > .demo:nth-child(8) { --i: 7; }
-      & main.gallery > .demo:nth-child(9) { --i: 8; }
-      & main.gallery > .demo:nth-child(10) { --i: 9; }
-      & main.gallery > .demo:nth-child(11) { --i: 10; }
-      & main.gallery > .demo:nth-child(12) { --i: 11; }
-      & main.gallery > .demo:nth-child(13) { --i: 12; }
-      & main.gallery > .demo:nth-child(14) { --i: 13; }
-      & main.gallery > .demo:nth-child(15) { --i: 14; }
-      & main.gallery > .demo:nth-child(16) { --i: 15; }
-      & main.gallery > .demo:nth-child(17) { --i: 16; }
-      & main.gallery > .demo:nth-child(18) { --i: 17; }
-      & main.gallery > .demo:nth-child(19) { --i: 18; }
-      & main.gallery > .demo:nth-child(20) { --i: 19; }
-      & main.gallery > .demo:nth-child(21) { --i: 20; }
-      & main.gallery > .demo:nth-child(22) { --i: 21; }
-      & main.gallery > .demo:nth-child(23) { --i: 22; }
-      & main.gallery > .demo:nth-child(24) { --i: 23; }
 
       /* Keep each card on screen: the editor scrolls inside the card */
       & main.gallery .tools { max-height: 30vh; overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--gold-dark) transparent; }
@@ -421,39 +410,8 @@ main.gallery {
   }
 }
 
-/* The ride: dwell on each of the 24 cards, then lurch to the next (60deg each) */
-@keyframes ride {
-  0.00%, 0.96% { --step: 0; animation-timing-function: ease-in-out; }
-  3.39%, 5.30% { --step: 1; animation-timing-function: ease-in-out; }
-  7.74%, 9.65% { --step: 2; animation-timing-function: ease-in-out; }
-  12.09%, 14.00% { --step: 3; animation-timing-function: ease-in-out; }
-  16.43%, 18.35% { --step: 4; animation-timing-function: ease-in-out; }
-  20.78%, 22.70% { --step: 5; animation-timing-function: ease-in-out; }
-  25.13%, 27.04% { --step: 6; animation-timing-function: ease-in-out; }
-  29.48%, 31.39% { --step: 7; animation-timing-function: ease-in-out; }
-  33.83%, 35.74% { --step: 8; animation-timing-function: ease-in-out; }
-  38.17%, 40.09% { --step: 9; animation-timing-function: ease-in-out; }
-  42.52%, 44.43% { --step: 10; animation-timing-function: ease-in-out; }
-  46.87%, 48.78% { --step: 11; animation-timing-function: ease-in-out; }
-  51.22%, 53.13% { --step: 12; animation-timing-function: ease-in-out; }
-  55.57%, 57.48% { --step: 13; animation-timing-function: ease-in-out; }
-  59.91%, 61.83% { --step: 14; animation-timing-function: ease-in-out; }
-  64.26%, 66.17% { --step: 15; animation-timing-function: ease-in-out; }
-  68.61%, 70.52% { --step: 16; animation-timing-function: ease-in-out; }
-  72.96%, 74.87% { --step: 17; animation-timing-function: ease-in-out; }
-  77.30%, 79.22% { --step: 18; animation-timing-function: ease-in-out; }
-  81.65%, 83.57% { --step: 19; animation-timing-function: ease-in-out; }
-  86.00%, 87.91% { --step: 20; animation-timing-function: ease-in-out; }
-  90.35%, 92.26% { --step: 21; animation-timing-function: ease-in-out; }
-  94.70%, 96.61% { --step: 22; animation-timing-function: ease-in-out; }
-  99.04%, 100.00% { --step: 23; }
-}
-}
-/* Horses rise and fall */
-@keyframes bob {
-  from { translate: 0 -14px; }
-  to   { translate: 0 14px; }
-}
+/* The ride: 0 to 1 over the scroll; --step is worked out from it (see above) */
+@keyframes sw-ride { from { --sw-p: 0; } to { --sw-p: 1; } }
 
 @media (max-width: 860px) {
   header.site h1::before, header.site h1::after { display: none; }
@@ -500,8 +458,8 @@ main.gallery .demo:focus-visible { outline: 2px solid var(--gold); outline-offse
   box-shadow: 0 0 0 1px #000, 0 18px 40px #000c;
   font: 1.05rem var(--font-body);
 }
-.theme-menu[open] .theme-menu-pop { animation: menu-drop 0.25s ease-out; }
-@keyframes menu-drop { from { opacity: 0; translate: 0 -8px; } }
+.theme-menu[open] .theme-menu-pop { animation: sw-menu-drop 0.25s ease-out; }
+@keyframes sw-menu-drop { from { opacity: 0; translate: 0 -8px; } }
 .theme-menu-list { list-style: none; margin: 0; padding: 0; }
 .theme-menu-pop button {
   display: block;
@@ -522,8 +480,8 @@ main.gallery .demo:focus-visible { outline: 2px solid var(--gold); outline-offse
 .theme-menu-customize { margin-top: 6px; border-top: 1px solid var(--gold-dark) !important; border-radius: 0 !important; font-family: var(--font-sc) !important; color: var(--muted) !important; }
 
 /* ---------------- THE OPEN CARD: one horse, pulled off the ring ----------------
-   The modal fills the page; the card rides its own brass pole, rising in and
-   then bobbing slowly up and down. Click the dark around it (or ✕) to close. */
+   The modal fills the page; the card rides its own brass pole, zooming in
+   from its spot on the ring. Click the dark around it (or ✕) to close. */
 .card-modal {
   --card-open: zoom;
   width: 100vw;
@@ -565,8 +523,8 @@ main.gallery .demo:focus-visible { outline: 2px solid var(--gold); outline-offse
   /* site.js zooms it up from its spot on the ring; once open it holds still */
 }
 .card-modal::backdrop { transition: opacity 0.45s; }
-.card-modal[open]::backdrop { animation: dusk-in 0.65s ease-out; }
-@keyframes dusk-in { from { opacity: 0; } }
+.card-modal[open]::backdrop { animation: sw-dusk-in 0.65s ease-out; }
+@keyframes sw-dusk-in { from { opacity: 0; } }
 .card-modal.closing::backdrop, .card-modal.closing::before { opacity: 0; }
 .card-modal::before { transition: opacity 0.45s; }
 .card-modal .demo > h2 { font-size: 2.4rem; }

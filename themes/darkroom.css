@@ -37,8 +37,8 @@ header.site h1::after { content: "."; color: var(--accent); }
 
 /* Opening a card: it develops like a print in the tray, under the red safelight */
 .card-modal::backdrop { background: radial-gradient(circle at 50% 30%, #3a0c06d9, #0a0303f2); }
-.card-modal[open] { animation: develop 1s ease-out; }
-@keyframes develop {
+.card-modal[open] { animation: dr-develop 1s ease-out; }
+@keyframes dr-develop {
   from { opacity: 0; filter: blur(10px) brightness(2.4) sepia(1) hue-rotate(-25deg); scale: 0.985; }
   45%  { opacity: 1; }
   to   { filter: none; }
