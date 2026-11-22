@@ -1,0 +1,20 @@
+[
+  {
+    "file": "cover-scene.webp",
+    "title": "Gabby Hayes #58 (June 1956), cover",
+    "author": "Dick Giordano (cover signed \"Giordano / Alascia\"), Charlton Comics",
+    "source_url": "https://commons.wikimedia.org/wiki/File:GabbyHayes058-001.jpg",
+    "license": "Public domain (US: copyright not renewed)",
+    "license_url": "https://commons.wikimedia.org/wiki/Template:PD-US-not_renewed",
+    "changes": "Cropped below the logo; the figures (thrown cowboy, bull, gunslinger, dust cloud) cut out of the sky with ImageMagick (difference from the sky gradient + flood fill from the edges); the logo, publisher line and price badge removed; resized to 860px tall, WebP with alpha. The sky behind them is CSS."
+  },
+  {
+    "file": "corner-box.webp",
+    "title": "Prize Comics Western v9 #83 (Sep-Oct 1950), cover",
+    "author": "Jack Kirby (pencils) and Joe Simon (inks), Prize Publications",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Prize_Comics_Western_v9_83.jpg",
+    "license": "Public domain (US: copyright not renewed)",
+    "license_url": "https://commons.wikimedia.org/wiki/Category:PD_US_not_renewed",
+    "changes": "Cropped to the cowboy hero's head and shoulders (196x210), saved as WebP. Used as the cover's corner box."
+  }
+]

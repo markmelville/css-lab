@@ -1,0 +1,46 @@
+/* DARKROOM: warm charcoal, amber safelight accent, chunky grotesque headings. */
+@import url("_base.css");
+@import url("https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;800&family=Instrument+Sans:wght@400;600&family=JetBrains+Mono:wght@400;700&display=swap");
+
+:root {
+  color-scheme: dark;
+  --bg: #0e0f12;
+  --panel: #17181d;
+  --line: #2a2b32;
+  --text: #ece8df;
+  --muted: #9b978d;
+  --accent: #ffb454;
+  --code-bg: #0a0b0d;
+  --code-text: #e2ded4;
+  --radius: 14px;
+  --font-heading: "Bricolage Grotesque", sans-serif;
+  --font-body: "Instrument Sans", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+}
+
+body {
+  background:
+    radial-gradient(900px 500px at 0% -10%, #ffb4541a, transparent 70%),
+    var(--bg);
+}
+
+header.site h1 {
+  font-size: clamp(2.6rem, 6vw, 4.2rem);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+}
+header.site h1::after { content: "."; color: var(--accent); }
+
+.demo > h2 { font-size: 1.25rem; font-weight: 800; letter-spacing: -0.01em; }
+.demo { transition: border-color 0.2s; }
+.demo:hover { border-color: #ffb45455; }
+
+/* Opening a card: it develops like a print in the tray, under the red safelight */
+.card-modal::backdrop { background: radial-gradient(circle at 50% 30%, #3a0c06d9, #0a0303f2); }
+.card-modal[open] { animation: develop 1s ease-out; }
+@keyframes develop {
+  from { opacity: 0; filter: blur(10px) brightness(2.4) sepia(1) hue-rotate(-25deg); scale: 0.985; }
+  45%  { opacity: 1; }
+  to   { filter: none; }
+}
+.card-modal .demo > h2 { font-size: 2rem; font-weight: 800; }

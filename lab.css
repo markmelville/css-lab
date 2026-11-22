@@ -1,0 +1,52 @@
+/* CORE: only what the page needs to *work*, no looks. Loaded into
+   @layer core (the lowest layer), under the theme. With the HTML 1.0 theme this
+   is all that applies, so you see the naked page (browser defaults).
+   The look of the built-in themes lives in themes/_base.css. */
+
+* { box-sizing: border-box; }
+
+/* Feature filter (pure CSS) + keyword search. !important so no theme rule
+   like `.demo { display: flex }` can un-hide a filtered card. (Important
+   declarations beat normal ones from higher layers.) */
+body:has(#feat-animation:checked)   .demo:not([data-features~="animation"]),
+body:has(#feat-interaction:checked) .demo:not([data-features~="interaction"]),
+body:has(#feat-light:checked)       .demo:not([data-features~="light"]),
+body:has(#feat-text:checked)        .demo:not([data-features~="text"]),
+body:has(#feat-filters:checked)     .demo:not([data-features~="filters"]),
+body:has(#feat-3d:checked)          .demo:not([data-features~="3d"]),
+body:has(#feat-positioning:checked) .demo:not([data-features~="positioning"]),
+body:has(#feat-scroll:checked)      .demo:not([data-features~="scroll"]),
+body:has(#feat-forms:checked)       .demo:not([data-features~="forms"]),
+.demo[hidden] {
+  display: none !important;
+}
+
+/* Each demo's stage: the demos are built to sit centred in a positioned,
+   clipped box, so this is part of the demo, not the theme. */
+.preview {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 240px;
+  overflow: hidden;
+}
+
+/* Editing controls and instructions only show once a card is opened in the modal */
+main.gallery .tools,
+main.gallery .instructions { display: none !important; }
+
+/* Reset CSS sits inlaid in the editor's top-right corner and stays there
+   while the code scrolls (it's outside the textarea, not part of its content) */
+.tools .editor { position: relative; }
+.tools .editor [data-reset] { position: absolute; top: 16px; right: 24px; z-index: 1; }
+
+/* The empty slot a card leaves behind while it's open in the modal */
+.demo-placeholder { visibility: hidden; }
+
+/* The live CSS editor has to be usable on any theme */
+.tools textarea { width: 100%; min-height: 260px; resize: vertical; tab-size: 2; }
+.tools pre { max-height: 260px; overflow: auto; }
+
+/* The header is a size container, so themes can change the filter bar's
+   layout based on the room available (see themes/_base.css) */
+header.site { container: site / inline-size; }

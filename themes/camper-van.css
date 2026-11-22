@@ -1,0 +1,587 @@
+/* CAMPER VAN: a 1970s road trip in a two-tone camper van.
+   Mood board ("70s camper van poster", "vintage road trip graphic"): flat
+   screen-printed posters with a teal sky, a striped setting sun and a road
+   running to the horizon; burnt orange / mustard / chocolate / avocado
+   paint; decal stripes along the side of the van; groovy swashy type;
+   everything a little sun-faded.
+
+   - Header: the view through a rounded windshield. The sunset scene is pure
+     CSS (sky, a sun cut by stripes with a gradient mask, hills, a road drawn
+     with conic gradients). The filter bar below it is the dashboard.
+   - Cards: the side of a van. A rounded window (the live demo, with a
+     rubber seal and a glass glare) in the cream upper body, then decal
+     stripes and the paint colour, which changes from van to van. Each one
+     has a licence plate numbered by a CSS counter.
+   - Stripes as structure: the page's top/bottom bands, the van decals, and
+     a "scenic overlook" divider where the stripes rise into a 70s rainbow.
+   - Full view: the van rolls in from the left, brakes, dips its nose and
+     settles on its suspension. The ✕ is a hubcap that rolls with it.
+   - Image: one public-domain botanical sunflower (1777), posterized to the
+     palette (see camper-van/credits.json). */
+@import url("_base.css");
+@import url("https://fonts.googleapis.com/css2?family=Shrikhand&family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..900,100;1,9..144,300..900,100&family=Caveat:wght@500;700&family=DM+Mono:wght@400;500&display=swap");
+
+:root {
+  color-scheme: light;
+  --bg: #f1deb6;          /* sun-faded cream paper */
+  --panel: #fbf0d8;
+  --line: #3a2212;
+  --text: #3a2212;        /* chocolate */
+  --muted: #7a5536;
+  --accent: #c8541a;      /* burnt orange */
+  --code-bg: #fcf4e2;
+  --code-text: #3a2212;
+  --radius: 18px;
+  --font-heading: "Shrikhand", "Fraunces", serif;
+  --font-body: "Fraunces", Georgia, serif;
+  --font-mono: "DM Mono", Consolas, monospace;
+  --font-hand: "Caveat", cursive;
+
+  --cream: #fcf2dc;
+  --brown: #3a2212;
+  --umber: #5a3418;
+  --orange: #e07a1f;
+  --mustard: #e3a32a;
+  --gold: #f2c94c;
+  --avocado: #77812e;
+  --teal: #4c8a82;
+
+  /* the four 70s stripes, top to bottom */
+  --stripes: var(--umber) 0 25%, var(--accent) 0 50%, var(--orange) 0 75%, var(--mustard) 0;
+}
+
+/* ---------------- PAPER ----------------
+   Stripe bands at the very top and bottom of the page, then a sun-faded
+   print: grain on prime-sized tiles, a few lighter fade patches, and a
+   warm vignette fixed to the viewport. */
+body {
+  padding-bottom: 60px;
+  font-size: 16px;
+  background:
+    linear-gradient(to bottom, var(--stripes)) top / 100% 40px no-repeat,
+    linear-gradient(to top, var(--stripes)) bottom / 100% 40px no-repeat,
+    radial-gradient(ellipse 90% 85% at 50% 40%, #0000 55%, #9a4a1a1f 85%, #6a30103a 100%) fixed,
+    radial-gradient(ellipse 420px 260px at 18% 22%, #fff6e036, #0000 70%),
+    radial-gradient(ellipse 520px 300px at 82% 58%, #fff6e02e, #0000 70%),
+    radial-gradient(ellipse 360px 380px at 30% 88%, #fff6e02a, #0000 70%),
+    radial-gradient(circle, #5a341814 0.7px, #0000 1.2px) 0 0 / 7px 11px,
+    radial-gradient(circle, #5a34180f 0.9px, #0000 1.5px) 3px 4px / 13px 17px,
+    radial-gradient(circle, #fff8e640 0.9px, #0000 1.5px) 1px 2px / 19px 23px,
+    var(--bg);
+}
+::selection { background: var(--mustard); color: var(--brown); }
+
+/* ---------------- HEADER: through the windshield ---------------- */
+header.site {
+  --horizon: 92px;   /* from the bottom of the scene */
+  --sun: 210px;
+  --road-x: 68%;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto 1fr auto;
+  max-width: 1200px;
+  padding: 66px 20px 0;
+}
+
+/* The scene: sky, hills, ground, road, sunflowers (front layer first) */
+header.site::before {
+  content: "";
+  grid-row: 1 / 3;
+  grid-column: 1;
+  min-height: 310px;
+  border-radius: 46px 46px 20px 20px;
+  box-shadow:
+    inset 0 0 0 4px var(--brown),
+    inset 0 0 0 10px #fcf2dc22,
+    0 0 0 8px var(--cream),
+    0 0 0 11px var(--brown);
+  background:
+    /* sunflowers by the roadside */
+    url("camper-van/sunflower.webp") right -26px bottom -46px / 170px auto no-repeat,
+    url("camper-van/sunflower.webp") right 118px bottom -34px / 96px auto no-repeat,
+    /* double yellow line */
+    conic-gradient(from 178deg at var(--road-x) calc(100% - var(--horizon)), var(--gold) 0 1.5deg, #0000 0 2.5deg, var(--gold) 0 4deg, #0000 0),
+    /* road edges, then the road */
+    conic-gradient(from 112deg at var(--road-x) calc(100% - var(--horizon)), #fcf2dccc 0 2deg, #0000 0 134deg, #fcf2dccc 0 136deg, #0000 0),
+    conic-gradient(from 112deg at var(--road-x) calc(100% - var(--horizon)), #4a2c17 0 136deg, #0000 0),
+    /* field furrows and the ground */
+    repeating-linear-gradient(to top, #0000 0 9px, #5b6522 9px 12px) bottom / 100% calc(var(--horizon) - 14px) no-repeat,
+    linear-gradient(to top, #66702a, #8d9638 var(--horizon), #0000 var(--horizon)),
+    /* distant hills (lower halves hidden by the ground) */
+    radial-gradient(ellipse 210px 70px at 10% calc(100% - var(--horizon)), #a5612a 98%, #0000 100%),
+    radial-gradient(ellipse 260px 46px at 31% calc(100% - var(--horizon)), #c07a34 98%, #0000 100%),
+    radial-gradient(ellipse 190px 54px at 97% calc(100% - var(--horizon)), #a5612a 98%, #0000 100%),
+    /* glow round the sun */
+    radial-gradient(circle at var(--road-x) calc(100% - var(--horizon) - 70px), #fbe3a0b0, #0000 280px),
+    /* sky: teal at the top, sunset at the horizon */
+    linear-gradient(to bottom, #3f7c77 0, #5f9b8e calc(100% - var(--horizon) - 230px), #e6c27c calc(100% - var(--horizon) - 80px), #f0a457 calc(100% - var(--horizon)));
+}
+/* The sun, cut by bands (a gradient mask), setting behind the horizon */
+header.site::after {
+  content: "";
+  grid-row: 1 / 3;
+  grid-column: 1;
+  align-self: end;
+  justify-self: start;
+  width: var(--sun);
+  aspect-ratio: 1;
+  margin-left: calc(var(--road-x) - var(--sun) / 2);
+  margin-bottom: calc(var(--horizon) - var(--sun) * 0.143);
+  border-radius: 50%;
+  background: linear-gradient(to bottom, var(--gold), var(--orange) 55%, var(--accent));
+  -webkit-mask-image: linear-gradient(to bottom, #000 0 50%, #0000 0 53%, #000 0 61%, #0000 0 65.5%, #000 0 71%, #0000 0 77%, #000 0 81%, #0000 0);
+  mask-image: linear-gradient(to bottom, #000 0 50%, #0000 0 53%, #000 0 61%, #0000 0 65.5%, #000 0 71%, #0000 0 77%, #000 0 81%, #0000 0);
+}
+
+/* Title: cream letters with stacked 70s stripe shadows */
+header.site h1 {
+  grid-row: 1;
+  grid-column: 1;
+  z-index: 1;
+  justify-self: start;
+  margin: 0;
+  padding: 40px 44px 0;
+  color: var(--cream);
+  font: 400 clamp(3.4rem, 8vw, 6.4rem)/1 var(--font-heading);
+  letter-spacing: 0.01em;
+  -webkit-text-stroke: 2px var(--brown);
+  paint-order: stroke fill;
+  text-shadow:
+    3px 3px 0 var(--mustard),
+    6px 6px 0 var(--orange),
+    9px 9px 0 var(--accent),
+    12px 12px 0 var(--umber);
+}
+/* Tagline: a bumper sticker */
+header.site p {
+  grid-row: 2;
+  grid-column: 1;
+  z-index: 1;
+  align-self: start;
+  justify-self: start;
+  max-width: min(520px, calc(100% - 88px));
+  margin: 26px 0 28px 46px;
+  padding: 7px 16px 8px;
+  color: var(--brown);
+  background:
+    linear-gradient(to right, var(--accent) 0 8px, var(--orange) 0 16px, var(--mustard) 0 24px, #0000 0),
+    var(--cream);
+  padding-left: 38px;
+  border: 2px solid var(--brown);
+  border-radius: 10px;
+  box-shadow: 4px 4px 0 #3a221266;
+  rotate: -1.5deg;
+  font: italic 600 1.05rem/1.35 var(--font-body);
+}
+
+/* ---------------- DASHBOARD: search + filters ---------------- */
+.filter-bar {
+  grid-row: 3;
+  grid-column: 1;
+  z-index: 2;
+  gap: 10px 18px;
+  margin-top: 26px;
+  padding: 12px 18px;
+  color: var(--cream);
+  background:
+    radial-gradient(circle, #fcf2dc0a 0.8px, #0000 1.3px) 0 0 / 5px 7px,
+    linear-gradient(to bottom, #6a4024, var(--umber) 30%, #43260f);
+  border: 3px solid var(--brown);
+  border-radius: 20px;
+  box-shadow: inset 0 2px 0 #fcf2dc2e, 0 6px 0 #3a221233;
+  font: 600 0.92rem var(--font-body);
+}
+.filter-bar input[type="search"] {
+  flex: 0 1 230px;
+  padding: 6px 16px;
+  color: var(--brown);
+  background: var(--cream);
+  border: 2px solid var(--mustard);
+  border-radius: 999px;
+  box-shadow: inset 0 2px 3px #3a221233;
+  font: italic 500 0.95rem var(--font-body);
+}
+.filter-bar input[type="search"]::placeholder { color: #8a6a4c; }
+.filter-bar input[type="search"]:focus { outline: 3px solid var(--gold); outline-offset: 1px; }
+.filter-count { order: 2; }
+/* Wide: search + count on the top row, the chips across the row below */
+.filter-chips { order: 3; flex: 1 0 100%; gap: 6px; padding-top: 10px; border-top: 2px dashed #fcf2dc26; }
+.filter-chips label {
+  padding: 3px 11px;
+  color: var(--cream);
+  border: 2px solid #fcf2dc40;
+  border-radius: 999px;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+.filter-chips label:hover { color: var(--cream); border-color: var(--mustard); }
+.filter-chips input:checked + label { color: var(--brown); background: var(--mustard); border-color: var(--mustard); }
+.filter-chips input:focus-visible + label { outline: 2px solid var(--gold); outline-offset: 2px; }
+.filter-count { color: var(--gold); font: 700 1.3rem/1 var(--font-hand); }
+
+/* Below this width (one row of chips no longer fits) they become a
+   dropdown on the dashboard, in one row with the search */
+@container site (width < 1020px) {
+  .filter-chips {
+    order: 0;
+    flex: 0 0 auto;
+    padding-top: 0;
+    border-top: 0;
+    position: relative;
+    z-index: 6;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    gap: 0;
+    width: 12em;
+    height: 2.05em;
+    overflow: visible;
+  }
+  .filter-chips label {
+    display: none;
+    white-space: nowrap;
+    padding: 4px 14px;
+    color: var(--cream);
+    background: var(--umber);
+    border: 2px solid var(--mustard);
+    border-radius: 0;
+  }
+  .filter-chips label + input + label { border-top-width: 0; }
+  .filter-chips input:checked + label { display: block; border-radius: 999px; color: var(--brown); background: var(--mustard); }
+  .filter-chips input:checked + label::after { content: "▾"; float: right; margin-left: 10px; }
+  .filter-chips:is(:hover, :has(input:focus-visible)) label { display: block; border-radius: 0; box-shadow: 0 10px 24px #3a221255; }
+  .filter-chips:is(:hover, :has(input:focus-visible)) input:checked + label::after { content: "✓"; }
+  .filter-chips:is(:hover, :has(input:focus-visible)) label:first-of-type { border-radius: 12px 12px 0 0; }
+  .filter-chips:is(:hover, :has(input:focus-visible)) label:last-of-type { border-radius: 0 0 12px 12px; }
+}
+
+/* ---------------- THEME MENU: top right of the windshield ---------------- */
+.theme-menu { top: 90px; right: 46px; }
+.theme-menu-button {
+  padding: 6px 16px;
+  color: var(--brown);
+  background: var(--cream);
+  border: 2px solid var(--brown);
+  border-radius: 999px;
+  box-shadow: 3px 3px 0 var(--accent);
+  font: 700 0.9rem var(--font-body);
+}
+.theme-menu-button::after { color: var(--accent); }
+.theme-menu-button:hover { border-color: var(--brown); background: #fff6e4; }
+.theme-menu[open] .theme-menu-button { box-shadow: 1px 1px 0 var(--accent); translate: 2px 2px; }
+.theme-menu-pop {
+  min-width: 230px;
+  padding: 16px 8px 8px;
+  color: var(--brown);
+  background:
+    linear-gradient(to bottom, var(--stripes)) top / 100% 10px no-repeat,
+    var(--cream);
+  border: 3px solid var(--brown);
+  border-radius: 18px;
+  box-shadow: 6px 6px 0 var(--accent), 0 18px 40px #3a221244;
+  font: 500 0.98rem/1.35 var(--font-body);
+  overflow: hidden;
+}
+.theme-menu-pop button { border-radius: 999px; padding: 6px 12px; }
+.theme-menu-pop button:hover { background: #e3a32a40; }
+.theme-menu-list button[aria-pressed="true"] { color: var(--brown); background: var(--mustard); font-weight: 700; }
+.theme-menu-customize { margin-top: 6px; border-top: 2px dashed #3a221255 !important; color: var(--muted) !important; font-style: italic !important; }
+
+/* ---------------- GALLERY: a row of parked vans ---------------- */
+main.gallery {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr));
+  gap: 38px 30px;
+  padding: 44px 20px 30px;
+  counter-reset: plate;
+}
+
+.demo {
+  --paint: var(--accent);
+  --ink: var(--cream);
+  --s1: var(--gold);
+  --s2: var(--mustard);
+  --s3: var(--umber);
+  position: relative;
+  background: var(--cream);
+  border: 0;
+  border-radius: 34px 34px 20px 20px;
+  box-shadow: 0 0 0 3px var(--brown), 7px 9px 0 #3a22122e;
+}
+/* Five paint jobs, in turn */
+main.gallery .demo:nth-child(5n+2) { --paint: var(--mustard); --ink: var(--brown); --s1: var(--accent); --s2: var(--orange); --s3: var(--umber); }
+main.gallery .demo:nth-child(5n+3) { --paint: var(--avocado); --ink: var(--cream); --s1: var(--gold); --s2: var(--orange); --s3: var(--umber); }
+main.gallery .demo:nth-child(5n+4) { --paint: var(--teal); --ink: var(--cream); --s1: var(--gold); --s2: var(--orange); --s3: var(--accent); }
+main.gallery .demo:nth-child(5n+5) { --paint: var(--umber); --ink: var(--cream); --s1: var(--accent); --s2: var(--orange); --s3: var(--mustard); }
+
+/* The window: the live demo, framed by the cream upper body */
+.preview {
+  border: 0;
+  border-radius: 24px;
+}
+main.gallery .preview {
+  order: -1;
+  flex: 1 0 auto;       /* windows stretch to the row height, so the paint lines up */
+  margin: 16px 16px 18px;
+  box-shadow: 0 0 0 4px var(--brown), 0 0 0 7px #3a221222;
+  filter: sepia(0.22) saturate(0.88);
+  transition: filter 0.5s;
+}
+/* glass glare (demos use their own ::after, never ::before) */
+main.gallery .preview::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 50;
+  pointer-events: none;
+  background: linear-gradient(118deg, #fff0 26%, #ffffff26 33%, #fff0 41%, #fff0 50%, #ffffff1a 53%, #fff0 58%);
+  transition: opacity 0.5s;
+}
+main.gallery .demo:hover .preview { filter: none; }
+main.gallery .demo:hover .preview::before { opacity: 0; }
+
+/* Paint below the window, starting with the side decal stripes */
+main.gallery .demo > h2 {
+  margin: 0;
+  padding: 30px 18px 4px;
+  color: var(--ink);
+  background: linear-gradient(to bottom,
+    var(--s1) 0 5px, var(--paint) 0 8px,
+    var(--s2) 0 13px, var(--paint) 0 16px,
+    var(--s3) 0 21px, var(--paint) 0);
+  font: 400 1.6rem/1.15 var(--font-heading);
+  letter-spacing: 0.01em;
+}
+main.gallery .demo .tags { padding: 6px 18px 10px; background: var(--paint); }
+.demo .tags code {
+  color: var(--ink);
+  background: color-mix(in srgb, var(--ink) 13%, transparent);
+  border: 1px solid color-mix(in srgb, var(--ink) 38%, transparent);
+  font: 500 11.5px/1.5 var(--font-mono);
+  padding: 1px 8px;
+}
+main.gallery .demo .credit {
+  padding: 0 112px 16px 18px;
+  color: var(--ink);
+  background: var(--paint);
+  font: 700 1.2rem/1.2 var(--font-hand);
+}
+.demo .credit a { color: inherit; text-decoration: underline 1.5px; text-underline-offset: 3px; }
+.demo .credit a:hover { color: inherit; text-decoration-style: wavy; }
+main.gallery .demo .credit a:hover { color: inherit; }
+
+/* Licence plate, numbered by a counter */
+main.gallery .demo { counter-increment: plate; }
+main.gallery .demo::after {
+  content: "LAB·" counter(plate, decimal-leading-zero);
+  position: absolute;
+  right: 16px;
+  bottom: 15px;
+  padding: 3px 9px 2px;
+  color: var(--brown);
+  background:
+    radial-gradient(circle 1.6px at 6px 50%, var(--brown) 98%, #0000) ,
+    radial-gradient(circle 1.6px at calc(100% - 6px) 50%, var(--brown) 98%, #0000),
+    var(--gold);
+  border-radius: 5px;
+  box-shadow: inset 0 0 0 1.5px var(--brown), 0 0 0 2px color-mix(in srgb, var(--paint) 60%, #000);
+  font: 500 12px/1.4 var(--font-mono);
+  letter-spacing: 0.14em;
+  padding-inline: 14px;
+}
+
+/* Parked vans bob on their springs when you point at them */
+main.gallery .demo { transition: translate 0.45s cubic-bezier(0.3, 1.8, 0.5, 1); }
+main.gallery .demo:hover { translate: 0 -5px; }
+main.gallery .demo:focus-visible { outline: 4px solid var(--mustard); outline-offset: 6px; }
+
+/* Scenic overlook: halfway down the full gallery, the stripes rise into a
+   rainbow. (A grid item on row 5; cards flow round it.) */
+main.gallery::before {
+  content: "Scenic overlook";
+  grid-column: 1 / -1;
+  grid-row: 5;
+  height: 104px;
+  padding: 18px 0 0 4px;
+  color: var(--umber);
+  font: 400 1.5rem/1 var(--font-heading);
+  background:
+    radial-gradient(circle at 50% 100%,
+      #0000 0 34px, var(--mustard) 0 44px, var(--orange) 0 54px,
+      var(--accent) 0 64px, var(--umber) 0 74px, #0000 0),
+    linear-gradient(to bottom, var(--stripes)) left bottom / calc(50% - 74px) 40px no-repeat,
+    linear-gradient(to bottom, var(--stripes)) right bottom / calc(50% - 74px) 40px no-repeat;
+}
+/* ...and only there: hidden when the list is filtered */
+body:has(#feat-all:not(:checked)) main.gallery::before,
+main.gallery:has(> .demo[hidden])::before { display: none; }
+
+/* End of the road: the sun goes down behind a rainbow */
+main.gallery::after {
+  content: "End of the road. Far out.";
+  grid-column: 1 / -1;
+  height: 150px;
+  padding-top: 4px;
+  color: var(--umber);
+  text-align: center;
+  font: 400 1.6rem/1 var(--font-heading);
+  background:
+    url("camper-van/sunflower.webp") left calc(50% - 160px) bottom 0 / 84px auto no-repeat,
+    url("camper-van/sunflower.webp") right calc(50% - 160px) bottom 0 / 84px auto no-repeat,
+    radial-gradient(circle at 50% 100%,
+      var(--gold) 0 30px, #0000 0 40px, var(--mustard) 0 52px, var(--orange) 0 64px,
+      var(--accent) 0 76px, var(--umber) 0 88px, #0000 0) center bottom / 200px 100px no-repeat;
+}
+
+/* ---------------- FULL VIEW: the van pulls in ---------------- */
+.card-modal {
+  width: min(980px, 94vw);
+  max-height: 92vh;
+  color: var(--text);
+  background: var(--cream);
+  border: 0;
+  border-radius: 44px 44px 24px 24px;
+  box-shadow: 0 0 0 4px var(--brown), 0 0 0 10px #fcf2dc, 0 0 0 13px var(--brown), 0 40px 90px #1a0a04cc;
+  transform-origin: 50% 100%;
+  overflow: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent) #0000;
+}
+.card-modal::backdrop {
+  background:
+    radial-gradient(ellipse 120% 70% at 50% 115%, #e07a1fcc, #0000 70%),
+    linear-gradient(#2c3f3cf0, #3a2212f2);
+  backdrop-filter: blur(3px) sepia(0.4);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .card-modal[open] { animation: cv-van-in 1.15s both; }
+  .card-modal[open]::backdrop { animation: cv-dusk 0.5s ease-out both; }
+  /* the hubcap rolls as the van drives in, and stops when it stops */
+  .card-modal[open] .card-modal-close { animation: cv-hubcap 0.7s cubic-bezier(0.25, 0.7, 0.3, 1) both; }
+}
+@keyframes cv-van-in {
+  0%   { translate: -115vw 0; rotate: 0deg; animation-timing-function: cubic-bezier(0.2, 0.6, 0.35, 1); }
+  58%  { translate: 14px 0; rotate: 1.1deg; animation-timing-function: ease-in-out; }   /* brakes: nose dips */
+  72%  { translate: -3px -4px; rotate: -0.7deg; animation-timing-function: ease-in-out; }
+  84%  { translate: 0 2px; rotate: 0.3deg; animation-timing-function: ease-in-out; }
+  93%  { translate: 0 -1px; rotate: -0.1deg; }
+  100% { translate: 0 0; rotate: 0deg; }
+}
+@keyframes cv-dusk { from { opacity: 0; } }
+@keyframes cv-hubcap { from { rotate: -900deg; } }
+
+.card-modal .demo {
+  --paint: var(--accent);
+  --ink: var(--cream);
+  background: none;
+  box-shadow: none;
+  border-radius: 0;
+}
+.card-modal .demo > h2 {
+  margin: 0;
+  padding: 30px 72px 6px 36px;
+  color: var(--brown);
+  font: 400 clamp(2.2rem, 5vw, 3.4rem)/1.1 var(--font-heading);
+  text-shadow: 3px 3px 0 var(--mustard);
+}
+.card-modal .demo .tags { padding: 6px 36px 10px; }
+.card-modal .demo .tags code {
+  --ink: var(--brown);
+  background: #e3a32a33;
+  border-color: #3a221255;
+}
+.card-modal .demo .credit { padding: 0 36px 12px; color: var(--muted); font: 700 1.3rem var(--font-hand); }
+.card-modal .demo .credit a { color: var(--accent); }
+.card-modal .instructions {
+  margin: 4px 36px 18px;
+  padding: 10px 16px 10px 18px;
+  color: var(--brown);
+  background: #f6d98e;
+  border: 2px solid var(--brown);
+  border-left: 10px solid var(--orange);
+  border-radius: 12px;
+  box-shadow: 4px 4px 0 #3a221233;
+  rotate: -0.4deg;
+  font: 700 1.35rem/1.25 var(--font-hand);
+}
+.card-modal .instructions::before { content: "Try it: "; color: var(--accent); font: 400 1.05rem var(--font-heading); }
+
+/* The big window */
+.card-modal .preview {
+  min-height: 400px;
+  margin: 6px 36px 30px;
+  box-shadow: 0 0 0 5px var(--brown), 0 0 0 9px #3a221222;
+}
+
+/* The lower body: paint, decal stripes, and the editor */
+.card-modal .tools {
+  padding: 34px 36px 34px;
+  color: var(--ink);
+  background: linear-gradient(to bottom,
+    var(--gold) 0 6px, var(--paint) 0 10px,
+    var(--mustard) 0 16px, var(--paint) 0 20px,
+    var(--umber) 0 26px, var(--paint) 0);
+}
+.card-modal .tools summary { color: var(--cream); font: 400 1.15rem var(--font-heading); }
+.card-modal .tools summary:hover { color: var(--gold); }
+.card-modal .tools textarea,
+.card-modal .tools pre {
+  color: var(--code-text);
+  background: var(--code-bg);
+  border: 3px solid var(--brown);
+  border-radius: 14px;
+  box-shadow: inset 0 2px 6px #3a22121f;
+}
+.card-modal .tools button {
+  color: var(--brown);
+  background: var(--gold);
+  border: 2px solid var(--brown);
+  border-radius: 999px;
+  font: 700 0.85rem var(--font-body);
+}
+.card-modal .tools button:hover { color: var(--brown); background: var(--mustard); border-color: var(--brown); }
+
+/* ✕ = a hubcap */
+.card-modal-close {
+  top: 16px;
+  margin: 18px 18px -64px 0;
+  width: 46px;
+  height: 46px;
+  color: var(--brown);
+  background: radial-gradient(circle,
+    #fffaf0 0 24%, #c9bba0 0 30%, #f3ead6 0 52%, #b8a888 0 56%, #efe4cc 0 76%, #9c8b6c 0);
+  border: 3px solid var(--brown);
+  box-shadow: 2px 3px 0 #3a221244;
+  font: 700 1.05rem var(--font-body);
+}
+.card-modal-close:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ---------------- NARROW SCREENS ---------------- */
+@media (max-width: 700px) {
+  header.site { --sun: 140px; --horizon: 70px; --road-x: 72%; padding: 54px 12px 0; }
+  header.site::before {
+    min-height: 260px;
+    border-radius: 32px 32px 16px 16px;
+    background-size: 120px auto, 0 0, auto, auto, auto, 100% calc(var(--horizon) - 14px), auto, auto, auto, auto, auto, auto;
+  }
+  header.site h1 { padding: 72px 26px 0; font-size: 3.4rem; }
+  header.site p { margin: 20px 0 24px 22px; max-width: calc(100% - 44px); font-size: 0.95rem; }
+  .theme-menu { top: 70px; right: 24px; }
+  .filter-bar { padding: 10px 12px; }
+  .filter-bar input[type="search"] { flex: 1 1 140px; }
+  main.gallery { padding-inline: 14px; gap: 30px; }
+  main.gallery .demo > h2 { font-size: 1.4rem; }
+  main.gallery::before { font-size: 1.15rem; }
+  main.gallery::after { font-size: 1.2rem; }
+  .card-modal .demo > h2 { padding-inline: 20px 64px; }
+  .card-modal .demo .tags, .card-modal .demo .credit { padding-inline: 20px; }
+  .card-modal .instructions { margin-inline: 20px; }
+  .card-modal .preview { margin-inline: 16px; min-height: 320px; }
+  .card-modal .tools { padding-inline: 18px; }
+}
+
+/* ---------------- REDUCED MOTION ---------------- */
+@media (prefers-reduced-motion: reduce) {
+  .card-modal[open] { animation: cv-fade 0.2s ease-out; }
+  @keyframes cv-fade { from { opacity: 0; } }
+  main.gallery .demo, main.gallery .demo:hover { transition: none; translate: none; }
+  main.gallery .preview, main.gallery .preview::before { transition: none; }
+}

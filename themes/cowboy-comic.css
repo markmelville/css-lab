@@ -1,0 +1,734 @@
+/* COWBOY COMIC: a 1950s western comic book.
+   From an image search for "1950s western comic book page": cover logos in
+   wood type with a black outline and a drop extrusion, a yellow cover with a
+   corner box (hero portrait, issue number, 10 cents), thick black panel borders
+   on white gutters, yellow caption boxes, oval speech balloons, starburst
+   sound effects, four-colour Ben-Day dots on yellowed newsprint.
+
+   - Header: the comic's cover. The cover art fills it: Dick Giordano's
+     bull-riding scene from Gabby Hayes #58 (1956), cut out of its sky and set
+     against a CSS sky with Ben-Day dots, so our logo sits where the comic's
+     was. The thrown cowboy yells the tagline. Corner box: a Jack Kirby cowboy.
+     (Both public domain, see cowboy-comic/credits.json.)
+   - Gallery: an interior page. Cards are panels in tiers of varied widths on a
+     12-column grid, tinted with Ben-Day dots. Titles sit in caption boxes with
+     comic lead-ins ("Meanwhile..."), credits are speech balloons.
+   - Hover a panel (outside its live demo) and a sound effect pops: BANG!
+   - Full view: the panel punches in over a KA-POW burst and action rays. */
+@import url("_base.css");
+@import url("https://fonts.googleapis.com/css2?family=Smokum&family=Bangers&family=Comic+Neue:ital,wght@0,400;0,700;1,400;1,700&family=Victor+Mono:wght@400;600&display=swap");
+
+:root {
+  color-scheme: light;
+  --ink: #1d1712;
+  --paper: #efe0b9;       /* yellowed newsprint */
+  --white: #fff8e6;       /* balloon / gutter white, printed on that paper */
+  --yellow: #f6c933;
+  --red: #c7311e;
+  --sky: #4fa6cf;
+  --orange: #e8792b;
+  --cactus: #6e9440;
+  --sand: #e6c690;
+
+  --bg: var(--paper);
+  --panel: var(--white);
+  --line: var(--ink);
+  --text: var(--ink);
+  --muted: #5d4a36;
+  --accent: var(--red);
+  --code-bg: #fffdf5;
+  --code-text: var(--ink);
+  --radius: 0px;
+  --font-heading: "Smokum", serif;
+  --font-body: "Comic Neue", sans-serif;
+  --font-mono: "Victor Mono", monospace;
+  --font-sfx: "Bangers", sans-serif;
+
+  /* Starbursts drawn as SVG (a background, so they keep their black outline) */
+  --burst: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-6 -6 212 212' preserveAspectRatio='none'%3E%3Cpolygon points='100,15 114,47 143,20 138,57 176,45 155,76 190,82 162,100 189,118 156,124 172,152 138,143 142,178 114,155 100,183 86,153 57,180 60,145 23,155 44,124 0,121 40,100 1,80 45,76 27,48 62,57 59,23 86,45' fill='%23f6c933' stroke='%231d1712' stroke-width='5' stroke-linejoin='miter'/%3E%3C/svg%3E");
+  --kapow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-6 -6 212 212' preserveAspectRatio='none'%3E%3Cpolygon points='100,15 112,38 134,17 135,46 163,33 152,60 180,58 165,79 197,85 170,100 194,115 166,122 184,143 153,140 164,169 135,155 132,180 112,162 100,188 88,163 66,184 65,154 35,170 47,140 17,143 33,122 8,115 30,100 9,86 34,78 14,55 46,59 35,31 65,46 66,16 88,38' fill='%23c7311e' stroke='%231d1712' stroke-width='3' stroke-linejoin='miter'/%3E%3Cpolygon points='100,15 112,38 134,17 135,46 163,33 152,60 180,58 165,79 197,85 170,100 194,115 166,122 184,143 153,140 164,169 135,155 132,180 112,162 100,188 88,163 66,184 65,154 35,170 47,140 17,143 33,122 8,115 30,100 9,86 34,78 14,55 46,59 35,31 65,46 66,16 88,38' transform='translate(100 100) scale(.8) translate(-100 -100)' fill='%23f6c933' stroke='%231d1712' stroke-width='2.5'/%3E%3C/svg%3E");
+}
+
+/* ---------------- NEWSPRINT (CSS only) ----------------
+   Cheap pulp paper: a faint red/yellow dot screen that bled through from the
+   other side, fibres and specks on prime-sized tiles (so the repeat is hard to
+   spot), and edges browned with age. */
+body {
+  font-size: 16px;
+  overflow-x: clip; /* sound-effect bursts poke out past the page edge */
+  background:
+    linear-gradient(to right, #9a5d2a2e, #0000 7%, #0000 93%, #9a5d2a2e),
+    radial-gradient(ellipse 420px 300px at 12% 18%, #b0703a12, #0000 70%),
+    radial-gradient(ellipse 380px 260px at 88% 62%, #b0703a10, #0000 70%),
+    radial-gradient(circle, #c7311e0d 1.2px, #0000 1.7px) 0 0 / 7px 7px,
+    radial-gradient(circle, #e0a8200f 1.2px, #0000 1.7px) 3px 3px / 7px 7px,
+    radial-gradient(ellipse 13px 0.8px at 30% 40%, #5a412014, #0000) 0 0 / 83px 59px,
+    radial-gradient(ellipse 0.8px 10px at 60% 70%, #5a412012, #0000) 0 0 / 71px 103px,
+    radial-gradient(circle, #3b28140f 0.7px, #0000 1.2px) 0 0 / 11px 13px,
+    radial-gradient(circle, #fffaea40 0.9px, #0000 1.5px) 2px 5px / 17px 19px,
+    var(--paper);
+}
+
+/* ---------------- THE COVER ---------------- */
+header.site {
+  --cc-bar: 60px;                     /* height of the filter strip along the bottom */
+  --cc-sky: linear-gradient(#6c9fd3, #84b2dc 30%, #a7c8e3 58%, #d2e7f2 85%, #dcedf5);
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-rows: auto 1fr auto;
+  align-items: start;
+  column-gap: 22px;
+  width: min(1160px, 100% - 40px);
+  max-width: none;
+  min-height: 540px;
+  margin: 28px auto 0;
+  padding: 18px 22px 0;
+  /* The cover art: the scene stands on the filter strip, against a printed sky */
+  background:
+    url("cowboy-comic/cover-scene.webp") right 0 top 0 / auto calc(100% - var(--cc-bar)) no-repeat,
+    radial-gradient(circle, #ffffff3a 1.3px, #0000 1.8px) 0 0 / 6px 6px,
+    var(--cc-sky) 0 0 / 100% calc(100% - var(--cc-bar)) no-repeat,
+    var(--white);
+  border: 4px solid var(--ink);
+  box-shadow: 8px 8px 0 var(--ink);
+}
+
+/* Corner box: the hero's portrait, issue number and price */
+header.site::before {
+  content: "No. 24 \2605  10\00a2";
+  grid-column: 1;
+  grid-row: 1 / span 2;
+  width: 118px;
+  padding: 128px 4px 5px;
+  text-align: center;
+  font: 700 0.82rem/1.1 var(--font-body);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink);
+  background:
+    linear-gradient(var(--ink), var(--ink)) 0 120px / 100% 3px no-repeat,
+    url("cowboy-comic/corner-box.webp") top center / 100% 120px no-repeat,
+    var(--white);
+  border: 3px solid var(--ink);
+  outline: 3px solid var(--white);
+  margin: 3px 0 18px 3px;
+}
+
+/* Cover logo: wood type, yellow with an ink outline and a red extrusion */
+header.site h1 {
+  grid-column: 2;
+  grid-row: 1;
+  margin: 0;
+  font: 400 clamp(3.4rem, 9vw, 7.2rem)/0.92 var(--font-heading);
+  letter-spacing: 0.03em;
+  color: var(--yellow);
+  -webkit-text-stroke: 0.045em var(--ink);
+  paint-order: stroke fill;
+  text-shadow:
+    2px 2px 0 var(--ink),
+    4px 4px 0 var(--red),
+    6px 6px 0 var(--red),
+    8px 8px 0 var(--ink);
+}
+header.site h1::before {
+  content: "Thrillin' Tales of the" / "";
+  display: block;
+  margin-bottom: 4px;
+  font: 400 clamp(1.1rem, 2.2vw, 1.6rem)/1 var(--font-sfx);
+  letter-spacing: 0.06em;
+  color: var(--white);
+  -webkit-text-stroke: 0;
+  text-shadow: 1px 1px 0 var(--ink), 2px 2px 0 var(--ink), 3px 3px 0 var(--red);
+}
+
+/* The tagline is what the thrown cowboy yells (the tail points up at him) */
+header.site p {
+  /* beside the cowboy's face: the art is (100% - bar) tall and 791/860 as
+     wide, and his mouth sits 21% across it and 14% down */
+  --cc-art-w: calc((540px - 8px - var(--cc-bar)) * 791 / 860);
+  position: absolute;
+  right: calc(var(--cc-art-w) * 0.79 + 64px);
+  top: 62px;
+  z-index: 1;
+  width: 226px;
+  margin: 0;
+  padding: 14px 30px;
+  color: var(--ink);
+  background: var(--white);
+  border: 3px solid var(--ink);
+  border-radius: 50%;
+  font: 700 0.95rem/1.3 var(--font-body);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  text-align: center;
+}
+header.site p::before,
+header.site p::after {
+  content: "";
+  position: absolute;
+  right: -60px;
+  bottom: 44%;
+  width: 84px;
+  height: 30px;
+  clip-path: polygon(0 34%, 100% 0, 26% 100%);
+}
+header.site p::before { background: var(--ink); }
+header.site p::after { right: -50px; bottom: calc(44% + 4px); width: 76px; height: 22px; background: var(--white); clip-path: polygon(0 40%, 100% 0, 24% 100%); }
+
+/* Less room beside the cowboy: the balloon drops under the logo */
+@container site (width < 1080px) {
+  header.site p { position: relative; right: auto; top: auto; grid-column: 2; grid-row: 2; justify-self: start; width: auto; max-width: 30ch; margin: 18px 0 20px; }
+}
+
+/* Cover blurb starburst */
+header.site::after {
+  content: "All CSS!\A No JS!";
+  white-space: pre;
+  position: absolute;
+  left: 70px;
+  bottom: calc(var(--cc-bar) + 48px);
+  display: grid;
+  place-items: center;
+  width: 210px;
+  height: 165px;
+  padding-bottom: 4px;
+  text-align: center;
+  font: 400 1.8rem/1 var(--font-sfx);
+  letter-spacing: 0.05em;
+  color: var(--red);
+  background: var(--burst) center / 100% 100% no-repeat;
+  rotate: -8deg;
+}
+
+/* Theme menu: a blurb box top right of the cover */
+.theme-menu { position: relative; top: auto; right: auto; grid-column: 3; grid-row: 1; justify-self: end; z-index: 7; }
+.theme-menu-button {
+  padding: 5px 12px 3px;
+  color: var(--ink);
+  background: var(--white);
+  border: 3px solid var(--ink);
+  border-radius: 0;
+  box-shadow: 4px 4px 0 var(--ink);
+  font: 400 1.15rem/1.1 var(--font-sfx);
+  letter-spacing: 0.06em;
+  transition: translate 0.1s, box-shadow 0.1s;
+}
+.theme-menu-button::before { content: "\2605 Other "; color: var(--red); }
+.theme-menu-button::after { content: " \25BE"; color: var(--ink); }
+.theme-menu-button:hover { border-color: var(--ink); background: #fff; }
+.theme-menu[open] .theme-menu-button { translate: 2px 2px; box-shadow: 2px 2px 0 var(--ink); }
+.theme-menu-pop {
+  top: calc(100% + 10px);
+  min-width: 230px;
+  padding: 6px;
+  color: var(--ink);
+  background: var(--white);
+  border: 3px solid var(--ink);
+  border-radius: 0;
+  box-shadow: 6px 6px 0 var(--ink);
+  font: 700 0.95rem/1.3 var(--font-body);
+}
+.theme-menu-pop button { border-radius: 0; padding: 6px 10px; }
+.theme-menu-pop button:hover { background: #f6c93366; }
+.theme-menu-list button[aria-pressed="true"] { color: var(--ink); background: var(--yellow); font-weight: 700; }
+.theme-menu-list button[aria-pressed="true"]::after { content: " \2605"; color: var(--red); }
+.theme-menu-list button.is-custom::after { content: " \00b7 yours"; font-style: italic; font-weight: 400; color: var(--muted); }
+.theme-menu-list button.is-custom[aria-pressed="true"]::after { content: " \00b7 yours \2605"; }
+.theme-menu-customize {
+  margin-top: 6px;
+  border-top: 3px solid var(--ink) !important;
+  color: var(--red) !important;
+  font: 400 1.05rem var(--font-sfx) !important;
+  letter-spacing: 0.06em;
+}
+
+/* Filter bar: a white strip along the bottom of the cover */
+.filter-bar {
+  grid-column: 1 / -1;
+  grid-row: 3;
+  box-sizing: border-box;
+  min-height: var(--cc-bar);
+  gap: 8px 14px;
+  margin: 0 -22px;
+  padding: 10px 22px;
+  color: var(--ink);
+  background: var(--white);
+  border: 0;
+  border-top: 4px solid var(--ink);
+  border-radius: 0;
+  font: 700 0.9rem var(--font-body);
+}
+.filter-bar input[type="search"] {
+  flex: 1 1 150px;
+  max-width: 230px;
+  padding: 6px 10px;
+  color: var(--ink);
+  background: #fff;
+  border: 3px solid var(--ink);
+  border-radius: 0;
+  box-shadow: 3px 3px 0 var(--ink);
+  font: 700 0.95rem var(--font-body);
+}
+.filter-bar input[type="search"]::placeholder { color: #8a7660; font-style: italic; }
+.filter-bar input[type="search"]:focus { outline: 3px solid var(--red); outline-offset: 2px; }
+.filter-chips { gap: 4px 2px; }
+.filter-chips label {
+  padding: 3px 7px 1px;
+  color: var(--ink);
+  border: 2px solid transparent;
+  border-radius: 0;
+  font: 400 1.05rem/1.2 var(--font-sfx);
+  letter-spacing: 0.06em;
+}
+.filter-chips label:hover { color: var(--red); border-color: var(--ink); }
+.filter-chips input:checked + label {
+  color: var(--yellow);
+  background: var(--red);
+  border-color: var(--ink);
+  box-shadow: 2px 2px 0 var(--ink);
+  rotate: -2deg;
+  text-shadow: 1px 1px 0 var(--ink);
+}
+.filter-chips input:focus-visible + label { outline: 3px solid var(--sky); outline-offset: 2px; }
+.filter-count { font-style: italic; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); }
+
+/* Narrow bar: the chips fold into a CSS-only dropdown */
+@container site (width < 1080px) {
+  .filter-chips {
+    position: relative;
+    z-index: 6;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    gap: 0;
+    width: 11em;
+    height: 2.05em;
+    overflow: visible;
+  }
+  .filter-chips label { display: none; padding: 4px 12px 2px; white-space: nowrap; background: var(--white); border: 2px solid var(--ink); rotate: none; }
+  .filter-chips label + input + label { border-top-width: 0; }
+  .filter-chips input:checked + label { display: block; rotate: none; }
+  .filter-chips input:checked + label::after { content: "\25BE"; float: right; margin-left: 10px; }
+  .filter-chips:is(:hover, :has(input:focus-visible)) label { display: block; box-shadow: 4px 4px 0 #1d171255; }
+  .filter-chips:is(:hover, :has(input:focus-visible)) input:checked + label::after { content: "\2605"; }
+}
+
+/* ---------------- THE PAGE: panels in tiers ---------------- */
+main.gallery {
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 16px;
+  width: min(1160px, 100% - 40px);
+  max-width: none;
+  margin: 34px auto 60px;
+  padding: 0;
+}
+
+/* Story title across the top of the page, and THE END at the bottom */
+main.gallery::before {
+  content: "Meanwhile, out on the CSS frontier\2026 twenty-four tall tales, and not one line of JavaScript!";
+  grid-column: 1 / -1;
+  justify-self: start;
+  max-width: 100%;
+  padding: 8px 16px;
+  background: var(--yellow);
+  border: 3px solid var(--ink);
+  box-shadow: 4px 4px 0 var(--ink);
+  font: italic 700 1rem/1.3 var(--font-body);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+main.gallery::after {
+  content: "The End";
+  grid-column: 1 / -1;
+  justify-self: center;
+  margin-top: 18px;
+  font: 400 4.6rem/1 var(--font-heading);
+  color: var(--red);
+  -webkit-text-stroke: 0.04em var(--ink);
+  paint-order: stroke fill;
+  text-shadow: 3px 3px 0 var(--ink);
+}
+
+/* A panel: thick ink border, flat tint printed as Ben-Day dots */
+.demo {
+  --tint: #a9d6e8;
+  --dot: #6cbbd9;
+  position: relative;
+  grid-column: span 4;
+  overflow: visible;
+  background:
+    radial-gradient(circle, var(--dot) 1.6px, #0000 2.1px) 0 0 / 7px 7px,
+    var(--tint);
+  border: 4px solid var(--ink);
+  border-radius: 0;
+}
+main.gallery > .demo:nth-child(5n+2) { --tint: #f1dcae; --dot: #e1b866; }
+main.gallery > .demo:nth-child(5n+3) { --tint: #f6be90; --dot: #ec8d43; }
+main.gallery > .demo:nth-child(5n+4) { --tint: #c9dba7; --dot: #95b65f; }
+main.gallery > .demo:nth-child(5n+5) { --tint: #f3c2b3; --dot: #df7a62; }
+
+/* Tiers: each row of panels adds up to 12 columns. Two pages of 12 panels;
+   the second mirrors the first. */
+main.gallery > .demo:nth-child(1)  { grid-column: span 8; }
+main.gallery > .demo:nth-child(6)  { grid-column: span 5; }
+main.gallery > .demo:nth-child(7)  { grid-column: span 7; }
+main.gallery > .demo:nth-child(8),
+main.gallery > .demo:nth-child(9)  { grid-column: span 6; }
+main.gallery > .demo:nth-child(10) { grid-column: span 7; }
+main.gallery > .demo:nth-child(11) { grid-column: span 5; }
+main.gallery > .demo:nth-child(12) { grid-column: span 12; }
+main.gallery > .demo:nth-child(14) { grid-column: span 8; }
+main.gallery > .demo:nth-child(18) { grid-column: span 7; }
+main.gallery > .demo:nth-child(19) { grid-column: span 5; }
+main.gallery > .demo:nth-child(20),
+main.gallery > .demo:nth-child(21) { grid-column: span 6; }
+main.gallery > .demo:nth-child(22) { grid-column: span 5; }
+main.gallery > .demo:nth-child(23) { grid-column: span 7; }
+main.gallery > .demo:nth-child(24) { grid-column: span 12; }
+
+/* Filtered or searched: the tiers assume every panel is there, so fall back
+   to an even grid of panels */
+body:has(#feat-all:not(:checked)) main.gallery,
+main.gallery:has(> .demo[hidden]) {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 420px), 1fr));
+}
+body:has(#feat-all:not(:checked)) main.gallery > .demo,
+main.gallery:has(> .demo[hidden]) > .demo { grid-column: auto; }
+
+/* Inside a panel: caption box, the picture (live demo), then a speech balloon */
+.demo > h2 {
+  align-self: flex-start;
+  max-width: calc(100% - 40px);
+  margin: 0;
+  padding: 6px 14px 7px 12px;
+  color: var(--ink);
+  background: var(--yellow);
+  border-right: 3px solid var(--ink);
+  border-bottom: 3px solid var(--ink);
+  font: 700 1.08rem/1.15 var(--font-body);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+/* Comic lead-ins, rotating through the page */
+main.gallery .demo > h2::before {
+  content: "Meanwhile\2026" / "";
+  display: block;
+  margin-bottom: 1px;
+  font: italic 700 0.74rem/1.2 var(--font-body);
+  letter-spacing: 0.04em;
+  color: #6b4e1c;
+}
+main.gallery .demo:nth-child(6n+2) > h2::before { content: "Out on the range\2026" / ""; }
+main.gallery .demo:nth-child(6n+3) > h2::before { content: "Later, at the saloon\2026" / ""; }
+main.gallery .demo:nth-child(6n+4) > h2::before { content: "Suddenly!" / ""; }
+main.gallery .demo:nth-child(6n+5) > h2::before { content: "Back at the ranch\2026" / ""; }
+main.gallery .demo:nth-child(6n) > h2::before { content: "At high noon\2026" / ""; }
+main.gallery > .demo:nth-child(1) > h2::before { content: "Our story begins\2026" / ""; }
+main.gallery > .demo:nth-child(1) > h2 { font-size: 1.35rem; }
+
+.preview {
+  order: 1;
+  flex: 1 1 auto;
+  margin: 12px 14px 0;
+  border: 3px solid var(--ink);
+  box-shadow: 3px 3px 0 #1d171266;
+}
+
+/* The idea credit is said in a speech balloon pointing up at the picture */
+.demo .credit {
+  order: 2;
+  position: relative;
+  align-self: flex-start;
+  margin: 16px 14px 10px 18px;
+  padding: 7px 20px;
+  color: var(--ink);
+  background: var(--white);
+  border: 2.5px solid var(--ink);
+  border-radius: 50%;
+  font: 700 0.84rem/1.25 var(--font-body);
+  letter-spacing: 0.02em;
+}
+.demo .credit::before,
+.demo .credit::after {
+  content: "";
+  position: absolute;
+  left: 24px;
+  clip-path: polygon(0 100%, 30% 0, 100% 100%);
+}
+.demo .credit::before { top: -15px; width: 20px; height: 17px; background: var(--ink); }
+.demo .credit::after { top: -10px; left: 27.5px; width: 13px; height: 13px; background: var(--white); }
+.demo .credit a { color: var(--ink); text-decoration: underline 1.5px; text-underline-offset: 2px; }
+.demo .credit a:hover { color: var(--red); }
+
+/* Tags: little lettering tickets along the bottom of the panel */
+.demo .tags { order: 3; gap: 5px; padding: 0 14px 14px; }
+.demo .tags code {
+  padding: 1px 6px;
+  color: var(--ink);
+  background: var(--white);
+  border: 2px solid var(--ink);
+  border-radius: 0;
+  font: 600 11.5px/1.4 var(--font-mono);
+}
+.demo .tags code:nth-child(odd) { rotate: -1.5deg; }
+.demo .tags code:nth-child(even) { rotate: 1deg; }
+
+/* Sound effects: hover a panel (anywhere but its live demo) and it goes BANG */
+main.gallery .demo::after {
+  content: "Bang!" / "";
+  position: absolute;
+  z-index: 4;
+  top: -28px;
+  right: -14px;
+  display: grid;
+  place-items: center;
+  width: 118px;
+  height: 94px;
+  padding-bottom: 3px;
+  pointer-events: none;
+  font: 400 1.35rem/1 var(--font-sfx);
+  letter-spacing: 0.05em;
+  color: var(--red);
+  text-transform: uppercase;
+  text-shadow: 1px 1px 0 var(--ink);
+  background: var(--burst) center / 100% 100% no-repeat;
+  opacity: 0;
+  scale: 0.2;
+  rotate: -25deg;
+  transition: opacity 0.12s, scale 0.18s cubic-bezier(0.3, 1.8, 0.6, 1), rotate 0.18s;
+}
+main.gallery .demo:nth-child(6n+2)::after { content: "Pow!" / ""; }
+main.gallery .demo:nth-child(6n+3)::after { content: "Zing!" / ""; }
+main.gallery .demo:nth-child(6n+4)::after { content: "Wham!" / ""; }
+main.gallery .demo:nth-child(6n+5)::after { content: "Yee-haw!" / ""; font-size: 1.05rem; }
+main.gallery .demo:nth-child(6n)::after { content: "Ka-blam!" / ""; font-size: 1.05rem; }
+main.gallery .demo:is(:hover:not(:has(.preview:hover)), :focus-visible)::after { opacity: 1; scale: 1; rotate: 10deg; }
+main.gallery .demo:focus-visible { outline: 4px solid var(--red); outline-offset: 4px; }
+
+/* Placeholder slot left by an open card: an empty, dashed panel */
+main.gallery .demo-placeholder { visibility: visible; background: none; border: 3px dashed #1d171255; }
+main.gallery .demo-placeholder > * { visibility: hidden; }
+main.gallery .demo-placeholder::after { content: none; }
+
+/* ---------------- NARROW SCREENS ---------------- */
+@media (max-width: 1000px) {
+  main.gallery { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  main.gallery > .demo:nth-child(n) { grid-column: auto; }
+  main.gallery > .demo:nth-child(3n+1) { grid-column: 1 / -1; }
+  header.site::after { width: 170px; height: 134px; font-size: 1.45rem; left: 50px; }
+}
+@media (max-width: 680px) {
+  header.site, main.gallery { width: calc(100% - 24px); }
+  header.site {
+    --cc-bar: 92px;
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-rows: auto auto minmax(300px, auto) auto;
+    column-gap: 14px;
+    min-height: 0;
+    padding: 12px 14px 0;
+    box-shadow: 5px 5px 0 var(--ink);
+    /* the scene stands on the filter strip, under the logo */
+    background-position: right -24px bottom var(--cc-bar), 0 0, 0 0, 0 0;
+    background-size: auto 330px, 6px 6px, 100% calc(100% - var(--cc-bar)), auto;
+  }
+  header.site::after { display: none; }
+  header.site::before { width: 78px; padding-top: 86px; font-size: 0.66rem; grid-row: 1; margin-bottom: 10px; }
+  header.site h1 { grid-row: 1; align-self: center; font-size: clamp(2.8rem, 14vw, 4.4rem); }
+  .theme-menu { grid-column: 1 / -1; grid-row: 2; justify-self: end; margin-bottom: 4px; }
+  header.site p { position: relative; right: auto; top: auto; grid-column: 1 / -1; grid-row: 3; align-self: end; justify-self: start; width: auto; max-width: 62%; margin: 10px 0 16px; padding: 12px 22px; border-radius: 28px; font-size: 0.85rem; }
+  header.site p::before { left: 64%; right: auto; bottom: auto; top: -20px; width: 24px; height: 22px; clip-path: polygon(0 0, 100% 100%, 20% 100%); }
+  header.site p::after { left: calc(64% + 3px); right: auto; bottom: auto; top: -13px; width: 18px; height: 16px; clip-path: polygon(0 0, 100% 100%, 20% 100%); }
+  .filter-bar { grid-row: 4; height: var(--cc-bar); margin: 0 -14px; padding: 10px 14px; }
+  main.gallery,
+  body:has(#feat-all:not(:checked)) main.gallery,
+  main.gallery:has(> .demo[hidden]) { grid-template-columns: minmax(0, 1fr); }
+  main.gallery > .demo:nth-child(n) { grid-column: 1 / -1; }
+  main.gallery .demo::after { right: -8px; }
+  main.gallery::after { font-size: 2.6rem; }
+}
+
+/* ---------------- FULL VIEW: KA-POW! ----------------
+   The dialog fills the screen (transparent), so the burst and the action rays
+   can sit around the panel. The panel punches in over the burst. Click the
+   rays around it (or the X) to close. */
+.card-modal {
+  width: 100%;
+  height: 100dvh;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 6vh 12px 8vh;
+  color: var(--ink);
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+.card-modal[open] { display: grid; justify-items: center; align-items: start; animation: none; }
+/* Action rays from the centre, darkened at the edges and screened with dots */
+.card-modal::backdrop {
+  background:
+    radial-gradient(circle, #1d17120f 1.4px, #0000 1.9px) 0 0 / 7px 7px,
+    radial-gradient(circle at 50% 50%, #0000 25%, #1d1712b3 80%),
+    repeating-conic-gradient(from 3deg at 50% 50%, #e8792b 0 7deg, #c7311e 7deg 14deg);
+  backdrop-filter: none;
+}
+/* The burst behind the panel */
+.card-modal::before {
+  content: "Ka-Pow!" / "";
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  translate: -50% -50%;
+  width: min(1600px, 140vw);
+  height: min(1200px, 135vh);
+  display: grid;
+  place-items: center;
+  font: 400 clamp(4rem, 14vw, 10rem)/1 var(--font-sfx);
+  letter-spacing: 0.04em;
+  color: var(--red);
+  -webkit-text-stroke: 3px var(--ink);
+  paint-order: stroke fill;
+  text-shadow: 6px 6px 0 var(--ink);
+  background: var(--kapow) center / 100% 100% no-repeat;
+  pointer-events: none;
+}
+.card-modal .demo {
+  position: relative;
+  z-index: 1;
+  width: min(980px, 100%);
+  margin: 0;
+  background:
+    radial-gradient(circle, #e9d7a64d 1.4px, #0000 1.9px) 0 0 / 7px 7px,
+    var(--white);
+  border: 5px solid var(--ink);
+  box-shadow: 12px 12px 0 var(--ink);
+  cursor: auto;
+}
+.card-modal .demo > h2 {
+  max-width: calc(100% - 80px);
+  padding: 10px 20px 12px 16px;
+  font: 400 clamp(2rem, 5vw, 3.2rem)/1 var(--font-heading);
+  letter-spacing: 0.03em;
+  text-transform: none;
+}
+.card-modal .demo > h2::before { content: none; }
+.card-modal .preview { min-height: 400px; margin: 16px 20px 0; }
+.card-modal .demo .credit { margin-left: 24px; }
+.card-modal .demo .tags { padding-inline: 20px; }
+.card-modal .tools { order: 4; padding: 4px 20px 22px; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .card-modal[open]::before { animation: cc-kapow 0.45s cubic-bezier(0.2, 1.5, 0.5, 1) both; }
+  .card-modal[open] .demo { animation: cc-punch-in 0.4s 0.24s cubic-bezier(0.25, 1.4, 0.5, 1) both; }
+  .card-modal[open]::backdrop { animation: cc-rays-in 0.3s ease-out; }
+}
+@keyframes cc-kapow {
+  from { scale: 0.1; rotate: -30deg; opacity: 0; }
+  40% { opacity: 1; }
+  to { scale: 1; rotate: 0deg; }
+}
+@keyframes cc-punch-in {
+  from { scale: 0.3; rotate: -7deg; opacity: 0; }
+  50% { opacity: 1; }
+  to { scale: 1; rotate: 0deg; }
+}
+@keyframes cc-rays-in { from { opacity: 0; } }
+
+/* Instructions: a big speech balloon above the picture */
+.card-modal .instructions {
+  order: 0;
+  position: relative;
+  align-self: center;
+  max-width: min(64ch, calc(100% - 40px));
+  margin: 18px 20px 6px;
+  padding: 14px 46px;
+  color: var(--ink);
+  background: #fff;
+  border: 3px solid var(--ink);
+  border-left-width: 3px;
+  border-radius: 50%;
+  font: 700 1rem/1.35 var(--font-body);
+  letter-spacing: 0.02em;
+  text-align: center;
+  text-transform: uppercase;
+}
+.card-modal .instructions::before {
+  content: "Here's how, pardner: ";
+  color: var(--red);
+  font-weight: 700;
+}
+.card-modal .instructions::after {
+  content: "";
+  position: absolute;
+  left: 30%;
+  bottom: -19px;
+  width: 26px;
+  height: 20px;
+  background: var(--ink);
+  clip-path: polygon(0 0, 100% 0, 15% 100%);
+}
+
+/* Close: a round balloon with an X, pinned top right */
+.card-modal-back { display: none; }
+.card-modal-close {
+  position: fixed;
+  top: 16px;
+  right: 18px;
+  float: none;
+  z-index: 5;
+  margin: 0;
+  width: 48px;
+  height: 48px;
+  color: var(--ink);
+  background: var(--white);
+  border: 3px solid var(--ink);
+  border-radius: 50%;
+  box-shadow: 4px 4px 0 var(--ink);
+  font: 400 1.4rem/1 var(--font-sfx);
+}
+.card-modal-close:hover { color: var(--yellow); background: var(--red); border-color: var(--ink); }
+
+/* Editor */
+.tools summary {
+  color: var(--ink);
+  font: 400 1.15rem var(--font-sfx);
+  letter-spacing: 0.06em;
+}
+.tools summary:hover { color: var(--red); }
+.tools textarea, .tools pre {
+  color: var(--code-text);
+  background: var(--code-bg);
+  border: 3px solid var(--ink);
+  border-radius: 0;
+  box-shadow: 4px 4px 0 #1d171255;
+  font: 13px/1.55 var(--font-mono);
+}
+.tools button {
+  color: var(--ink);
+  background: var(--yellow);
+  border: 2px solid var(--ink);
+  border-radius: 0;
+  box-shadow: 2px 2px 0 var(--ink);
+  font: 400 0.95rem var(--font-sfx);
+  letter-spacing: 0.06em;
+}
+.tools button:hover { color: var(--yellow); background: var(--red); border-color: var(--ink); }
+
+@media (max-width: 680px) {
+  .card-modal { padding: 64px 8px 6vh; }
+  .card-modal .demo { box-shadow: 6px 6px 0 var(--ink); }
+  .card-modal .preview { margin-inline: 10px; min-height: 320px; }
+  .card-modal .instructions { border-radius: 26px; padding: 12px 18px; }
+  .card-modal .tools { padding-inline: 10px; }
+}
+
+/* ---------------- REDUCED MOTION ---------------- */
+@media (prefers-reduced-motion: reduce) {
+  main.gallery .demo::after { transition: opacity 0.12s; scale: 1; rotate: 10deg; }
+  .card-modal[open] .demo,
+  .card-modal[open]::before { animation: cc-fade-in 0.2s both; }
+  @keyframes cc-fade-in { from { opacity: 0; } }
+}

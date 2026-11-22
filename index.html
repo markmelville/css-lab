@@ -1,0 +1,2984 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CSS Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tilt+Neon&display=swap">
+<!-- Core + theme load into cascade layers; customizations (#theme-overrides)
+     are unlayered, so they always win. lab.js swaps the theme line. -->
+<style id="theme-css">
+@layer core, theme;
+@import url("lab.css") layer(core);
+@import url("themes/default.css") layer(theme);
+</style>
+<style id="theme-overrides"></style>
+<script src="lab.js"></script>
+<link rel="stylesheet" href="panel.css">
+<script src="fonts-data.js" defer></script>
+<script src="credits-data.js" defer></script>
+<script src="panel.js" defer></script>
+<script src="site.js" defer></script>
+</head>
+<body>
+
+<!-- Customize: meta UI, never themed. A manual popover, so it stays open
+     while you use the page. Opened from the theme menu in the header. -->
+<aside id="meta-panel" class="meta-panel" popover="manual" aria-label="Customize">
+  <!-- Main view: every customization at once -->
+  <div class="meta-view meta-main">
+    <div class="meta-head">
+      <h2>Customize</h2>
+      <button type="button" popovertarget="meta-panel" popovertargetaction="hide" aria-label="Close">✕</button>
+    </div>
+    <section class="meta-section">
+      <h3>Theme</h3>
+      <div class="meta-themes"></div>
+      <div class="meta-actions">
+        <button type="button" data-act="duplicate">Duplicate</button>
+        <button type="button" data-act="rename">Rename</button>
+        <button type="button" data-act="delete">Delete</button>
+        <button type="button" data-act="reset">Reset changes</button>
+        <button type="button" data-act="export">Export .css</button>
+        <button type="button" data-act="import">Import</button>
+        <input type="file" accept=".css,text/css" hidden>
+      </div>
+      <p class="meta-note"></p>
+    </section>
+    <details class="meta-section" open>
+      <summary><h3>Typography</h3></summary>
+      <div class="meta-fields" data-group="type"></div>
+    </details>
+    <details class="meta-section" open>
+      <summary><h3>Colour</h3></summary>
+      <div class="meta-fields" data-group="colors"></div>
+    </details>
+    <details class="meta-section meta-credits" open hidden>
+      <summary><h3>Image credits</h3></summary>
+      <p class="meta-note">Every image in this theme was found, not generated, and is free to use. Sources and changes:</p>
+      <ol class="meta-credit-list"></ol>
+    </details>
+  </div>
+
+  <!-- Font browser: only shown while choosing a font -->
+  <div class="meta-view meta-fonts" inert>
+    <div class="meta-head">
+      <button type="button" data-back>← Back</button>
+      <h2 class="meta-fonts-title">Choose a font</h2>
+    </div>
+    <div class="meta-font-controls">
+      <input id="preview-text" type="text" aria-label="Preview text" spellcheck="false">
+      <div class="meta-row">
+        <input id="font-search" type="search" placeholder="Search 1,837 Google Fonts" aria-label="Search fonts">
+        <select id="font-sort" aria-label="Sort">
+          <option value="pop">Popular</option>
+          <option value="az">A–Z</option>
+        </select>
+      </div>
+      <div class="meta-chips"></div>
+      <div class="meta-row">
+        <label>Size <input id="font-size" type="range" min="16" max="72" value="32"></label>
+        <span id="font-count"></span>
+      </div>
+    </div>
+    <div class="meta-font-list"></div>
+  </div>
+</aside>
+
+<header class="site">
+  <!-- Theme menu: part of the page, so every theme styles it. A <details>, so
+       a theme can drop it down over the page OR let it expand in place. -->
+  <details class="theme-menu">
+    <summary class="theme-menu-button">Theme</summary>
+    <div class="theme-menu-pop">
+      <ul class="theme-menu-list"></ul>
+      <button class="theme-menu-customize" type="button">Customize…</button>
+    </div>
+  </details>
+  <h1>CSS Lab</h1>
+  <p>No-JS CSS effects. Select a card for more details.</p>
+  <div class="filter-bar">
+    <input type="search" id="demo-search" placeholder="Search demos" aria-label="Search demos">
+    <div class="filter-chips" role="radiogroup" aria-label="Filter by feature">
+      <input type="radio" name="feat" id="feat-all" checked aria-label="All"><label for="feat-all">All</label>
+      <input type="radio" name="feat" id="feat-animation" aria-label="Animation"><label for="feat-animation">Animation</label>
+      <input type="radio" name="feat" id="feat-interaction" aria-label="Interaction"><label for="feat-interaction">Interaction</label>
+      <input type="radio" name="feat" id="feat-light" aria-label="Light and colour"><label for="feat-light">Light &amp; colour</label>
+      <input type="radio" name="feat" id="feat-text" aria-label="Text"><label for="feat-text">Text</label>
+      <input type="radio" name="feat" id="feat-filters" aria-label="Filters"><label for="feat-filters">Filters</label>
+      <input type="radio" name="feat" id="feat-3d" aria-label="3D"><label for="feat-3d">3D</label>
+      <input type="radio" name="feat" id="feat-positioning" aria-label="Positioning"><label for="feat-positioning">Positioning</label>
+      <input type="radio" name="feat" id="feat-scroll" aria-label="Scroll"><label for="feat-scroll">Scroll</label>
+      <input type="radio" name="feat" id="feat-forms" aria-label="Forms"><label for="feat-forms">Forms</label>
+    </div>
+    <span class="filter-count" aria-live="polite"></span>
+  </div>
+</header>
+
+<main class="gallery">
+
+<!-- ============ 1. NEON SIGN ============ -->
+<section class="demo" data-features="animation text light">
+  <h2>Neon sign</h2>
+  <a class="demo-link" href="#neon-sign">View this demo</a>
+  <div class="tags"><code>text-shadow</code> <code>@keyframes</code> <code>custom properties</code></div>
+  <p class="credit">Idea: <a href="https://www.youtube.com/shorts/HWXdK2DayzE" target="_blank" rel="noopener">Ania Kubów</a> · rebuilt</p>
+  <div class="preview neon-wall">
+    <p class="neon">Open <span class="neon-flicker">late</span></p>
+  </div>
+  <div class="tools">
+    <details><summary>Edit CSS</summary>
+<div class="editor"><textarea spellcheck="false">.neon-wall {
+  background:
+    radial-gradient(circle at 50% 50%, #2a0f24, #0b0609 70%);
+}
+
+.neon {
+  --neon: #ff2d95;
+  margin: 0;
+  /* Tilt Neon: a Google font drawn like bent glass tubes (single
+     even stroke, rounded ends), so it reads as a real sign */
+  font: 400 5rem/1 "Tilt Neon", system-ui, sans-serif;
+  letter-spacing: 0.02em;
+  color: #fff;
+  /* Light falls off with distance: each layer doubles the blur
+     radius, so the glow spreads out and fades like real light spill. */
+  text-shadow:
+    0 0 1px  #fff,
+    0 0 3px  #fff,
+    0 0 6px  var(--neon),
+    0 0 12px var(--neon),
+    0 0 24px var(--neon),
+    0 0 48px var(--neon),
+    0 0 96px var(--neon);
+}
+
+/* One letter group buzzes like a failing tube */
+.neon-flicker {
+  animation: flicker 4s infinite;
+}
+
+@keyframes flicker {
+  /* opacity dims the letters AND their glow together */
+  0%, 18%, 22%, 25%, 53%, 57%, 100% { opacity: 1; }
+  20%, 24%, 55% { opacity: 0.25; }
+}</textarea>
+<button type="button" data-reset>Reset CSS</button></div>
+    </details>
+    <details><summary>HTML</summary><pre></pre></details>
+  </div>
+</section>
+
+<!-- ============ 2. FAB MENU (Material 3) ============ -->
+<section class="demo" data-features="animation interaction">
+  <h2>FAB menu</h2>
+  <a class="demo-link" href="#fab-menu">View this demo</a>
+  <div class="tags"><code>@starting-style</code> <code>transition-behavior: allow-discrete</code> <code>:has(:checked)</code> <code>custom-property stagger</code> <code>linear()</code></div>
+  <p class="credit">Idea: <a href="https://www.youtube.com/shorts/sk_aMAGzFf8" target="_blank" rel="noopener">Ania Kubów</a> · rebuilt</p>
+  <p class="instructions">Click the + button to open the menu, and the × to close it.</p>
+  <div class="preview fab-stage">
+    <div class="fab-app">
+      <div class="fab-bar"><span class="fab-sym">menu</span><b>Notes</b><span class="fab-sym">search</span></div>
+      <div class="fab-note"><i></i><i></i><i></i></div>
+      <div class="fab-note"><i></i><i></i></div>
+      <div class="fab-note"><i></i><i></i><i></i></div>
+      <div class="fab">
+        <input type="checkbox" id="fab-toggle" aria-label="Open the new-note menu">
+        <ul class="fab-items">
+          <li style="--i: 3"><span class="fab-sym">edit_note</span>Note</li>
+          <li style="--i: 2"><span class="fab-sym">checklist</span>List</li>
+          <li style="--i: 1"><span class="fab-sym">photo_camera</span>Photo</li>
+          <li style="--i: 0"><span class="fab-sym">mic</span>Voice</li>
+        </ul>
+        <label for="fab-toggle" class="fab-button"><span class="fab-plus"></span></label>
+      </div>
+    </div>
+  </div>
+  <div class="tools">
+    <details><summary>Edit CSS</summary>
+<div class="editor"><textarea spellcheck="false">@import url("https://fonts.googleapis.com/css2?family=Google+Sans+Flex:wght@400;500;700&family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,500,1,0&display=swap");
+
+/* Google's Material 3 "FAB menu": a floating + button that opens
+   into a stack of pill-shaped actions. No JS: the + is a label for a
+   hidden checkbox, and :has(:checked) flips everything. */
+
+.fab-stage {
+  min-height: 360px;
+  background: radial-gradient(circle at 25% 15%, #f4ecff, #e2d7f5 75%);
+  --fab-spring: linear(0, 0.42 10%, 0.88 22%, 1.08 33%, 1.1 40%, 1.04 52%, 0.99 66%, 1);
+}
+
+/* A little phone-app screen for the menu to live in */
+.fab-app {
+  position: relative;
+  width: min(330px, 86%);
+  height: 320px;
+  overflow: hidden;
+  border-radius: 28px;
+  background: #fef7ff;
+  box-shadow: 0 12px 36px #4a3a7a33;
+  font-family: "Google Sans Flex", sans-serif;
+  color: #1d1b20;
+}
+.fab-bar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 18px 8px;
+  font-size: 1.15rem;
+}
+.fab-bar b { flex: 1; font-weight: 500; }
+.fab-sym {
+  font: 24px/1 "Material Symbols Rounded";
+  font-variation-settings: "FILL" 1;
+}
+.fab-note {
+  display: grid;
+  gap: 7px;
+  margin: 8px 16px;
+  padding: 14px;
+  border-radius: 16px;
+  background: #f3edf7;
+}
+.fab-note i { height: 8px; border-radius: 4px; background: #cac4d0; }
+.fab-note i:first-child { width: 55%; background: #9a8fb0; }
+.fab-note i:last-child { width: 80%; }
+
+/* Dim the screen while the menu is open */
+.fab-app::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: #1d1b20;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+.fab-app:has(#fab-toggle:checked)::after { opacity: 0.32; }
+
+/* The FAB and its menu, bottom right */
+.fab {
+  position: absolute;
+  right: 16px;
+  bottom: 16px;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+}
+.fab input { position: absolute; opacity: 0; pointer-events: none; }
+
+.fab-items {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* CLOSED: each action is display: none, so it isn't there at all */
+.fab-items li {
+  display: none;
+  align-items: center;
+  gap: 10px;
+  height: 46px;
+  padding: 0 20px 0 14px;
+  border-radius: 999px;
+  color: #21005d;
+  background: #eaddff;
+  font-size: 1rem;
+  font-weight: 500;
+  box-shadow: 0 2px 6px #4a3a7a33;
+  cursor: pointer;
+  opacity: 0;
+  scale: 0.4;
+  translate: 0 16px;
+  transform-origin: right center;
+  /* allow-discrete lets display flip at the right moment, so the
+     actions animate out before they vanish */
+  transition:
+    opacity 0.2s,
+    scale 0.3s,
+    translate 0.3s,
+    display 0.3s allow-discrete;
+  /* closing: top item leaves first */
+  transition-delay: calc((3 - var(--i)) * 30ms);
+}
+
+/* OPEN: display: flex, and animate in */
+.fab:has(:checked) .fab-items li {
+  display: flex;
+  opacity: 1;
+  scale: 1;
+  translate: 0 0;
+  transition-timing-function: ease, var(--fab-spring), var(--fab-spring);
+  transition-duration: 0.25s, 0.5s, 0.5s, 0.5s;
+  /* opening: stagger from the bottom up, one custom property each */
+  transition-delay: calc(var(--i) * 45ms);
+}
+/* ...and where to animate FROM, since it was display: none */
+@starting-style {
+  .fab:has(:checked) .fab-items li {
+    opacity: 0;
+    scale: 0.4;
+    translate: 0 16px;
+  }
+}
+.fab-items li:hover { background: #d9c7ff; }
+
+/* The FAB itself morphs: rounded square + → circle × */
+.fab-button {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  color: #21005d;
+  background: #eaddff;
+  box-shadow: 0 4px 12px #4a3a7a40;
+  cursor: pointer;
+  transition: border-radius 0.45s var(--fab-spring), background 0.25s, color 0.25s;
+}
+.fab-plus {
+  width: 22px;
+  height: 22px;
+  background:
+    linear-gradient(currentColor 0 0) center / 100% 2.5px no-repeat,
+    linear-gradient(currentColor 0 0) center / 2.5px 100% no-repeat;
+  transition: rotate 0.45s var(--fab-spring);
+}
+.fab:has(:checked) .fab-button {
+  border-radius: 50%;
+  color: #fff;
+  background: #6750a4;
+}
+.fab:has(:checked) .fab-plus { rotate: 135deg; }
+.fab:has(input:focus-visible) .fab-button { outline: 3px solid #6750a4; outline-offset: 3px; }</textarea>
+<button type="button" data-reset>Reset CSS</button></div>
+    </details>
+    <details><summary>HTML</summary><pre></pre></details>
+  </div>
+</section>
+
+<!-- ============ 3. ODOMETER ============ -->
+<section class="demo" data-features="animation interaction text">
+  <h2>Odometer number roll</h2>
+  <a class="demo-link" href="#odometer-number-roll">View this demo</a>
+  <div class="tags"><code>translate</code> <code>transition</code> <code>:has()</code> <code>calc()</code></div>
+  <p class="credit">Idea: <a href="https://www.youtube.com/shorts/CDAcMB7pdhU" target="_blank" rel="noopener">Ania Kubów</a> · rebuilt</p>
+  <p class="instructions">Pick a number under the counter and watch the digits roll to it.</p>
+  <div class="preview odo-stage">
+    <div class="odo-wrap">
+      <div class="odo" aria-label="number">
+        <span class="digit d1"><span class="col"><i>0</i><i>1</i><i>2</i><i>3</i><i>4</i><i>5</i><i>6</i><i>7</i><i>8</i><i>9</i></span></span>
+        <span class="digit d2"><span class="col"><i>0</i><i>1</i><i>2</i><i>3</i><i>4</i><i>5</i><i>6</i><i>7</i><i>8</i><i>9</i></span></span>
+        <span class="digit d3"><span class="col"><i>0</i><i>1</i><i>2</i><i>3</i><i>4</i><i>5</i><i>6</i><i>7</i><i>8</i><i>9</i></span></span>
+        <span class="digit d4"><span class="col"><i>0</i><i>1</i><i>2</i><i>3</i><i>4</i><i>5</i><i>6</i><i>7</i><i>8</i><i>9</i></span></span>
+      </div>
+      <div class="odo-picks">
+        <input type="radio" name="odo" id="odo-a" checked><label for="odo-a">1024</label>
+        <input type="radio" name="odo" id="odo-b"><label for="odo-b">8679</label>
+        <input type="radio" name="odo" id="odo-c"><label for="odo-c">3150</label>
+        <input type="radio" name="odo" id="odo-d"><label for="odo-d">9999</label>
+      </div>
+    </div>
+  </div>
+  <div class="tools">
+    <details><summary>Edit CSS</summary>
+<div class="editor"><textarea spellcheck="false">.odo-stage {
+  background: #15171b;
+}
+
+/* Which number is showing: set one variable per digit.
+   (No JS: the radio buttons drive it through :has().) */
+.odo-wrap                     { --d1: 1; --d2: 0; --d3: 2; --d4: 4; }
+.odo-wrap:has(#odo-b:checked) { --d1: 8; --d2: 6; --d3: 7; --d4: 9; }
+.odo-wrap:has(#odo-c:checked) { --d1: 3; --d2: 1; --d3: 5; --d4: 0; }
+.odo-wrap:has(#odo-d:checked) { --d1: 9; --d2: 9; --d3: 9; --d4: 9; }
+
+.odo {
+  display: flex;
+  gap: 4px;
+  font: 700 3.5rem/1 ui-monospace, Consolas, monospace;
+  color: #f4f4f4;
+}
+
+/* Each digit is a 1em-tall window... */
+.digit {
+  height: 1em;
+  overflow: hidden;
+  padding: 0 0.12em;
+  border-radius: 6px;
+  background: linear-gradient(#000 0%, #2a2d33 50%, #000 100%);
+  box-shadow: inset 0 0 6px #000;
+}
+
+/* ...onto a column of 0-9 that slides up by (digit x 1em) */
+.col {
+  display: flex;
+  flex-direction: column;
+  transition: translate 1s cubic-bezier(0.6, -0.3, 0.3, 1.3);
+}
+.col i { font-style: normal; height: 1em; }
+
+.d1 .col { translate: 0 calc(var(--d1) * -1em); transition-duration: 1.6s; }
+.d2 .col { translate: 0 calc(var(--d2) * -1em); transition-duration: 1.3s; }
+.d3 .col { translate: 0 calc(var(--d3) * -1em); transition-duration: 1.0s; }
+.d4 .col { translate: 0 calc(var(--d4) * -1em); transition-duration: 0.7s; }
+
+/* The buttons */
+.odo-picks {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  margin-top: 22px;
+}
+.odo-picks input { position: absolute; opacity: 0; pointer-events: none; }
+.odo-picks label {
+  font: 13px ui-monospace, Consolas, monospace;
+  padding: 4px 10px;
+  border: 1px solid #3a3d45;
+  border-radius: 6px;
+  color: #aaa;
+  cursor: pointer;
+}
+.odo-picks input:checked + label {
+  color: #fff;
+  border-color: #7cc4ff;
+  background: #7cc4ff22;
+}</textarea>
+<button type="button" data-reset>Reset CSS</button></div>
+    </details>
+    <details><summary>HTML</summary><pre></pre></details>
+  </div>
+</section>
+
+<!-- ============ 4. FROSTED GLASS ============ -->
+<section class="demo" data-features="filters animation light">
+  <h2>Frosted glass</h2>
+  <a class="demo-link" href="#frosted-glass">View this demo</a>
+  <div class="tags"><code>backdrop-filter</code> <code>blur()</code> <code>saturate()</code> <code>brightness()</code></div>
+  <p class="credit">Idea: <a href="https://www.tiktok.com/@aniakubow/video/7540291816021642518" target="_blank" rel="noopener">Ania Kubów</a> · rebuilt</p>
+  <div class="preview glass-stage">
+    <span class="blob b1"></span><span class="blob b2"></span><span class="blob b3"></span>
+    <div class="glass">
+      <strong>Frosted glass</strong>
+      <span>The filter applies to what's <em>behind</em> this card.</span>
+    </div>
+  </div>
+  <div class="tools">
+    <details><summary>Edit CSS</summary>
+<div class="editor"><textarea spellcheck="false">.glass-stage {
+  background: #0e1220;
+}
+
+/* Moving colour behind the glass so you can see the blur */
+.blob {
+  position: absolute;
+  width: 160px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  animation: drift 9s ease-in-out infinite alternate;
+}
+.b1 { background: #ff4d8d; left: 12%; top: 10%; }
+.b2 { background: #3bd1ff; right: 14%; top: 30%; animation-delay: -3s; }
+.b3 { background: #ffd23b; left: 38%; bottom: 0%; animation-delay: -6s; }
+
+@keyframes drift {
+  to { translate: 60px -40px; }
+}
+
+.glass {
+  position: relative;
+  display: grid;
+  gap: 4px;
+  width: min(80%, 320px);
+  padding: 24px;
+  color: #fff;
+  border-radius: 18px;
+
+  /* 1. semi-transparent background */
+  background: rgb(255 255 255 / 0.12);
+  /* 2-3. blur what's behind, then boost saturation and brightness */
+  backdrop-filter: blur(18px) saturate(180%) brightness(1.15);
+  /* 4. a light, semi-transparent edge */
+  border: 1px solid rgb(255 255 255 / 0.3);
+  box-shadow: 0 8px 32px rgb(0 0 0 / 0.3);
+  text-shadow: 0 1px 3px rgb(0 0 0 / 0.5); /* readable over bright colours */
+}
+.glass strong { font-size: 1.2rem; }</textarea>
+<button type="button" data-reset>Reset CSS</button></div>
+    </details>
+    <details><summary>HTML</summary><pre></pre></details>
+  </div>
+</section>
+
+<!-- ============ 5. SHINE SWEEP ============ -->
+<section class="demo" data-features="light interaction animation">
+  <h2>Shine sweep</h2>
+  <a class="demo-link" href="#shine-sweep">View this demo</a>
+  <div class="tags"><code>linear-gradient</code> <code>::after</code> <code>translate</code> <code>transition</code></div>
+  <p class="credit">Idea: <a href="https://www.youtube.com/shorts/RojcPDSd63k" target="_blank" rel="noopener">Ania Kubów</a> · rebuilt</p>
+  <p class="instructions">Hover over the card to sweep the shine across it.</p>
+  <div class="preview shine-stage">
+    <div class="shine-card">
+      <span class="chip"></span>
+      <span class="num">4242 4242 4242 4242</span>
+      <span class="name">HOVER ME</span>
+    </div>
+  </div>
+  <div class="tools">
+    <details><summary>Edit CSS</summary>
+<div class="editor"><textarea spellcheck="false">.shine-stage {
+  background: #121318;
+}
+
+.shine-card {
+  position: relative;
+  overflow: hidden; /* keeps the shine inside the card */
+  width: 300px;
+  aspect-ratio: 1.586; /* credit-card ratio */
+  padding: 22px;
+  border-radius: 16px;
+  display: grid;
+  align-content: space-between;
+  color: #f1e9d2;
+  background: linear-gradient(135deg, #2b2b2f, #4a4a52 50%, #232327);
+  box-shadow: 0 10px 30px #0009;
+  font-family: ui-monospace, Consolas, monospace;
+}
+.shine-card .chip {
+  width: 44px;
+  height: 32px;
+  border-radius: 6px;
+  background: linear-gradient(135deg, #d9b45a, #f6e19c, #b8902f);
+}
+.shine-card .num { font-size: 1.1rem; letter-spacing: 0.08em; }
+.shine-card .name { font-size: 0.8rem; opacity: 0.8; }
+
+/* The shine: a narrow diagonal highlight parked off the left edge */
+.shine-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 40%,
+    rgb(255 255 255 / 0.45) 50%,
+    transparent 60%
+  );
+  translate: -100% 0;
+  transition: translate 0.8s ease;
+}
+
+/* On hover, slide it all the way across */
+.shine-card:hover::after {
+  translate: 100% 0;
+}</textarea>
+<button type="button" data-reset>Reset CSS</button></div>
+    </details>
+    <details><summary>HTML</summary><pre></pre></details>
+  </div>
+</section>
+
+<!-- ============ 6. HOLOGRAPHIC TICKET ============ -->
+<section class="demo" data-features="light 3d interaction">
+  <h2>Holographic ticket</h2>
+  <a class="demo-link" href="#holographic-ticket">View this demo</a>
+  <div class="tags"><code>mix-blend-mode: color-dodge</code> <code>:has()</code> <code>@property</code> <code>perspective()</code> <code>mask</code></div>
+  <p class="credit">Idea: <a href="https://www.youtube.com/shorts/OZekrwHEHK8" target="_blank" rel="noopener">Ania Kubów</a> · rebuilt</p>
+  <p class="instructions">Move your mouse around the ticket: it tilts away from the pointer and the foil shifts with it.</p>
+  <div class="preview holo-stage">
+    <div class="holo">
+      <div class="holo-card">
+        <div class="holo-content">
+          <small>Admit one</small>
+          <strong>CSS LAB</strong>
+          <span>Row 7 · Seat 42</span>
+        </div>
+        <div class="holo-foil"></div>
+        <div class="holo-glare"></div>
+      </div>
+      <div class="holo-zones">
+        <i></i><i></i><i></i><i></i><i></i>
+        <i></i><i></i><i></i><i></i><i></i>
+        <i></i><i></i><i></i><i></i><i></i>
+        <i></i><i></i><i></i><i></i><i></i>
+        <i></i><i></i><i></i><i></i><i></i>
+      </div>
+    </div>
+  </div>
+  <div class="tools">
+    <details><summary>Edit CSS</summary>
+<div class="editor"><textarea spellcheck="false">/* Registering --x and --y as numbers lets them transition
+   smoothly, so the card glides between hover zones instead of
+   snapping. */
+@property --x { syntax: "<number>"; inherits: true; initial-value: 2; }
+@property --y { syntax: "<number>"; inherits: true; initial-value: 2; }
+
+.holo-stage {
+  background: radial-gradient(circle, #262a40, #0b0c12 70%);
+  padding: 40px 0;
+}
+
+.holo {
+  --tilt: 8deg; /* make it negative to tilt toward the mouse instead */
+  position: relative;
+  width: 340px;
+  aspect-ratio: 17 / 9;
+  transition: --x 0.35s ease-out, --y 0.35s ease-out;
+  filter: drop-shadow(0 14px 24px rgb(0 0 0 / 0.5));
+}
+
+/* NO JS: a 5x5 grid of invisible hover zones sits on top of the
+   card. :has() finds the hovered zone, and we read its column
+   (--x) and row (--y), each 0 to 4, with 2 being the centre. */
+.holo-zones {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template: repeat(5, 1fr) / repeat(5, 1fr);
+}
+.holo:has(.holo-zones i:nth-child(5n+1):hover) { --x: 0; }
+.holo:has(.holo-zones i:nth-child(5n+2):hover) { --x: 1; }
+.holo:has(.holo-zones i:nth-child(5n+3):hover) { --x: 2; }
+.holo:has(.holo-zones i:nth-child(5n+4):hover) { --x: 3; }
+.holo:has(.holo-zones i:nth-child(5n):hover)   { --x: 4; }
+.holo:has(.holo-zones i:nth-child(-n+5):hover)                 { --y: 0; }
+.holo:has(.holo-zones i:nth-child(n+6):nth-child(-n+10):hover)  { --y: 1; }
+.holo:has(.holo-zones i:nth-child(n+11):nth-child(-n+15):hover) { --y: 2; }
+.holo:has(.holo-zones i:nth-child(n+16):nth-child(-n+20):hover) { --y: 3; }
+.holo:has(.holo-zones i:nth-child(n+21):hover)                 { --y: 4; }
+
+/* The card tips away from wherever the mouse is */
+.holo-card {
+  position: absolute;
+  inset: 0;
+  border-radius: 14px;
+  overflow: hidden;
+  transform:
+    perspective(700px)
+    rotateX(calc((2 - var(--y)) * var(--tilt)))
+    rotateY(calc((var(--x) - 2) * var(--tilt)));
+  /* ticket notches cut out of each side */
+  mask:
+    radial-gradient(circle at 0 50%, #0000 14px, #000 15px) left / 51% 100% no-repeat,
+    radial-gradient(circle at 100% 50%, #0000 14px, #000 15px) right / 51% 100% no-repeat;
+}
+
+.holo-content {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  text-align: center;
+  color: #e9e6ff;
+  font-family: system-ui, sans-serif;
+  /* dark base + a dot texture for the foil to light up */
+  background:
+    radial-gradient(circle, #ffffff30 1px, #0000 1.5px) 0 0 / 12px 12px,
+    linear-gradient(135deg, #1b1f3a, #3b2050 60%, #1d2b45);
+}
+.holo-content small { letter-spacing: 0.4em; text-transform: uppercase; opacity: 0.7; }
+.holo-content strong { font-size: 2.6rem; letter-spacing: 0.08em; line-height: 1.1; }
+.holo-content span { opacity: 0.8; }
+
+/* THE HOLOGRAM: a rainbow, 3x bigger than the card, slid around by
+   the mouse position. color-dodge brightens whatever is underneath
+   by the rainbow's colour, so it looks like foil catching light. */
+.holo-foil {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    115deg,
+    #ff0080 0%, #ffbf00 6%, #00ff9d 12%,
+    #00b3ff 18%, #a100ff 24%, #ff0080 30%
+  );
+  background-size: 300% 300%;
+  background-position: calc(var(--x) * 25%) calc(var(--y) * 25%);
+  mix-blend-mode: color-dodge;
+  opacity: 0.3;
+  transition: opacity 0.3s;
+}
+.holo:has(.holo-zones i:hover) .holo-foil { opacity: 0.55; }
+
+/* A soft hotspot of light right under the mouse */
+.holo-glare {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle at calc((var(--x) + 0.5) * 20%) calc((var(--y) + 0.5) * 20%),
+    rgb(255 255 255 / 0.5),
+    #0000 50%
+  );
+  mix-blend-mode: overlay;
+}</textarea>
+<button type="button" data-reset>Reset CSS</button></div>
+    </details>
+    <details><summary>HTML</summary><pre></pre></details>
+  </div>
+</section>
+
+
+<!-- ============ 7. COLLAPSING HEADER ============ -->
+<section class="demo" data-features="scroll animation text">
+  <h2>Collapsing header</h2>
+  <a class="demo-link" href="#collapsing-header">View this demo</a>
+  <div class="tags"><code>animation-timeline: scroll()</code> <code>animation-range</code> <code>position: sticky</code> <code>font-variation-settings</code></div>
+  <p class="credit">Idea: <a href="https://www.youtube.com/shorts/PLCW5JGBBeI" target="_blank" rel="noopener">Ania Kubów</a> · rebuilt</p>
+  <p class="instructions">Scroll the little page: the big header shrinks into a slim bar.</p>
+  <div class="preview ch-stage">
+    <div class="ch-page">
+      <header class="ch-header">
+        <span class="ch-logo"></span>
+        <span class="ch-titles">
+          <strong class="ch-title">Field Notes</strong>
+          <small class="ch-sub">Issue 07 · scroll down ↓</small>
+        </span>
+      </header>
+      <article class="ch-body">
+        <p>This header isn't watching a clock. Its animation is tied to how far this little page has been scrolled, so scrolling <em>is</em> the playhead.</p>
+        <p>Scroll back up and it plays in reverse. Stop halfway and it stops halfway. No scroll listeners, no JavaScript.</p>
+        <p>The header is sticky with a negative <code>top</code>, so it slides up until only a slim bar is left, and then it sticks.</p>
+        <p>Meanwhile the title shrinks, sharpens and darkens, the subtitle fades away, and a shadow appears once the bar is floating over the text.</p>
+        <p>That's the whole trick. Scroll up to unfold it again.</p>
+      </article>
+    </div>
+  </div>
+  <div class="tools">
+    <details><summary>Edit CSS</summary>
+<div class="editor"><textarea spellcheck="false">/* Fraunces: a soft, wonky old-style serif with an optical-size axis
+   (opsz) and a SOFT axis, so the title can morph as it shrinks */
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,100..900,0..100,0..1&display=swap");
+
+.ch-stage {
+  background:
+    radial-gradient(circle at 20% 10%, #f6e7cf, #dcc09b 75%);
+}
+
+/* The fake page: a small scroll container of its own */
+.ch-page {
+  --ch-full: 128px;  /* header height at the top */
+  --ch-min: 52px;    /* height once collapsed */
+  --ch-travel: calc(var(--ch-full) - var(--ch-min));
+
+  position: absolute;
+  inset: 20px;
+  width: min(400px, calc(100% - 40px));
+  margin-inline: auto;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  border-radius: 14px;
+  background: #fffaf1;
+  box-shadow: 0 18px 40px rgb(70 40 10 / 0.25);
+  font-family: "Fraunces", Georgia, serif;
+  color: #2b2118;
+}
+
+/* A NEGATIVE sticky top: the header scrolls up by --ch-travel, then
+   sticks, leaving a slim bar. Its layout height never changes, so the
+   text below doesn't jump while it collapses. */
+.ch-header {
+  position: sticky;
+  top: calc(-1 * var(--ch-travel));
+  z-index: 1;
+  height: var(--ch-full);
+  display: flex;
+  align-items: end;
+  gap: 12px;
+  padding: 0 18px 10px;
+  background: #c4512f;
+  color: #fff4e4;
+
+  /* THE TRICK: this animation's progress is the scroll position of the
+     nearest scroll container (.ch-page), not time. It runs from 0px to
+     --ch-travel of scrolling, then holds its end state. */
+  animation: ch-bar linear both;
+  animation-timeline: scroll();
+  animation-range: 0 var(--ch-travel);
+  /* Chrome 115+ and Safari 26; Firefox still has this behind a flag */
+}
+@keyframes ch-bar {
+  to {
+    background: #fffaf1;
+    color: #2b2118;
+    box-shadow: 0 6px 16px rgb(70 40 10 / 0.14);
+  }
+}
+
+/* The children ride the same scroll timeline */
+.ch-logo,
+.ch-title,
+.ch-sub {
+  animation-timing-function: linear;
+  animation-fill-mode: both;
+  animation-timeline: scroll();
+  animation-range: 0 var(--ch-travel);
+}
+
+.ch-logo {
+  flex: none;
+  width: 46px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: conic-gradient(from 200deg, currentColor 50%, #0000 0);
+  border: 2px solid currentColor;
+  animation-name: ch-logo;
+}
+@keyframes ch-logo { to { width: 26px; rotate: 180deg; } }
+
+.ch-titles { display: grid; }
+
+.ch-title {
+  font-size: 2.3rem;
+  line-height: 1;
+  /* big and soft at the top, small, crisp and lighter when collapsed */
+  font-variation-settings: "wght" 800, "SOFT" 100, "WONK" 1;
+  animation-name: ch-title;
+}
+@keyframes ch-title {
+  to {
+    font-size: 1.2rem;
+    font-variation-settings: "wght" 600, "SOFT" 0, "WONK" 0;
+  }
+}
+
+.ch-sub {
+  font-size: 0.8rem;
+  font-style: italic;
+  opacity: 0.85;
+  animation-name: ch-sub;
+  animation-range: 0 calc(var(--ch-travel) * 0.6); /* gone early */
+}
+@keyframes ch-sub {
+  to { opacity: 0; translate: 0 -6px; font-size: 0; }
+}
+
+.ch-body {
+  padding: 6px 18px 18px;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  font-variation-settings: "SOFT" 50;
+}
+.ch-body code {
+  font-family: ui-monospace, Consolas, monospace;
+  font-size: 0.85em;
+}</textarea>
+<button type="button" data-reset>Reset CSS</button></div>
+    </details>
+    <details><summary>HTML</summary><pre></pre></details>
+  </div>
+</section>
+
+<!-- ============ 8. GLIDING PILL NAV ============ -->
+<section class="demo" data-features="interaction positioning animation">
+  <h2>Gliding pill nav</h2>
+  <a class="demo-link" href="#gliding-pill-nav">View this demo</a>
+  <div class="tags"><code>anchor-name</code> <code>anchor()</code> <code>:has()</code> <code>transition</code></div>
+  <p class="credit">Idea: <a href="https://www.youtube.com/shorts/n3hKcTz9Hb4" target="_blank" rel="noopener">Ania Kubów</a> · rebuilt</p>
+  <p class="instructions">Hover over the links to slide the pill; click one to make it the new home.</p>
+  <div class="preview pn-stage">
+    <nav class="pn-nav" aria-label="Demo navigation">
+      <input type="radio" name="pn" id="pn-home" checked><label for="pn-home">Home</label>
+      <input type="radio" name="pn" id="pn-work"><label for="pn-work">Work</label>
+      <input type="radio" name="pn" id="pn-journal"><label for="pn-journal">Journal</label>
+      <input type="radio" name="pn" id="pn-contact"><label for="pn-contact">Say hello</label>
+      <span class="pn-pill"></span>
+    </nav>
+  </div>
+  <div class="tools">
+    <details><summary>Edit CSS</summary>
+<div class="editor"><textarea spellcheck="false">/* Sora: a geometric sans with wide, open letters, built for UI */
+@import url("https://fonts.googleapis.com/css2?family=Sora:wght@400..700&display=swap");
+
+.pn-stage {
+  background:
+    radial-gradient(ellipse at 50% 120%, #3b2a12, #0f0e13 60%);
+}
+
+.pn-nav {
+  position: relative; /* the pill is positioned inside the nav */
+  display: flex;
+  gap: 2px;
+  padding: 6px;
+  border-radius: 999px;
+  background: #1c1b22;
+  border: 1px solid #ffffff14;
+  box-shadow: 0 10px 30px #0008, inset 0 1px #ffffff0d;
+  font: 500 0.95rem "Sora", system-ui, sans-serif;
+}
+
+/* The radios are invisible; their labels are the links.
+   Clicking one "selects" it, so the pill has a home to return to. */
+.pn-nav input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+.pn-nav label {
+  position: relative;
+  z-index: 1; /* text sits above the pill */
+  padding: 9px 18px;
+  border-radius: 999px;
+  color: #9d98a8;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 0.3s;
+}
+.pn-nav input:checked + label { color: #f2ede4; }
+.pn-nav input:focus-visible + label { outline: 2px solid #ffc25c; outline-offset: 2px; }
+
+/* WHO GETS THE PILL: whichever label holds the anchor-name.
+   The selected link has it by default; a hovered link takes it over. */
+.pn-nav input:checked + label,
+.pn-nav label:hover {
+  anchor-name: --pn-target;
+}
+/* If two elements share an anchor-name, the LAST one in the page wins,
+   which isn't always the hovered one. So while any link is hovered,
+   the selected link gives its name up. */
+.pn-nav:has(label:hover) input:checked + label:not(:hover) {
+  anchor-name: none;
+  color: #9d98a8;
+}
+
+/* The pill: its four edges are pinned to the anchor's four edges.
+   When the anchor moves to another link, the edges transition over.
+   (Anchor positioning: Chrome 125+, Safari 26) */
+.pn-pill {
+  position: absolute;
+  position-anchor: --pn-target;
+  top: anchor(top);
+  bottom: anchor(bottom);
+  left: anchor(left);
+  right: anchor(right);
+  border-radius: 999px;
+  background: linear-gradient(#ffd27a, #ff9a3c);
+  box-shadow: 0 4px 18px #ff9a3c55;
+  /* a slight overshoot so it glides and settles */
+  transition:
+    left 0.45s cubic-bezier(0.3, 1.4, 0.5, 1),
+    right 0.45s cubic-bezier(0.3, 1.4, 0.5, 1);
+}
+
+/* The label wearing the pill gets dark text */
+.pn-nav input + label:hover,
+.pn-nav:not(:has(label:hover)) input:checked + label {
+  color: #241708;
+}</textarea>
+<button type="button" data-reset>Reset CSS</button></div>
+    </details>
+    <details><summary>HTML</summary><pre></pre></details>
+  </div>
+</section>
+
+<!-- ============ 9. MATERIAL TOGGLE SWITCH ============ -->
+<section class="demo" data-features="interaction animation forms">
+  <h2>Material toggle switch</h2>
+  <a class="demo-link" href="#material-toggle-switch">View this demo</a>
+  <div class="tags"><code>:has(:checked)</code> <code>:active</code> <code>linear()</code> <code>transition</code></div>
+  <p class="credit">Idea: <a href="https://www.youtube.com/shorts/aaoYm6wkjTU" target="_blank" rel="noopener">Ania Kubów</a> · rebuilt</p>
+  <p class="instructions">Click a switch. Press and hold to see the thumb grow.</p>
+  <div class="preview tg-stage">
+    <div class="tg-card">
+      <label class="tg-row">
+        <span class="tg-text"><b>Wi-Fi</b><small>Connected to “Lab”</small></span>
+        <input type="checkbox" role="switch" id="tg-wifi" checked>
+        <span class="tg-track"><span class="tg-thumb"></span></span>
+      </label>
+      <label class="tg-row">
+        <span class="tg-text"><b>Bluetooth</b><small>Press and hold the switch</small></span>
+        <input type="checkbox" role="switch" id="tg-bluetooth">
+        <span class="tg-track"><span class="tg-thumb"></span></span>
+      </label>
+      <label class="tg-row">
+        <span class="tg-text"><b>Airplane mode</b><small>Off</small></span>
+        <input type="checkbox" role="switch" id="tg-airplane">
+        <span class="tg-track"><span class="tg-thumb"></span></span>
+      </label>
+    </div>
+  </div>
+  <div class="tools">
+    <details><summary>Edit CSS</summary>
+<div class="editor"><textarea spellcheck="false">/* Google Sans Flex: the typeface of Google's Material 3 Expressive */
+@import url("https://fonts.googleapis.com/css2?family=Google+Sans+Flex:opsz,wght@6..144,1..1000&display=swap");
+
+.tg-stage {
+  background: linear-gradient(160deg, #f3edf7, #e8def8);
+}
+
+.tg-card {
+  /* Material 3 colour roles */
+  --tg-primary: #6750a4;
+  --tg-on-primary: #ffffff;
+  --tg-primary-container: #eaddff;
+  --tg-outline: #79747e;
+  --tg-surface-high: #e6e0e9;
+  --tg-on-surface: #1d1b20;
+  /* A real spring, sampled into linear(): it overshoots, rings, settles */
+  --tg-spring: linear(0, 0.182, 0.52, 0.819, 1.006, 1.085, 1.092, 1.065,
+    1.033, 1.009, 0.995, 0.991, 0.992, 0.995, 0.998, 1);
+
+  width: min(100%, 360px);
+  padding: 8px;
+  border-radius: 28px;
+  background: #fffbfe;
+  box-shadow: 0 2px 6px #6750a41a, 0 12px 32px #6750a41f;
+  font-family: "Google Sans Flex", system-ui, sans-serif;
+}
+
+.tg-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 14px 12px 18px;
+  border-radius: 20px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.tg-row + .tg-row { margin-top: 2px; }
+.tg-text { flex: 1; display: grid; }
+.tg-text b { font-weight: 550; font-size: 1rem; color: var(--tg-on-surface); }
+.tg-text small { font-size: 0.8rem; color: #49454f; }
+
+/* The real checkbox: hidden, but still focusable and clickable via the label */
+.tg-row input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+}
+
+.tg-track {
+  position: relative;
+  flex: none;
+  width: 52px;
+  height: 32px;
+  border-radius: 999px;
+  background: var(--tg-surface-high);
+  border: 2px solid var(--tg-outline);
+  transition: background-color 0.25s, border-color 0.25s;
+}
+.tg-row input:focus-visible + .tg-track {
+  outline: 3px solid var(--tg-primary);
+  outline-offset: 2px;
+}
+
+/* The thumb is positioned by its CENTRE (translate -50%), so it can
+   grow and shrink without drifting off its spot */
+.tg-thumb {
+  position: absolute;
+  top: 50%;
+  left: 14px; /* centre of the "off" spot */
+  width: 16px;
+  height: 16px;
+  translate: -50% -50%;
+  border-radius: 50%;
+  background: var(--tg-outline);
+  color: var(--tg-on-surface); /* colour of the hover halo */
+  transition:
+    left 0.5s var(--tg-spring),
+    width 0.35s var(--tg-spring),
+    height 0.35s var(--tg-spring),
+    background-color 0.2s;
+}
+
+/* Hover/press halo: a fixed 40px circle behind the thumb */
+.tg-thumb::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 40px;
+  height: 40px;
+  translate: -50% -50%;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.tg-row:hover .tg-thumb::before { opacity: 0.08; }
+.tg-row:active .tg-thumb::before { opacity: 0.12; }
+
+/* A check mark drawn as a rotated corner, shown when on */
+.tg-thumb::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 45%;
+  width: 5px;
+  height: 10px;
+  border: solid var(--tg-primary);
+  border-width: 0 2px 2px 0;
+  translate: -50% -50%;
+  rotate: 45deg;
+  scale: 0;
+  transition: scale 0.3s var(--tg-spring);
+}
+
+/* ON: the label :has() a checked box, so restyle everything inside it */
+.tg-row:has(:checked) .tg-track {
+  background: var(--tg-primary);
+  border-color: var(--tg-primary);
+}
+.tg-row:has(:checked) .tg-thumb {
+  left: 34px; /* centre of the "on" spot */
+  width: 24px;
+  height: 24px;
+  background: var(--tg-on-primary);
+  color: var(--tg-primary);
+}
+.tg-row:has(:checked) .tg-thumb::after { scale: 1; }
+
+/* PRESSED: the thumb swells to 28px while you hold it, on or off */
+.tg-row:active .tg-thumb {
+  width: 28px;
+  height: 28px;
+  background: #49454f;
+}
+.tg-row:active:has(:checked) .tg-thumb {
+  background: var(--tg-primary-container);
+}</textarea>
+<button type="button" data-reset>Reset CSS</button></div>
+    </details>
+    <details><summary>HTML</summary><pre></pre></details>
+  </div>
+</section>
+
+<!-- ============ 10. FLOATING-LABEL TEXT INPUT ============ -->
+<section class="demo" data-features="forms interaction animation text">
+  <h2>Floating-label text input</h2>
+  <a class="demo-link" href="#floating-label-text-input">View this demo</a>
+  <div class="tags"><code>:focus-within</code> <code>:placeholder-shown</code> <code>:user-invalid</code> <code>scale</code></div>
+  <p class="credit">Idea: <a href="https://www.youtube.com/shorts/GJJl3Xfy0d4" target="_blank" rel="noopener">Ania Kubów</a> · rebuilt</p>
+  <p class="instructions">Click a field and type. Leave the email field with an invalid address to see it turn red.</p>
+  <div class="preview fl-stage">
+    <div class="fl-form">
+      <div class="fl-field">
+        <input type="text" id="fl-name" placeholder=" " autocomplete="off">
+        <label for="fl-name">Your name</label>
+        <span class="fl-line"></span>
+      </div>
+      <div class="fl-field">
+        <input type="email" id="fl-email" placeholder=" " autocomplete="off">
+        <label for="fl-email">Email address</label>
+        <span class="fl-line"></span>
+      </div>
+    </div>
+  </div>
+  <div class="tools">
+    <details><summary>Edit CSS</summary>
+<div class="editor"><textarea spellcheck="false">/* Instrument Sans: a sharp, slightly condensed grotesque that stays
+   crisp at the small floated-label size */
+@import url("https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400..600&display=swap");
+
+.fl-stage {
+  background:
+    radial-gradient(circle at 80% 0%, #1d3b33, #101614 65%);
+}
+
+.fl-form {
+  display: grid;
+  gap: 22px;
+  width: min(100%, 340px);
+  padding: 24px 0;
+  font-family: "Instrument Sans", system-ui, sans-serif;
+}
+
+.fl-field {
+  --fl-accent: #7cf5c5;
+  position: relative;
+  padding-top: 18px; /* room for the label once it floats */
+}
+
+.fl-field input {
+  width: 100%;
+  padding: 8px 0;
+  font: inherit;
+  font-size: 1.1rem;
+  color: #eef3ef;
+  background: none;
+  border: 0;
+  border-bottom: 1px solid #ffffff33;
+  outline: none;
+  caret-color: var(--fl-accent);
+}
+
+/* The label starts INSIDE the field, looking like a placeholder */
+.fl-field label {
+  position: absolute;
+  left: 0;
+  top: 26px;
+  font-size: 1.1rem;
+  color: #8fa39b;
+  pointer-events: none; /* clicks fall through to the input */
+  transform-origin: left top;
+  transition:
+    translate 0.25s cubic-bezier(0.2, 0.8, 0.2, 1),
+    scale 0.25s cubic-bezier(0.2, 0.8, 0.2, 1),
+    color 0.25s;
+}
+
+/* FLOAT IT UP when the field is focused, or when it has text.
+   The trick: placeholder=" " (a single space). :placeholder-shown is
+   true only while the input is EMPTY, so :not(:placeholder-shown)
+   means "the user has typed something". */
+.fl-field:focus-within label,
+.fl-field:has(input:not(:placeholder-shown)) label {
+  translate: 0 -24px;
+  scale: 0.75;
+  letter-spacing: 0.04em;
+}
+.fl-field:focus-within label { color: var(--fl-accent); }
+
+/* The underline grows out from the centre */
+.fl-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  background: var(--fl-accent);
+  scale: 0 1;               /* zero width... */
+  transform-origin: center; /* ...squeezed into the middle */
+  transition: scale 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.fl-field:focus-within .fl-line { scale: 1 1; }
+
+/* Bonus: a bad email turns red, but only after the user has
+   interacted with it (:user-invalid, unlike :invalid) */
+.fl-field:has(input:user-invalid) {
+  --fl-accent: #ff7a7a;
+}
+.fl-field:has(input:user-invalid) label { color: var(--fl-accent); }
+.fl-field:has(input:user-invalid) .fl-line { scale: 1 1; }</textarea>
+<button type="button" data-reset>Reset CSS</button></div>
+    </details>
+    <details><summary>HTML</summary><pre></pre></details>
+  </div>
+</section>
+
+<!-- ============ 11. GOOEY METABALLS ============ -->
+<section class="demo" data-features="filters animation light interaction">
+  <h2>Gooey metaballs</h2>
+  <a class="demo-link" href="#gooey-metaballs">View this demo</a>
+  <div class="tags"><code>filter: blur() contrast()</code> <code>mix-blend-mode</code> <code>isolation</code> <code>@keyframes</code></div>
+  <p class="credit">Idea: <a href="https://www.youtube.com/shorts/ti5cE4-BcTc" target="_blank" rel="noopener">Ania Kubów</a> · rebuilt</p>
+  <p class="instructions">Hover over the stage to drop in another blob.</p>
+  <div class="preview mb-stage">
+    <div class="mb-wrap">
+      <div class="mb-goo">
+        <i></i><i></i><i></i><i></i><i></i>
+        <i class="mb-extra"></i>
+      </div>
+      <span class="mb-tint"></span>
+      <span class="mb-shade"></span>
+    </div>
+    <p class="mb-hint">hover to drop in another blob</p>
+  </div>
+  <div class="tools">
+    <details><summary>Edit CSS</summary>
+<div class="editor"><textarea spellcheck="false">/* Fredoka: round, bubbly letters to match the blobs */
+@import url("https://fonts.googleapis.com/css2?family=Fredoka:wght@500&display=swap");
+
+.mb-stage {
+  background: #0c0a16;
+}
+
+.mb-wrap {
+  position: absolute;
+  inset: 0;
+  isolation: isolate; /* blend modes below only mix inside this box */
+}
+
+/* STEP 1, THE GOO: white blobs on solid black. blur() smears each blob
+   into a soft glow; where two glows overlap they add up. contrast()
+   then snaps every soft grey back to pure black or white, so the
+   overlap becomes a solid bridge and the blobs melt together. */
+.mb-goo {
+  position: absolute;
+  inset: -40px; /* bigger than the box, so its blurred edges are clipped off */
+  z-index: 0;
+  background: #000; /* must be solid, or contrast has nothing to snap to */
+  filter: blur(14px) contrast(28);
+}
+
+.mb-goo i {
+  --s: 70px;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: var(--s);
+  aspect-ratio: 1;
+  margin: calc(var(--s) / -2);
+  border-radius: 50%;
+  background: #fff;
+  animation: mb-drift var(--t, 5s) ease-in-out infinite alternate;
+}
+/* Each blob drifts between two points, at its own pace, so they meet
+   and part in a pattern that rarely repeats */
+@keyframes mb-drift {
+  from { translate: var(--x1) var(--y1); }
+  to   { translate: var(--x2) var(--y2); }
+}
+.mb-goo i:nth-child(1) { --s: 96px; --t: 5.2s; --x1: -170px; --y1: 10px;   --x2: 30px;   --y2: -20px; }
+.mb-goo i:nth-child(2) { --s: 72px; --t: 6.4s; --x1: 170px;  --y1: 30px;   --x2: -40px;  --y2: 10px; }
+.mb-goo i:nth-child(3) { --s: 56px; --t: 4.3s; --x1: 10px;   --y1: -80px;  --x2: -20px;  --y2: 70px; }
+.mb-goo i:nth-child(4) { --s: 44px; --t: 7.1s; --x1: -80px;  --y1: 70px;   --x2: 130px;  --y2: -60px; }
+.mb-goo i:nth-child(5) { --s: 64px; --t: 3.7s; --x1: 60px;   --y1: -40px;  --x2: -100px; --y2: 40px; }
+
+/* The hover blob waits above the box and drops in with a bounce */
+.mb-goo .mb-extra {
+  --s: 80px;
+  animation: none;
+  translate: 0 -260px;
+  transition: translate 1.1s cubic-bezier(0.3, 1.5, 0.4, 1);
+}
+.mb-wrap:hover .mb-extra { translate: 0 10px; }
+
+/* STEP 2, THE COLOUR: contrast() would wreck real colours, so the goo
+   stays black and white and gets painted afterwards. multiply turns
+   white into the gradient and leaves black black. */
+.mb-tint {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(115deg, #ff3d7f, #ffb03b, #48d6c4, #6b5cff);
+  background-size: 300% 100%;
+  mix-blend-mode: multiply;
+  pointer-events: none;
+  animation: mb-hue 9s ease-in-out infinite alternate;
+}
+@keyframes mb-hue { to { background-position: 100% 0; } }
+
+/* STEP 3: lighten swaps the pure black for the stage colour
+   (each channel takes whichever is lighter, so the blobs win) */
+.mb-shade {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: #0c0a16;
+  mix-blend-mode: lighten;
+  pointer-events: none;
+}
+
+.mb-hint {
+  position: absolute;
+  inset: auto 0 10px;
+  margin: 0;
+  text-align: center;
+  font: 500 0.8rem "Fredoka", system-ui, sans-serif;
+  letter-spacing: 0.05em;
+  color: #ffffff70;
+  pointer-events: none;
+}</textarea>
+<button type="button" data-reset>Reset CSS</button></div>
+    </details>
+    <details><summary>HTML</summary><pre></pre></details>
+  </div>
+</section>
+
+<!-- ============ 12. COUNT-UP NUMBERS ============ -->
+<section class="demo" data-features="animation text interaction">
+  <h2>Count-up numbers</h2>
+  <a class="demo-link" href="#count-up-numbers">View this demo</a>
+  <div class="tags"><code>@property</code> <code>counter()</code> <code>@counter-style</code> <code>conic-gradient</code> <code>mod()</code></div>
+  <p class="credit">Idea: <a href="https://www.youtube.com/shorts/qRrwWDh51Ak" target="_blank" rel="noopener">Ania Kubów</a> · rebuilt</p>
+  <p class="instructions">Click Replay to count up again.</p>
+  <div class="preview cu-stage">
+    <div class="cu-card">
+      <input type="checkbox" id="cu-replay">
+      <div class="cu-ring"><span class="cu-pct"></span><small>issues closed</small></div>
+      <div class="cu-stats">
+        <p class="cu-big"><span class="cu-num"></span></p>
+        <p class="cu-label">stars this year</p>
+        <label for="cu-replay" class="cu-btn">↻ Replay</label>
+      </div>
+    </div>
+  </div>
+  <div class="tools">
+    <details><summary>Edit CSS</summary>
+<div class="editor"><textarea spellcheck="false">/* Bricolage Grotesque: chunky, characterful display figures */
+@import url("https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&display=swap");
+
+/* THE TRICK: registering the variables as <integer> means the browser
+   can animate them, one whole number at a time. (An unregistered
+   custom property would just flip from start to end.) */
+@property --cu-n { syntax: "<integer>"; inherits: true; initial-value: 0; }
+@property --cu-p { syntax: "<integer>"; inherits: true; initial-value: 0; }
+
+.cu-stage {
+  background: radial-gradient(circle at 30% 30%, #1d2216, #0d0f0b 70%);
+}
+
+.cu-card {
+  --cu-to: 12480;  /* the big number */
+  --cu-pto: 87;    /* the percentage */
+  --cu-lime: #c8ff5a;
+
+  display: flex;
+  align-items: center;
+  gap: 26px;
+  padding: 24px 28px;
+  border-radius: 22px;
+  background: #171a14;
+  border: 1px solid #ffffff12;
+  box-shadow: 0 20px 50px #0009;
+  font-family: "Bricolage Grotesque", system-ui, sans-serif;
+  color: #f1f4ea;
+
+  animation: cu-count-a 2.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@keyframes cu-count-a {
+  from { --cu-n: 0; --cu-p: 0; }
+  to   { --cu-n: var(--cu-to); --cu-p: var(--cu-pto); }
+}
+/* REPLAY: an identical animation under another name. Swapping the
+   name restarts it, so every click of the checkbox plays it again. */
+@keyframes cu-count-b {
+  from { --cu-n: 0; --cu-p: 0; }
+  to   { --cu-n: var(--cu-to); --cu-p: var(--cu-pto); }
+}
+.cu-card:has(#cu-replay:checked) { animation-name: cu-count-b; }
+
+#cu-replay { position: absolute; opacity: 0; pointer-events: none; }
+
+/* SHOWING A NUMBER: content can't print a variable directly, but it
+   can print a counter, and a counter can be set from a variable. */
+.cu-pct {
+  counter-reset: cu-p var(--cu-p);
+  font-size: 1.7rem;
+  font-weight: 700;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+.cu-pct::after { content: counter(cu-p) "%"; }
+.cu-ring small { font-size: 0.7rem; color: #a3ab95; }
+
+/* The same integer drives the ring */
+.cu-ring {
+  flex: none;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  width: 124px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background:
+    radial-gradient(closest-side, #171a14 80%, #0000 81%),
+    conic-gradient(var(--cu-lime) calc(var(--cu-p) * 1%), #ffffff14 0);
+}
+
+.cu-stats { display: grid; justify-items: start; gap: 4px; }
+.cu-big { margin: 0; }
+.cu-label { margin: 0 0 10px; max-width: 16ch; font-size: 0.85rem; line-height: 1.3; color: #a3ab95; }
+
+/* THE COMMA (advanced): a counter prints digits only, so split the
+   number into thousands (k) and the rest (r) with round() and mod(),
+   and use custom counter styles that print nothing for out-of-range
+   values. Under 1000 you see "r"; from 1000 you see "k,rrr". */
+@counter-style cu-blank   { system: cyclic; symbols: ""; }
+@counter-style cu-under1k { system: extends decimal; range: 0 999; fallback: cu-blank; }
+@counter-style cu-k       { system: extends decimal; range: 1 infinite; fallback: cu-blank; }
+@counter-style cu-comma   { system: fixed; symbols: ","; fallback: cu-blank; } /* 1 prints "," */
+@counter-style cu-pad3    { system: extends decimal; pad: 3 "0"; range: 0 999; fallback: cu-blank; }
+
+.cu-num {
+  --k: round(down, var(--cu-n) / 1000, 1);
+  --r: mod(var(--cu-n), 1000);
+  --big: min(1, var(--k)); /* 0 below 1000, 1 from then on */
+  counter-reset:
+    cu-small calc(var(--r) - var(--big) * 1000)      /* negative = hidden once big */
+    cu-k     var(--k)
+    cu-comma var(--big)
+    cu-rest  calc(var(--r) - (1 - var(--big)) * 1000); /* hidden until big */
+  font-size: 3.4rem;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums; /* equal-width digits, so no wobble */
+}
+.cu-num::before {
+  content:
+    counter(cu-small, cu-under1k)
+    counter(cu-k, cu-k)
+    counter(cu-comma, cu-comma)
+    counter(cu-rest, cu-pad3);
+}
+
+.cu-btn {
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #171a14;
+  background: var(--cu-lime);
+  cursor: pointer;
+  user-select: none;
+  transition: scale 0.15s;
+}
+.cu-btn:hover { scale: 1.05; }
+.cu-btn:active { scale: 0.95; }
+#cu-replay:focus-visible ~ .cu-stats .cu-btn { outline: 2px solid var(--cu-lime); outline-offset: 3px; }</textarea>
+<button type="button" data-reset>Reset CSS</button></div>
+    </details>
+    <details><summary>HTML</summary><pre></pre></details>
+  </div>
+</section>
+
+<!-- ============ 13. AURORA TEXT ============ -->
+<section class="demo" data-features="animation text light filters">
+  <h2>Aurora text</h2>
+  <a class="demo-link" href="#aurora-text">View this demo</a>
+  <div class="tags"><code>background-clip: text</code> <code>background-position</code> <code>@keyframes</code> <code>filter: blur()</code> <code>attr()</code></div>
+  <p class="credit">Idea: <a href="https://www.youtube.com/shorts/U1jRhh7thv8" target="_blank" rel="noopener">Ania Kubów</a> · rebuilt</p>
+  <div class="preview au-stage">
+    <div class="au-wrap">
+      <h3 class="au-text" data-text="Northern Lights">Northern Lights</h3>
+      <p class="au-sub">tonight, after midnight</p>
+    </div>
+  </div>
+  <div class="tools">
+    <details><summary>Edit CSS</summary>
+<div class="editor"><textarea spellcheck="false">@import url("https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300;12..96,800");
+
+.au-stage {
+  /* a night sky: a few tiny stars over deep blue */
+  background:
+    radial-gradient(1px 1px at 12% 22%, #fff9, #0000),
+    radial-gradient(1px 1px at 78% 14%, #fff8, #0000),
+    radial-gradient(1.5px 1.5px at 64% 78%, #fff7, #0000),
+    radial-gradient(1px 1px at 30% 84%, #fff6, #0000),
+    radial-gradient(1px 1px at 90% 60%, #fff8, #0000),
+    radial-gradient(ellipse at 50% 120%, #0d2a3a, #05070f 65%);
+}
+
+/* isolation makes a stacking context, so the glow's z-index: -1
+   puts it behind the letters but still in front of the sky */
+.au-wrap { text-align: center; isolation: isolate; }
+
+.au-text {
+  position: relative;
+  margin: 0;
+  font: 800 clamp(2.6rem, 9vw, 4.6rem)/1 "Bricolage Grotesque", system-ui, sans-serif;
+  font-variation-settings: "opsz" 96;
+  letter-spacing: -0.03em;
+
+  /* THE AURORA: soft blobs of colour on a canvas 3x wider than
+     the text... */
+  background:
+    radial-gradient(40% 60% at 20% 40%, #3dffb0, #0000 70%),
+    radial-gradient(35% 70% at 45% 60%, #2bd9ff, #0000 70%),
+    radial-gradient(40% 60% at 70% 35%, #b45cff, #0000 70%),
+    radial-gradient(30% 60% at 90% 65%, #ff5ca8, #0000 70%),
+    #1fd18c;
+  background-size: 300% 100%;
+  /* ...painted ONLY inside the letter shapes */
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+
+  /* slide the canvas back and forth so the colours drift */
+  animation: au-drift 12s ease-in-out infinite alternate;
+}
+
+/* THE GLOW: a copy of the words (attr() reads data-text), filled
+   with the same aurora, blurred and tucked behind the real text.
+   background: inherit picks up the animated position too, so the
+   glow moves in lock-step with the letters. */
+.au-text::before {
+  content: attr(data-text) / ""; /* the "" is alt text: screen readers skip the copy */
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: inherit;
+  -webkit-background-clip: text;
+  background-clip: text;
+  filter: blur(18px) saturate(1.4);
+  opacity: 0.8;
+}
+
+@keyframes au-drift {
+  from { background-position: 0% 50%; }
+  to   { background-position: 100% 50%; }
+}
+
+.au-sub {
+  margin: 14px 0 0;
+  font: 300 0.95rem/1 "Bricolage Grotesque", system-ui, sans-serif;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  color: #9fc9d6;
+}</textarea>
+<button type="button" data-reset>Reset CSS</button></div>
+    </details>
+    <details><summary>HTML</summary><pre></pre></details>
+  </div>
+</section>
+
+<!-- ============ 14. MODERN CAROUSEL ============ -->
+<section class="demo" data-features="scroll animation interaction">
+  <h2>Modern carousel</h2>
+  <a class="demo-link" href="#modern-carousel">View this demo</a>
+  <div class="tags"><code>scroll-snap</code> <code>animation-timeline: view()</code> <code>scale</code> <code>@supports</code></div>
+  <p class="credit">Idea: <a href="https://www.youtube.com/shorts/4geIjMgc0So" target="_blank" rel="noopener">Ania Kubów</a> · rebuilt</p>
+  <p class="instructions">Scroll the row sideways (Shift + mouse wheel, a trackpad swipe, or the scrollbar).</p>
+  <div class="preview mc-stage">
+    <ul class="mc-track">
+      <li class="mc-card"><b>Lisbon</b><span>Tiled streets, slow trams</span></li>
+      <li class="mc-card"><b>Reykjavík</b><span>Black sand, white nights</span></li>
+      <li class="mc-card"><b>Kyoto</b><span>Moss gardens at dawn</span></li>
+      <li class="mc-card"><b>Oaxaca</b><span>Mole, mezcal, marigolds</span></li>
+      <li class="mc-card"><b>Tbilisi</b><span>Balconies and sulphur baths</span></li>
+      <li class="mc-card"><b>Marrakesh</b><span>Spice-dust and riads</span></li>
+    </ul>
+  </div>
+  <div class="tools">
+    <details><summary>Edit CSS</summary>
+<div class="editor"><textarea spellcheck="false">@import url("https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1");
+
+.mc-stage {
+  background: linear-gradient(180deg, #f4efe6, #e6ddcf);
+  place-items: stretch;
+}
+
+/* The row: a plain horizontal scroller that snaps each card to the centre */
+.mc-track {
+  --mc-w: 200px; /* card width */
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  margin: 0;
+  list-style: none;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  overscroll-behavior-x: contain;
+  scrollbar-width: thin;
+  /* padding half a stage minus half a card, so the first and last
+     cards can reach the middle too */
+  padding: 24px calc(50% - var(--mc-w) / 2);
+}
+
+.mc-card {
+  flex: 0 0 var(--mc-w);
+  height: 230px;
+  scroll-snap-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 4px;
+  padding: 18px;
+  border-radius: 20px;
+  color: #fff;
+  /* each card gets its own colour from --mc-hue (set below) */
+  background:
+    radial-gradient(circle at 75% 25%, oklch(0.9 0.12 var(--mc-hue) / 0.9), #0000 45%),
+    linear-gradient(160deg, oklch(0.65 0.17 var(--mc-hue)), oklch(0.32 0.1 var(--mc-hue)));
+  box-shadow: 0 12px 28px oklch(0.3 0.08 var(--mc-hue) / 0.35);
+}
+/* Chrome only (133+): open on the third card, not the first */
+.mc-card:nth-child(3) { scroll-initial-target: nearest; }
+
+.mc-card:nth-child(1) { --mc-hue: 18; }
+.mc-card:nth-child(2) { --mc-hue: 200; }
+.mc-card:nth-child(3) { --mc-hue: 330; }
+.mc-card:nth-child(4) { --mc-hue: 140; }
+.mc-card:nth-child(5) { --mc-hue: 265; }
+.mc-card:nth-child(6) { --mc-hue: 45; }
+.mc-card b {
+  font: italic 400 2rem/1 "Instrument Serif", Georgia, serif;
+}
+.mc-card span {
+  font: 0.85rem/1.3 system-ui, sans-serif;
+  opacity: 0.85;
+}
+
+/* THE TRICK: each card's animation is driven by ITS OWN position in
+   the scroller, not by time. view(inline) = "how far through the
+   scroller's width am I?" 0% = just entering on the right,
+   50% = dead centre, 100% = just left on the left.
+   (Scroll-driven animations: Chrome 115+, Safari 26.) */
+@supports (animation-timeline: view()) {
+  .mc-card {
+    animation: mc-focus linear both;
+    animation-timeline: view(inline); /* must come after the shorthand */
+  }
+}
+
+@keyframes mc-focus {
+  0%, 100% { scale: 0.85; opacity: 0.45; filter: saturate(0.4); }
+  50%      { scale: 1;    opacity: 1;    filter: none; }
+}</textarea>
+<button type="button" data-reset>Reset CSS</button></div>
+    </details>
+    <details><summary>HTML</summary><pre></pre></details>
+  </div>
+</section>
+
+<!-- ============ 15. SPINNING GRADIENT BORDER ============ -->
+<section class="demo" data-features="animation light interaction">
+  <h2>Spinning gradient border</h2>
+  <a class="demo-link" href="#spinning-gradient-border">View this demo</a>
+  <div class="tags"><code>@property</code> <code>conic-gradient</code> <code>background-clip</code> <code>animation-play-state</code></div>
+  <p class="credit">Idea: <a href="https://web.dev/articles/css-border-animations" target="_blank" rel="noopener">Bramus Van Damme / web.dev</a> · rebuilt</p>
+  <p class="instructions">Hover over the card to speed the ring up.</p>
+  <div class="preview sb-stage">
+    <div class="sb-card">
+      <small>Early access</small>
+      <strong>Join the beta</strong>
+      <span>Hover me: the ring speeds up and the glow brightens.</span>
+    </div>
+  </div>
+  <div class="tools">
+    <details><summary>Edit CSS</summary>
+<div class="editor"><textarea spellcheck="false">@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700");
+
+/* A plain custom property is just text, so the browser can't
+   animate it. Registering it as an <angle> makes it a real angle
+   that @keyframes can tween, from 0deg to 360deg. */
+@property --sb-spin {
+  syntax: "<angle>";
+  inherits: true;
+  initial-value: 0deg;
+}
+/* A second angle that only runs while you hover (see below) */
+@property --sb-boost {
+  syntax: "<angle>";
+  inherits: true;
+  initial-value: 0deg;
+}
+
+.sb-stage {
+  background: radial-gradient(circle at 50% 40%, #1b1530, #08070d 70%);
+  isolation: isolate; /* keeps the glow's z-index: -1 above this background */
+}
+
+.sb-card {
+  --sb-ring: conic-gradient(
+    from calc(var(--sb-spin) + var(--sb-boost)),
+    #ff3d81, #ffb13d, #3dffc5, #3d8bff, #b53dff, #ff3d81
+  );
+  position: relative;
+  display: grid;
+  gap: 6px;
+  width: min(80%, 300px);
+  padding: 26px 28px;
+  border-radius: 18px;
+  color: #ece9ff;
+  font-family: "Space Grotesk", system-ui, sans-serif;
+
+  /* THE TRICK: a transparent border with two backgrounds.
+     The top layer (solid) stops at the padding edge; the conic
+     layer underneath fills to the border edge, so it only shows
+     through the 3px border ring. */
+  border: 3px solid transparent;
+  background:
+    linear-gradient(#15121f, #15121f) padding-box,
+    var(--sb-ring) border-box;
+
+  /* both angles loop forever... */
+  animation:
+    sb-spin 4s linear infinite,
+    sb-boost 1.2s linear infinite paused; /* ...but this one starts paused */
+}
+
+/* THE GLOW: the same ring, blurred, behind the card */
+.sb-card::before {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  z-index: -1;
+  border-radius: inherit;
+  background: var(--sb-ring);
+  filter: blur(18px);
+  opacity: 0.45;
+  transition: opacity 0.4s, filter 0.4s;
+}
+
+/* Hover un-pauses the second angle. The ring's angle is the SUM of
+   both, so it spins faster with no jump (changing the duration of
+   one animation instead would make it skip). */
+.sb-card:hover {
+  animation-play-state: running, running;
+}
+.sb-card:hover::before {
+  opacity: 0.9;
+  filter: blur(26px) brightness(1.3);
+}
+
+@keyframes sb-spin  { to { --sb-spin:  360deg; } }
+@keyframes sb-boost { to { --sb-boost: 360deg; } }
+
+.sb-card small {
+  font-size: 0.72rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: #ffb13d;
+}
+.sb-card strong { font-size: 1.7rem; line-height: 1.1; }
+.sb-card span { font-size: 0.9rem; color: #b4aed0; }</textarea>
+<button type="button" data-reset>Reset CSS</button></div>
+    </details>
+    <details><summary>HTML</summary><pre></pre></details>
+  </div>
+</section>
+
+<!-- ============ 16. 3D PUSHABLE BUTTON ============ -->
+<section class="demo" data-features="interaction 3d animation">
+  <h2>3D pushable button</h2>
+  <a class="demo-link" href="#3d-pushable-button">View this demo</a>
+  <div class="tags"><code>translate</code> <code>transition</code> <code>cubic-bezier()</code> <code>:active</code> <code>filter: blur()</code></div>
+  <p class="credit">Idea: <a href="https://www.joshwcomeau.com/animation/3d-button/" target="_blank" rel="noopener">Josh W. Comeau</a> · rebuilt</p>
+  <p class="instructions">Hover over a button to lift it, then press it.</p>
+  <div class="preview pb-stage">
+    <div class="pb-row">
+      <button class="pb-btn" type="button">
+        <span class="pb-shadow"></span>
+        <span class="pb-edge"></span>
+        <span class="pb-front">Push me</span>
+      </button>
+      <button class="pb-btn pb-mint" type="button">
+        <span class="pb-shadow"></span>
+        <span class="pb-edge"></span>
+        <span class="pb-front">Me too</span>
+      </button>
+    </div>
+  </div>
+  <div class="tools">
+    <details><summary>Edit CSS</summary>
+<div class="editor"><textarea spellcheck="false">@import url("https://fonts.googleapis.com/css2?family=Rubik:wght@700");
+
+.pb-stage {
+  background: #f3ece0;
+}
+.pb-row { display: flex; gap: 28px; flex-wrap: wrap; justify-content: center; }
+
+/* The button itself is just an invisible box; three stacked layers
+   inside it do all the drawing:
+     .pb-shadow  a blurred blob on the "floor"
+     .pb-edge    the darker side of the slab (the depth you see)
+     .pb-front   the face, raised above the edge */
+.pb-btn {
+  --pb-face: oklch(0.63 0.21 25);       /* tomato */
+  --pb-side: oklch(0.42 0.16 25);
+  --pb-side-lit: oklch(0.5 0.18 25);
+  position: relative;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  outline-offset: 6px;
+  -webkit-tap-highlight-color: transparent;
+}
+.pb-mint {
+  --pb-face: oklch(0.8 0.14 165);
+  --pb-side: oklch(0.52 0.11 170);
+  --pb-side-lit: oklch(0.6 0.12 170);
+}
+
+.pb-shadow, .pb-edge {
+  position: absolute;
+  inset: 0;
+  border-radius: 14px;
+}
+.pb-shadow {
+  background: rgb(60 30 0 / 0.3);
+  filter: blur(4px);
+  translate: 0 3px;
+}
+/* lighter in the middle, darker at the sides: reads as a curved slab */
+.pb-edge {
+  background: linear-gradient(to right,
+    var(--pb-side) 0%, var(--pb-side-lit) 10%,
+    var(--pb-side-lit) 90%, var(--pb-side) 100%);
+}
+
+.pb-front {
+  position: relative; /* sits on top of the two absolute layers */
+  display: block;
+  padding: 16px 38px;
+  border-radius: 14px;
+  font: 700 1.2rem/1 "Rubik", system-ui, sans-serif;
+  color: #fff;
+  background: var(--pb-face);
+  translate: 0 -5px; /* resting height: 5px of edge shows below */
+}
+.pb-mint .pb-front { color: oklch(0.28 0.06 170); }
+
+/* THE SPRING: leaving hover eases back slowly with no overshoot... */
+.pb-front, .pb-shadow {
+  transition: translate 600ms cubic-bezier(0.3, 0.7, 0.4, 1);
+}
+/* ...but rising on hover is quick, and the y2 value above 1 in the
+   curve overshoots a little, so the face bounces up. The shadow
+   spreads as the face lifts. */
+.pb-btn:hover .pb-front {
+  translate: 0 -8px;
+  transition: translate 250ms cubic-bezier(0.3, 0.7, 0.4, 1.5);
+}
+.pb-btn:hover .pb-shadow {
+  translate: 0 6px;
+  transition: translate 250ms cubic-bezier(0.3, 0.7, 0.4, 1.5);
+}
+/* Pressed: snap down almost instantly, like a real key */
+.pb-btn:active .pb-front {
+  translate: 0 -2px;
+  transition: translate 34ms;
+}
+.pb-btn:active .pb-shadow {
+  translate: 0 1px;
+  transition: translate 34ms;
+}
+
+.pb-btn:hover .pb-front { filter: brightness(1.08); }
+.pb-btn:focus:not(:focus-visible) { outline: none; }</textarea>
+<button type="button" data-reset>Reset CSS</button></div>
+    </details>
+    <details><summary>HTML</summary><pre></pre></details>
+  </div>
+</section>
+
+<!-- ============ 17. GLITCH TEXT ============ -->
+<section class="demo" data-features="animation text interaction">
+  <h2>Glitch text</h2>
+  <a class="demo-link" href="#glitch-text">View this demo</a>
+  <div class="tags"><code>clip-path: inset()</code> <code>::before / ::after</code> <code>attr()</code> <code>mix-blend-mode</code> <code>steps()</code></div>
+  <p class="credit">Idea: <a href="https://css-tricks.com/glitch-effect-text-images-svg/" target="_blank" rel="noopener">Chris Coyier (after Lucas Bebber)</a> · rebuilt</p>
+  <p class="instructions">Hover over the text to make the glitch worse.</p>
+  <div class="preview gl-stage">
+    <div class="gl-wrap">
+      <h3 class="gl-text" data-text="Signal lost">Signal lost</h3>
+      <p class="gl-sub">CH 03 · NO CARRIER</p>
+    </div>
+  </div>
+  <div class="tools">
+    <details><summary>Edit CSS</summary>
+<div class="editor"><textarea spellcheck="false">@import url("https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;700");
+
+.gl-stage {
+  background: radial-gradient(circle, #14161d, #050608 75%);
+}
+/* CRT scanlines over the whole stage */
+.gl-stage::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(#0000 0 2px, #0000004d 2px 3px);
+}
+
+.gl-wrap { text-align: center; }
+
+.gl-text {
+  --gl-amp: 3px;      /* how far the colour slices jump */
+  --gl-speed: 2.6s;   /* how long one glitch cycle takes */
+  position: relative;
+  margin: 0;
+  font: 700 clamp(2.8rem, 9vw, 4.4rem)/1 "Chakra Petch", system-ui, sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #eefbff;
+  /* the white text itself jolts sideways now and then */
+  animation: gl-jolt var(--gl-speed) steps(1) infinite;
+}
+
+/* THE TRICK: two exact copies of the word (attr() reads data-text),
+   one red, one cyan, stacked on the original. Each is cut down to a
+   thin horizontal band with clip-path: inset(top right bottom left)
+   and nudged sideways. The keyframes swap the band and the nudge
+   every few frames, and steps(1) makes each swap an instant jump. */
+.gl-text::before,
+.gl-text::after {
+  content: attr(data-text) / ""; /* empty alt text, so screen readers don't read it 3 times */
+  position: absolute;
+  inset: 0;
+  mix-blend-mode: screen; /* where the copies overlap the white, it stays white */
+}
+.gl-text::before {
+  color: #ff2b6d;
+  animation: gl-slice-a var(--gl-speed) steps(1) infinite;
+}
+.gl-text::after {
+  color: #00e1ff;
+  animation: gl-slice-b calc(var(--gl-speed) * 1.37) steps(1) infinite;
+}
+
+/* Hover: bigger jumps, faster cycle */
+.gl-wrap:hover .gl-text {
+  --gl-amp: 9px;
+  --gl-speed: 0.9s;
+}
+
+@keyframes gl-slice-a {
+  0%   { clip-path: inset(10% 0 74% 0); translate: calc(var(--gl-amp) * -1) 0; }
+  12%  { clip-path: inset(58% 0 20% 0); translate: calc(var(--gl-amp) * -2) 0; }
+  24%  { clip-path: inset(32% 0 50% 0); translate: var(--gl-amp) 0; }
+  36%  { clip-path: inset(84% 0 4% 0);  translate: calc(var(--gl-amp) * -1.5) 0; }
+  48%  { clip-path: inset(0 0 100% 0);  translate: 0 0; } /* hidden: a quiet moment */
+  70%  { clip-path: inset(44% 0 38% 0); translate: calc(var(--gl-amp) * 2) 0; }
+  78%  { clip-path: inset(4% 0 82% 0);  translate: calc(var(--gl-amp) * -1) 0; }
+  86%  { clip-path: inset(0 0 100% 0);  translate: 0 0; }
+}
+@keyframes gl-slice-b {
+  0%   { clip-path: inset(66% 0 16% 0); translate: var(--gl-amp) 0; }
+  14%  { clip-path: inset(18% 0 66% 0); translate: calc(var(--gl-amp) * 2) 0; }
+  28%  { clip-path: inset(0 0 100% 0);  translate: 0 0; }
+  52%  { clip-path: inset(40% 0 46% 0); translate: calc(var(--gl-amp) * -2) 0; }
+  60%  { clip-path: inset(76% 0 8% 0);  translate: var(--gl-amp) 0; }
+  72%  { clip-path: inset(24% 0 60% 0); translate: calc(var(--gl-amp) * 1.5) 0; }
+  84%  { clip-path: inset(0 0 100% 0);  translate: 0 0; }
+}
+@keyframes gl-jolt {
+  0%, 30%, 34%, 74%, 77% { transform: none; }
+  31%  { transform: translateX(calc(var(--gl-amp) * 0.8)) skewX(-8deg); }
+  75%  { transform: translateX(calc(var(--gl-amp) * -0.6)) skewX(5deg); }
+}
+
+.gl-sub {
+  margin: 14px 0 0;
+  font: 500 0.85rem/1 "Chakra Petch", system-ui, sans-serif;
+  letter-spacing: 0.45em;
+  color: #6f8a92;
+}</textarea>
+<button type="button" data-reset>Reset CSS</button></div>
+    </details>
+    <details><summary>HTML</summary><pre></pre></details>
+  </div>
+</section>
+
+<!-- ============ 18. COVER FLOW ============ -->
+<section class="demo" data-features="scroll 3d animation interaction">
+  <h2>Cover Flow</h2>
+  <a class="demo-link" href="#cover-flow">View this demo</a>
+  <div class="tags"><code>animation-timeline: view()</code> <code>animation-range</code> <code>rotateY()</code> <code>-webkit-box-reflect</code> <code>scroll-snap</code></div>
+  <p class="credit">Idea: <a href="https://scroll-driven-animations.style/demos/cover-flow/css/" target="_blank" rel="noopener">Bramus Van Damme</a> · rebuilt</p>
+  <p class="instructions">Scroll the albums sideways (Shift + mouse wheel, a trackpad swipe, or the scrollbar).</p>
+  <div class="preview cf-stage">
+    <ul class="cf-flow">
+      <li><div class="cf-cover"><b>Night Swim</b><small>The Lanterns</small></div></li>
+      <li><div class="cf-cover"><b>Paper Tigers</b><small>Odd Hours</small></div></li>
+      <li><div class="cf-cover"><b>Static Bloom</b><small>Mira Vale</small></div></li>
+      <li><div class="cf-cover"><b>Low Tide</b><small>Harbour Lights</small></div></li>
+      <li><div class="cf-cover"><b>Gold Rush</b><small>Brass Ghosts</small></div></li>
+      <li><div class="cf-cover"><b>Velvet Hour</b><small>June Arden</small></div></li>
+      <li><div class="cf-cover"><b>Signal Fire</b><small>North Range</small></div></li>
+      <li><div class="cf-cover"><b>Greenhouse</b><small>The Fernleys</small></div></li>
+      <li><div class="cf-cover"><b>Afterglow</b><small>Coast Radio</small></div></li>
+    </ul>
+  </div>
+  <div class="tools">
+    <details><summary>Edit CSS</summary>
+<div class="editor"><textarea spellcheck="false">@import url("https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@1,9..144,600");
+
+.cf-stage {
+  background: linear-gradient(#0b0b0e 55%, #17171c);
+  place-items: stretch;
+}
+
+.cf-flow {
+  --cf-size: 150px;  /* cover size */
+  --cf-step: 42px;   /* distance between covers: much less than a
+                        cover, so the side stacks overlap */
+  --cf-reach: var(--cf-step); /* how far from centre a cover turns */
+  display: flex;
+  align-items: center; /* vertically centred when the stage is taller */
+  margin: 0;
+  list-style: none;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  overscroll-behavior-x: contain;
+  scrollbar-width: thin;
+  scrollbar-color: #444 #0000;
+  padding: 34px calc(50% - var(--cf-step) / 2) 84px; /* room below for the reflection */
+}
+
+.cf-flow li {
+  flex: 0 0 var(--cf-step);
+  min-width: 0; /* else the flex item grows to fit the wide cover */
+  scroll-snap-align: center;
+  /* Each slot names a timeline that tracks its own trip across the
+     scroller (inline = horizontally). */
+  view-timeline: --cf-slot inline;
+}
+/* Chrome only (133+): open on the middle album instead of the first */
+.cf-flow li:nth-child(5) { scroll-initial-target: nearest; }
+
+.cf-cover {
+  position: relative; /* so z-index applies */
+  width: var(--cf-size);
+  aspect-ratio: 1;
+  /* centre the wide cover on its narrow slot */
+  margin-left: calc((var(--cf-step) - var(--cf-size)) / 2);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 12px;
+  color: #fff;
+  font: italic 600 1.05rem/1.05 "Fraunces", Georgia, serif;
+  text-shadow: 0 1px 6px #0007;
+  /* a mirror image underneath that fades out (Chrome + Safari) */
+  -webkit-box-reflect: below 3px linear-gradient(#0000 60%, #fff4);
+  transform: perspective(600px) rotateY(-65deg);
+}
+.cf-cover small {
+  font: 500 0.62rem/1.4 system-ui, sans-serif;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  opacity: 0.85;
+}
+
+/* THE TRICK (scroll-driven animations: Chrome 115+, Safari 26).
+   Two animations ride the slot's timeline:
+   cf-turn only runs in a short window around the centre (from
+   --cf-reach right of centre to --cf-reach left of it), so the
+   cover swings flat as it arrives and turns away as it leaves.
+   Outside that window, fill-mode "both" holds the end poses, so
+   every cover in the side stacks keeps the same angle.
+   cf-stack runs the whole way across, so z-index peaks in the
+   middle and the covers nearest the centre always sit on top. */
+@supports (animation-timeline: view()) {
+  .cf-cover {
+    animation: cf-turn linear both, cf-stack linear both;
+    animation-timeline: --cf-slot, --cf-slot;
+    animation-range:
+      cover calc(50% - var(--cf-reach)) cover calc(50% + var(--cf-reach)),
+      cover 0% cover 100%;
+  }
+}
+
+/* 0% = arriving from the right, 50% = centred, 100% = leaving left.
+   The side poses also shove the cover 84px outward, opening a gap
+   either side of the centre album. */
+@keyframes cf-turn {
+  0%   { transform: perspective(600px) translateX(84px) rotateY(-65deg); }
+  50%  { transform: perspective(600px) translateZ(40px) rotateY(0deg); }
+  100% { transform: perspective(600px) translateX(-84px) rotateY(65deg); }
+}
+@keyframes cf-stack {
+  0%, 100% { z-index: 1; }
+  50%      { z-index: 100; }
+}
+
+/* The album art: all gradients, no images */
+.cf-flow li:nth-child(1) .cf-cover {
+  background:
+    radial-gradient(circle at 70% 28%, #f4f1d8 0 14%, #0000 15%),
+    linear-gradient(#0f2347, #06101f 70%, #0d3a5c);
+}
+.cf-flow li:nth-child(2) .cf-cover {
+  background: repeating-linear-gradient(-35deg, #ff8a1e 0 14px, #1b1007 14px 26px);
+}
+.cf-flow li:nth-child(3) .cf-cover {
+  background:
+    radial-gradient(circle, #0000 30%, #1a0618 31%),
+    conic-gradient(#ff5fa2, #ffd36b, #8a5cff, #ff5fa2);
+}
+.cf-flow li:nth-child(4) .cf-cover {
+  background:
+    repeating-radial-gradient(circle at 50% 120%, #59d7c9 0 8px, #0f6e72 8px 16px);
+}
+.cf-flow li:nth-child(5) .cf-cover {
+  background:
+    linear-gradient(135deg, #0000 24%, #111 24% 30%, #0000 30%),
+    linear-gradient(#f1c232, #b8860b);
+  color: #111;
+  text-shadow: none;
+}
+.cf-flow li:nth-child(6) .cf-cover {
+  background: radial-gradient(circle at 30% 30%, #b46cff, #3a0f5c 60%, #14051f);
+}
+.cf-flow li:nth-child(7) .cf-cover {
+  background:
+    linear-gradient(#0000 calc(100% - 1px), #fff3 0) 0 0 / 100% 18px,
+    linear-gradient(#ff4a1c, #7a0d0d);
+}
+.cf-flow li:nth-child(8) .cf-cover {
+  background: repeating-conic-gradient(#1f7a3a 0 25%, #8fd16a 0 50%) 0 0 / 36px 36px;
+}
+.cf-flow li:nth-child(9) .cf-cover {
+  background: linear-gradient(#ffb35c, #ff5e7e 45%, #4b2a7a);
+}</textarea>
+<button type="button" data-reset>Reset CSS</button></div>
+    </details>
+    <details><summary>HTML</summary><pre></pre></details>
+  </div>
+</section>
+
+<!-- ============ 19. CUSTOM SELECT ============ -->
+<section class="demo" data-features="forms interaction animation">
+  <h2>Custom select</h2>
+  <a class="demo-link" href="#custom-select">View this demo</a>
+  <div class="tags"><code>appearance: base-select</code> <code>::picker(select)</code> <code>::checkmark</code> <code>selectedcontent</code> <code>@starting-style</code></div>
+  <p class="credit">Idea: <a href="https://codepen.io/una/full/MWMmYxb" target="_blank" rel="noopener">Una Kravets</a> · rebuilt</p>
+  <p class="instructions">Open the menu and pick a pastry.</p>
+  <div class="preview cs-stage">
+    <div class="cs-field">
+      <label class="cs-label" for="cs-pastry">Pick a pastry</label>
+      <select class="cs-select" id="cs-pastry">
+        <button><selectedcontent></selectedcontent></button>
+        <option value="croissant" selected><span class="cs-icon">🥐</span> <span class="cs-name">Croissant</span> <span class="cs-price">£2.80</span></option>
+        <option value="doughnut"><span class="cs-icon">🍩</span> <span class="cs-name">Doughnut</span> <span class="cs-price">£2.20</span></option>
+        <option value="cupcake"><span class="cs-icon">🧁</span> <span class="cs-name">Cupcake</span> <span class="cs-price">£3.10</span></option>
+        <option value="pie"><span class="cs-icon">🥧</span> <span class="cs-name">Apple pie</span> <span class="cs-price">£3.60</span></option>
+        <option value="cookie"><span class="cs-icon">🍪</span> <span class="cs-name">Cookie</span> <span class="cs-price">£1.50</span></option>
+      </select>
+    </div>
+  </div>
+  <div class="tools">
+    <details><summary>Edit CSS</summary>
+<div class="editor"><textarea spellcheck="false">@import url("https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800");
+
+.cs-stage {
+  background: radial-gradient(circle at 30% 15%, #fff1d9, #f7cf9f 55%, #eca57a);
+}
+
+.cs-field {
+  display: grid;
+  gap: 8px;
+  /* Bricolage Grotesque: chunky, slightly quirky grotesque that
+     suits a bakery menu */
+  font-family: "Bricolage Grotesque", system-ui, sans-serif;
+  color: #3a1a0e;
+}
+.cs-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.cs-select {
+  min-width: 270px;
+  font: 600 1.1rem/1.2 "Bricolage Grotesque", system-ui, sans-serif;
+}
+
+/* EVERYTHING below needs a customizable select (Chrome 135+).
+   Other browsers skip this block and show a normal select: they
+   drop the <button> and <span> tags but keep the text, so each
+   option still reads "🥐 Croissant £2.80". */
+@supports (appearance: base-select) {
+
+  /* THE SWITCH: opt the select AND its dropdown (the "picker")
+     out of the native OS widget into a plain, stylable one */
+  .cs-select,
+  .cs-select::picker(select) {
+    appearance: base-select;
+  }
+
+  .cs-select {
+    display: flex;
+    align-items: center;
+    padding: 10px 14px;
+    color: #3a1a0e;
+    background: #fffaf2;
+    border: 2px solid #3a1a0e;
+    border-radius: 14px;
+    box-shadow: 4px 4px 0 #3a1a0e;
+    cursor: pointer;
+    transition: translate 0.15s, box-shadow 0.15s;
+  }
+  .cs-select:hover { translate: -1px -1px; box-shadow: 5px 5px 0 #3a1a0e; }
+  /* :open = the dropdown is showing; the button "presses in" */
+  .cs-select:open { translate: 2px 2px; box-shadow: 2px 2px 0 #3a1a0e; }
+
+  /* The <button> child replaces the select's built-in button, and
+     <selectedcontent> inside it is a live copy of the chosen
+     option's HTML (emoji and all) */
+  .cs-select > button {
+    display: flex;
+    flex: 1;
+    font: inherit;
+    color: inherit;
+    background: none;
+    border: 0;
+    padding: 0;
+  }
+  .cs-select selectedcontent { display: flex; align-items: center; gap: 10px; }
+  .cs-select selectedcontent .cs-price { display: none; }
+
+  /* The dropdown arrow is its own pseudo-element. Here it's an
+     empty box with two borders, turned 45deg into a chevron. */
+  .cs-select::picker-icon {
+    content: "";
+    width: 8px;
+    height: 8px;
+    margin: 0 4px 4px 8px;
+    border: solid currentColor;
+    border-width: 0 2.5px 2.5px 0;
+    rotate: 45deg;
+    transition: rotate 0.3s, translate 0.3s;
+  }
+  .cs-select:open::picker-icon { rotate: 225deg; translate: 0 4px; }
+
+  /* The dropdown: a popover in the top layer, anchored under the
+     button, so the clipped stage can't cut it off */
+  .cs-select::picker(select) {
+    margin-top: 10px;
+    padding: 6px;
+    background: #fffaf2;
+    border: 2px solid #3a1a0e;
+    border-radius: 16px;
+    box-shadow: 6px 6px 0 #3a1a0e;
+    transform-origin: top;
+    /* allow-discrete lets display and overlay wait for the fade-out,
+       instead of the popover vanishing instantly on close */
+    transition:
+      opacity 0.25s,
+      scale 0.3s cubic-bezier(0.3, 1.5, 0.6, 1),
+      display 0.3s allow-discrete,
+      overlay 0.3s allow-discrete;
+  }
+  .cs-select:not(:open)::picker(select) { opacity: 0; scale: 1 0.7; }
+  /* Where the open animation starts from */
+  @starting-style {
+    .cs-select:open::picker(select) { opacity: 0; scale: 1 0.7; }
+  }
+
+  .cs-select option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 10px;
+    border-radius: 10px;
+    font-weight: 500;
+    transition: background 0.15s;
+    /* options drop in one after another each time it opens */
+    animation: cs-in 0.3s backwards;
+  }
+  .cs-select option:nth-of-type(2) { animation-delay: 0.04s; }
+  .cs-select option:nth-of-type(3) { animation-delay: 0.08s; }
+  .cs-select option:nth-of-type(4) { animation-delay: 0.12s; }
+  .cs-select option:nth-of-type(5) { animation-delay: 0.16s; }
+
+  .cs-select option:hover,
+  .cs-select option:focus-visible { background: #ffdcae; outline: none; }
+  .cs-select option:checked { font-weight: 800; }
+
+  /* Real HTML inside options: the emoji gets its own bubble */
+  .cs-icon {
+    display: grid;
+    place-items: center;
+    width: 38px;
+    aspect-ratio: 1;
+    font-size: 1.4rem;
+    border-radius: 50%;
+    background: #ffe7c6;
+    transition: rotate 0.25s, scale 0.25s;
+  }
+  .cs-select option:hover .cs-icon { rotate: -14deg; scale: 1.15; }
+  .cs-price { margin-left: auto; font-size: 0.9rem; opacity: 0.6; }
+
+  /* The tick next to the selected option: moved to the far end */
+  .cs-select option::checkmark {
+    order: 1;
+    content: "✔";
+    color: #d2581f;
+  }
+}
+
+@keyframes cs-in {
+  from { opacity: 0; translate: 0 -8px; }
+}</textarea>
+<button type="button" data-reset>Reset CSS</button></div>
+    </details>
+    <details><summary>HTML</summary><pre></pre></details>
+  </div>
+</section>
+
+<!-- ============ 20. ACCORDION TO HEIGHT: AUTO ============ -->
+<section class="demo" data-features="interaction animation">
+  <h2>Accordion to height: auto</h2>
+  <a class="demo-link" href="#accordion-to-height-auto">View this demo</a>
+  <div class="tags"><code>interpolate-size</code> <code>::details-content</code> <code>allow-discrete</code> <code>details[name]</code></div>
+  <p class="credit">Idea: <a href="https://developer.chrome.com/docs/css-ui/animate-to-height-auto" target="_blank" rel="noopener">Bramus Van Damme</a> · rebuilt</p>
+  <p class="instructions">Open the questions: each one glides open to its natural height.</p>
+  <div class="preview ac-stage">
+    <div class="ac-stack">
+      <details class="ac-item" name="ac-faq" open>
+        <summary class="ac-summary">Why couldn't CSS animate to auto?</summary>
+        <div class="ac-body">
+          <p>Transitions need two numbers to blend between, and <code>auto</code> isn't a number. So for years we faked it with <code>max-height: 999px</code> and lived with the lag.</p>
+        </div>
+      </details>
+      <details class="ac-item" name="ac-faq">
+        <summary class="ac-summary">What changed?</summary>
+        <div class="ac-body">
+          <p><code>interpolate-size: allow-keywords</code> tells the browser it may work out what <code>auto</code> is in pixels and animate to that.</p>
+        </div>
+      </details>
+      <details class="ac-item" name="ac-faq">
+        <summary class="ac-summary">And the closing animation?</summary>
+        <div class="ac-body">
+          <p>The new <code>::details-content</code> pseudo-element wraps everything but the summary, so it can be transitioned both ways. Sharing a <code>name</code> makes the panels take turns.</p>
+        </div>
+      </details>
+    </div>
+  </div>
+  <div class="tools">
+    <details><summary>Edit CSS</summary>
+<div class="editor"><textarea spellcheck="false">@import url("https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1");
+@import url("https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400..600");
+
+.ac-stage {
+  background: linear-gradient(160deg, #e8ecdf, #cfd8c2);
+  padding: 28px 20px;
+}
+
+.ac-stack {
+  width: min(440px, 100%);
+  display: grid;
+  gap: 10px;
+  /* Instrument Sans for reading, Instrument Serif for the questions:
+     a matched pair designed to sit together */
+  font: 0.95rem/1.5 "Instrument Sans", system-ui, sans-serif;
+  color: #22301f;
+}
+
+.ac-item {
+  background: #fbfcf7;
+  border: 1px solid #b7c4a8;
+  border-radius: 14px;
+  /* THE KEY LINE (Chrome 129+): allow animating to and from
+     keywords like auto. It inherits, so it could also go on :root. */
+  interpolate-size: allow-keywords;
+}
+
+/* Everything inside the details except the summary
+   (Chrome 131+). Closed = zero height, clipped. */
+.ac-item::details-content {
+  block-size: 0;
+  overflow: clip;
+  /* content-visibility is what actually hides closed content;
+     allow-discrete keeps it visible until the height has
+     finished shrinking */
+  transition:
+    block-size 0.45s cubic-bezier(0.2, 0.8, 0.2, 1),
+    content-visibility 0.45s allow-discrete;
+}
+/* Open = its natural height. This is the transition that used
+   to be impossible. */
+.ac-item[open]::details-content {
+  block-size: auto;
+}
+
+.ac-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 18px;
+  cursor: pointer;
+  list-style: none; /* hide the default triangle */
+  font: italic 1.35rem/1.2 "Instrument Serif", Georgia, serif;
+}
+.ac-summary::-webkit-details-marker { display: none; }
+
+/* A plus that turns into a cross */
+.ac-summary::after {
+  content: "+";
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  font: 400 1.3rem/1 "Instrument Sans", system-ui, sans-serif;
+  color: #fbfcf7;
+  background: #4d6b3c;
+  transition: rotate 0.35s, background 0.35s;
+}
+.ac-item[open] > .ac-summary::after { rotate: 135deg; background: #b4532a; }
+
+.ac-body {
+  padding: 0 18px 14px;
+  /* the text fades as well as unrolls */
+  opacity: 0;
+  translate: 0 -6px;
+  transition: opacity 0.35s, translate 0.35s;
+}
+.ac-item[open] .ac-body { opacity: 1; translate: 0; }
+.ac-body p { margin: 0; }
+.ac-body code {
+  font-size: 0.85em;
+  padding: 1px 5px;
+  border-radius: 5px;
+  background: #e4ead9;
+}</textarea>
+<button type="button" data-reset>Reset CSS</button></div>
+    </details>
+    <details><summary>HTML</summary><pre></pre></details>
+  </div>
+</section>
+
+<!-- ============ 21. SINGLE-ELEMENT LOADERS ============ -->
+<section class="demo" data-features="animation">
+  <h2>Single-element loaders</h2>
+  <a class="demo-link" href="#single-element-loaders">View this demo</a>
+  <div class="tags"><code>conic-gradient</code> <code>mask</code> <code>@property</code> <code>background-position</code> <code>background-size</code></div>
+  <p class="credit">Idea: <a href="https://css-loaders.com/" target="_blank" rel="noopener">Temani Afif</a> · rebuilt</p>
+  <div class="preview ld-stage">
+    <div class="ld-row">
+      <div class="ld ld-comet"></div>
+      <div class="ld ld-arc"></div>
+      <div class="ld ld-dots"></div>
+      <div class="ld ld-bars"></div>
+    </div>
+  </div>
+  <div class="tools">
+    <details><summary>Edit CSS</summary>
+<div class="editor"><textarea spellcheck="false">/* Every loader is ONE empty div. All the shapes are painted
+   with background gradients, then cut out with mask. */
+
+.ld-stage {
+  background: radial-gradient(circle at 50% 40%, #1d2340, #0c0f1d 75%);
+}
+.ld-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 44px;
+  padding: 20px;
+}
+.ld { width: 60px; aspect-ratio: 1; }
+
+/* A ring mask: transparent in the middle, opaque in an 8px band
+   at the edge. Whatever background we paint only shows there. */
+.ld-comet,
+.ld-arc {
+  --ld-ring: radial-gradient(farthest-side, #0000 calc(100% - 8px), #000 calc(100% - 7px));
+  border-radius: 50%;
+  mask: var(--ld-ring);
+}
+
+/* 1. COMET: a conic gradient fading from nothing to solid, plus a
+   round dot for its head (the top layer), spun with rotate */
+.ld-comet {
+  background:
+    radial-gradient(farthest-side, #6ff3ff 94%, #0000) top / 8px 8px no-repeat,
+    conic-gradient(#0000 15%, #6ff3ff);
+  animation: ld-spin 0.9s linear infinite;
+}
+
+/* 2. ARC: the start and end angles of a conic slice are custom
+   properties. @property makes them real angles, so keyframes can
+   animate them (unregistered ones would just flip at 50%). */
+@property --ld-start { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
+@property --ld-end { syntax: "<angle>"; inherits: false; initial-value: 20deg; }
+
+.ld-arc {
+  background: conic-gradient(
+    #0000 var(--ld-start),
+    #ff6fb7 0 var(--ld-end),
+    #0000 0
+  );
+  animation: ld-arc 1.5s ease-in-out infinite;
+}
+/* Head races ahead, then the tail catches up. The rotation ends
+   exactly where the next loop's 20deg sliver starts, so it loops
+   seamlessly. */
+@keyframes ld-arc {
+  0%   { --ld-start: 0deg;   --ld-end: 20deg;  rotate: 0deg; }
+  50%  { --ld-start: 0deg;   --ld-end: 290deg; rotate: 160deg; }
+  100% { --ld-start: 270deg; --ld-end: 290deg; rotate: 450deg; }
+}
+
+/* 3. DOTS: the same radial gradient painted three times, each in
+   its own background layer. Moving each layer's y position makes
+   the dots hop in a wave. */
+.ld-dots {
+  --ld-dot: radial-gradient(circle closest-side, #ffd166 92%, #0000);
+  height: 40px;
+  aspect-ratio: auto;
+  background: var(--ld-dot), var(--ld-dot), var(--ld-dot);
+  background-size: 15px 15px;
+  background-repeat: no-repeat;
+  animation: ld-hop 1s linear infinite;
+}
+@keyframes ld-hop {
+  0%, 83%, 100% { background-position: 0 50%, 50% 50%, 100% 50%; }
+  17%           { background-position: 0 0,   50% 50%, 100% 50%; }
+  33%           { background-position: 0 100%, 50% 0,  100% 50%; }
+  50%           { background-position: 0 50%, 50% 100%, 100% 0; }
+  67%           { background-position: 0 50%, 50% 50%, 100% 100%; }
+}
+
+/* 4. EQUALIZER: four solid-colour layers pinned to the bottom,
+   each a 10px-wide bar. Animating background-size changes each
+   bar's height independently. */
+.ld-bars {
+  --ld-bar: linear-gradient(#7ae582 0 0);
+  height: 44px;
+  aspect-ratio: auto;
+  width: 58px;
+  background: var(--ld-bar), var(--ld-bar), var(--ld-bar), var(--ld-bar);
+  background-position: 0 100%, 33.3% 100%, 66.6% 100%, 100% 100%;
+  background-repeat: no-repeat;
+  animation: ld-eq 1.2s ease-in-out infinite;
+}
+@keyframes ld-eq {
+  0%, 100% { background-size: 10px 30%, 10px 80%, 10px 50%, 10px 100%; }
+  25%      { background-size: 10px 100%, 10px 40%, 10px 90%, 10px 30%; }
+  50%      { background-size: 10px 50%, 10px 100%, 10px 25%, 10px 70%; }
+  75%      { background-size: 10px 80%, 10px 20%, 10px 100%, 10px 45%; }
+}
+
+@keyframes ld-spin {
+  to { rotate: 1turn; }
+}</textarea>
+<button type="button" data-reset>Reset CSS</button></div>
+    </details>
+    <details><summary>HTML</summary><pre></pre></details>
+  </div>
+</section>
+
+<!-- ============ 22. BREATHING SQUARE ILLUSION ============ -->
+<section class="demo" data-features="animation interaction">
+  <h2>Breathing square illusion</h2>
+  <a class="demo-link" href="#breathing-square-illusion">View this demo</a>
+  <div class="tags"><code>rotate</code> <code>@keyframes</code> <code>grid gap</code> <code>:hover</code> <code>transition</code></div>
+  <p class="credit">Idea: <a href="https://codepen.io/alvaromontoro/pen/pvbErNQ" target="_blank" rel="noopener">Alvaro Montoro</a> · rebuilt</p>
+  <p class="instructions">Watch the square breathe, then hover over it to see what is really going on.</p>
+  <div class="preview bs-stage">
+    <div class="bs-illusion">
+      <div class="bs-square"></div>
+      <i class="bs-tile"></i><i class="bs-tile"></i>
+      <i class="bs-tile"></i><i class="bs-tile"></i>
+    </div>
+    <p class="bs-hint">Is it breathing? Hover to find out.</p>
+  </div>
+  <div class="tools">
+    <details><summary>Edit CSS</summary>
+<div class="editor"><textarea spellcheck="false">@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500");
+
+.bs-stage {
+  background: #f3eee4;
+  gap: 18px;
+  padding: 24px 0;
+}
+
+/* Four tiles in a 2x2 grid. The grid gap leaves a thin cross of
+   empty space down the middle: the only place you can see the
+   square behind. */
+.bs-illusion {
+  position: relative;
+  display: grid;
+  grid-template: 1fr 1fr / 1fr 1fr;
+  gap: 22px;
+  width: 200px;
+  aspect-ratio: 1;
+}
+
+/* The square never changes size. It just spins, centred behind the
+   tiles. Its corners (the part that would give it away) always
+   stay hidden under the tiles. */
+.bs-square {
+  position: absolute;
+  inset: 25%;
+  background: #2f3bd6;
+  animation: bs-spin 5s linear infinite;
+}
+@keyframes bs-spin {
+  to { rotate: 1turn; }
+}
+
+/* THE ILLUSION: through the cross you only see bits of the edges.
+   As it turns, those bits slide in and out along the gaps, and
+   your brain reads it as one square swelling and shrinking. */
+.bs-tile {
+  position: relative; /* stacks above the absolutely positioned square */
+  background: #f2774b;
+  border-radius: 4px;
+  transition: opacity 0.6s, scale 0.6s;
+}
+
+/* The reveal: fade the tiles to ghosts so you can see the whole,
+   steady square turning */
+.bs-stage:hover .bs-tile {
+  opacity: 0.12;
+  scale: 0.92;
+}
+
+.bs-hint {
+  margin: 0;
+  font: 500 0.95rem "Space Grotesk", system-ui, sans-serif;
+  color: #5a5248;
+  transition: opacity 0.4s;
+}
+.bs-stage:hover .bs-hint { opacity: 0.4; }</textarea>
+<button type="button" data-reset>Reset CSS</button></div>
+    </details>
+    <details><summary>HTML</summary><pre></pre></details>
+  </div>
+</section>
+
+<!-- ============ 23. NEWTON'S CRADLE ============ -->
+<section class="demo" data-features="animation light">
+  <h2>Newton's cradle</h2>
+  <a class="demo-link" href="#newton-s-cradle">View this demo</a>
+  <div class="tags"><code>transform-origin</code> <code>@keyframes</code> <code>animation-timing-function</code> <code>radial-gradient</code></div>
+  <p class="credit">Idea: <a href="https://codepen.io/amit_sheen/pen/XWMXwvJ" target="_blank" rel="noopener">Amit Sheen</a> · rebuilt</p>
+  <p class="instructions">Hover over the cradle to pause it.</p>
+  <div class="preview nc-stage">
+    <div class="nc-cradle">
+      <div class="nc-ball"></div>
+      <div class="nc-ball"></div>
+      <div class="nc-ball"></div>
+      <div class="nc-ball"></div>
+      <div class="nc-ball"></div>
+    </div>
+  </div>
+  <div class="tools">
+    <details><summary>Edit CSS</summary>
+<div class="editor"><textarea spellcheck="false">.nc-stage {
+  /* a soft spotlight on a dark desk */
+  background:
+    radial-gradient(ellipse 60% 50% at 50% 35%, #3a3d46, #0000),
+    linear-gradient(#17181d 78%, #22242b 78%);
+}
+
+.nc-cradle {
+  --nc-size: 38px;   /* ball diameter */
+  --nc-string: 120px;
+  --nc-swing: 32deg;
+  --nc-time: 1.3s;
+  position: relative;
+  display: flex;
+  padding: 5px 96px 0; /* room for the end balls to swing */
+  margin-bottom: 26px;
+}
+
+/* The frame: one box with only its top, left and right borders */
+.nc-cradle::before {
+  content: "";
+  position: absolute;
+  inset: 0 6px -24px;
+  border: 5px solid #b9bcc4;
+  border-bottom: 0;
+  border-radius: 14px 14px 0 0;
+  /* a little chrome sheen on the frame */
+  border-color: #d9dbe0 #8d919b #8d919b;
+}
+/* The base */
+.nc-cradle::after {
+  content: "";
+  position: absolute;
+  inset: auto -12px -34px;
+  height: 12px;
+  border-radius: 6px;
+  background: linear-gradient(#5a3a26, #2d1b10);
+  box-shadow: 0 10px 18px #000a;
+}
+
+/* Each pendulum is one element: the string is a 2px stripe of
+   background, the ball is ::after. transform-origin at the TOP
+   centre means rotating it swings from the frame, like a real one. */
+.nc-ball {
+  position: relative;
+  width: var(--nc-size);
+  height: calc(var(--nc-string) + var(--nc-size));
+  background: linear-gradient(#cfd2d8, #cfd2d8) 50% 0 / 1.5px var(--nc-string) no-repeat;
+  transform-origin: 50% 0;
+}
+.nc-ball::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  /* METAL: a bright highlight up-left, falling off to a dark rim,
+     with a faint bounce light along the bottom */
+  background:
+    radial-gradient(circle at 34% 28%, #fff 0 5%, #0000 14%),
+    radial-gradient(circle at 50% 120%, #9aa3b5 0 25%, #0000 55%),
+    radial-gradient(circle at 40% 35%, #e9ebef, #a3a8b3 35%, #535865 70%, #1f2126);
+  box-shadow: 0 6px 10px #0008;
+}
+
+/* One full cycle: left ball falls in (0-25%), right ball flies out
+   and comes back (25-75%), left ball flies out again (75-100%).
+   Falling = ease-in (speeding up), rising = ease-out (slowing down). */
+.nc-ball:first-child { animation: nc-left var(--nc-time) infinite; }
+.nc-ball:last-child  { animation: nc-right var(--nc-time) infinite; }
+
+@keyframes nc-left {
+  0%   { rotate: var(--nc-swing); animation-timing-function: cubic-bezier(0.45, 0, 1, 1); }
+  25%  { rotate: 0deg; }
+  75%  { rotate: 0deg; animation-timing-function: cubic-bezier(0, 0, 0.55, 1); }
+  100% { rotate: var(--nc-swing); }
+}
+@keyframes nc-right {
+  0%   { rotate: 0deg; }
+  25%  { rotate: 0deg; animation-timing-function: cubic-bezier(0, 0, 0.55, 1); }
+  50%  { rotate: calc(var(--nc-swing) * -1); animation-timing-function: cubic-bezier(0.45, 0, 1, 1); }
+  75%  { rotate: 0deg; }
+  100% { rotate: 0deg; }
+}
+
+/* Hover to freeze it mid-swing */
+.nc-cradle:hover .nc-ball { animation-play-state: paused; }</textarea>
+<button type="button" data-reset>Reset CSS</button></div>
+    </details>
+    <details><summary>HTML</summary><pre></pre></details>
+  </div>
+</section>
+
+<!-- ============ 24. :HAS() SPOTLIGHT ============ -->
+<section class="demo" data-features="interaction filters">
+  <h2>:has() spotlight</h2>
+  <a class="demo-link" href="#has-spotlight">View this demo</a>
+  <div class="tags"><code>:has()</code> <code>:not(:hover)</code> <code>filter: blur()</code> <code>transition</code></div>
+  <p class="credit">Idea: <a href="https://www.joshwcomeau.com/css/has/" target="_blank" rel="noopener">Josh W. Comeau</a> · rebuilt</p>
+  <p class="instructions">Hover over a card to spotlight it.</p>
+  <div class="preview sp-stage">
+    <ul class="sp-grid">
+      <li class="sp-card sp-fraunces"><span class="sp-aa">Aa</span><span class="sp-name">Fraunces</span></li>
+      <li class="sp-card sp-syne"><span class="sp-aa">Aa</span><span class="sp-name">Syne</span></li>
+      <li class="sp-card sp-caveat"><span class="sp-aa">Aa</span><span class="sp-name">Caveat</span></li>
+      <li class="sp-card sp-bebas"><span class="sp-aa">Aa</span><span class="sp-name">Bebas Neue</span></li>
+      <li class="sp-card sp-instrument"><span class="sp-aa">Aa</span><span class="sp-name">Instrument Serif</span></li>
+      <li class="sp-card sp-unbounded"><span class="sp-aa">Aa</span><span class="sp-name">Unbounded</span></li>
+    </ul>
+  </div>
+  <div class="tools">
+    <details><summary>Edit CSS</summary>
+<div class="editor"><textarea spellcheck="false">@import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600");
+@import url("https://fonts.googleapis.com/css2?family=Syne:wght@700");
+@import url("https://fonts.googleapis.com/css2?family=Caveat:wght@600");
+@import url("https://fonts.googleapis.com/css2?family=Bebas+Neue");
+@import url("https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1");
+@import url("https://fonts.googleapis.com/css2?family=Unbounded:wght@600");
+
+.sp-stage {
+  background: #1b1a20;
+  padding: 28px 16px;
+}
+
+.sp-grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 124px));
+  gap: 14px;
+}
+
+.sp-card {
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 4px;
+  aspect-ratio: 1 / 0.85;
+  border-radius: 16px;
+  color: #1b1a20;
+  background: var(--sp-bg);
+  cursor: default;
+  transition: filter 0.3s, opacity 0.3s, scale 0.3s, translate 0.3s, box-shadow 0.3s;
+}
+.sp-aa { font-size: 2.6rem; line-height: 1; }
+.sp-name { font: 600 0.7rem system-ui, sans-serif; letter-spacing: 0.06em; text-transform: uppercase; opacity: 0.65; }
+
+/* THE TRICK: "if the grid HAS a hovered card, then every card that
+   is NOT hovered..." Before :has(), a parent couldn't react to its
+   children, so this took JavaScript. */
+.sp-grid:has(.sp-card:hover) .sp-card:not(:hover) {
+  filter: blur(3px) grayscale(0.8);
+  opacity: 0.4;
+  scale: 0.94;
+}
+/* ...while the hovered one lifts out of the pack */
+.sp-card:hover {
+  translate: 0 -8px;
+  scale: 1.06;
+  box-shadow: 0 18px 30px #000a, 0 0 0 3px #fff;
+}
+/* Note the pointer in a gap between cards hovers no card, so the
+   whole grid snaps back. Shrink the gap to 0 (and pad the cards)
+   if that flicker bothers you. */
+
+/* Each card shows off a different typeface */
+.sp-fraunces   { --sp-bg: #ffcf70; }
+.sp-fraunces .sp-aa { font-family: "Fraunces", serif; font-weight: 600; }
+.sp-syne       { --sp-bg: #ff8fa3; }
+.sp-syne .sp-aa { font-family: "Syne", sans-serif; font-weight: 700; }
+.sp-caveat     { --sp-bg: #9ee6c4; }
+.sp-caveat .sp-aa { font-family: "Caveat", cursive; font-weight: 600; font-size: 3.2rem; }
+.sp-bebas      { --sp-bg: #8fc8ff; }
+.sp-bebas .sp-aa { font-family: "Bebas Neue", sans-serif; font-size: 3.2rem; }
+.sp-instrument { --sp-bg: #e3c8ff; }
+.sp-instrument .sp-aa { font-family: "Instrument Serif", serif; font-style: italic; font-size: 3rem; }
+.sp-unbounded  { --sp-bg: #f4f1e8; }
+.sp-unbounded .sp-aa { font-family: "Unbounded", sans-serif; font-weight: 600; font-size: 2.2rem; }</textarea>
+<button type="button" data-reset>Reset CSS</button></div>
+    </details>
+    <details><summary>HTML</summary><pre></pre></details>
+  </div>
+</section>
+</main>
+
+<!-- A selected card opens here (site.js moves it in and back). Each theme
+     styles this dialog and how it arrives, and picks a mode with the CSS
+     variable --card-open: (unset) = CSS entrance, "zoom" = the card grows
+     from its spot on the page, "page" = acts like navigating to a new page
+     (only Back closes it, and it adds a browser history entry). -->
+<dialog class="card-modal" aria-label="Demo">
+  <button class="card-modal-back" type="button">← Back</button>
+  <button class="card-modal-close" type="button" aria-label="Close">✕</button>
+</dialog>
+
+<script>
+  // Keyword search: the one part of filtering CSS can't do (it can't read what
+  // you type). It just sets [hidden]; the feature chips are pure CSS.
+  {
+    const search = document.getElementById('demo-search');
+    const countEl = document.querySelector('.filter-count');
+    const demos = [...document.querySelectorAll('.demo')];
+    const haystack = d => [d.querySelector('h2').textContent, d.querySelector('.tags').textContent, d.dataset.features].join(' ').toLowerCase();
+    const update = () => {
+      const terms = search.value.toLowerCase().split(/\s+/).filter(Boolean);
+      for (const d of demos) d.hidden = !terms.every(t => haystack(d).includes(t));
+      const shown = demos.filter(d => d.checkVisibility()).length;
+      countEl.textContent = shown === demos.length ? `${shown} demos`
+        : shown ? `${shown} of ${demos.length} demos` : 'No demos match';
+    };
+    search.addEventListener('input', update);
+    document.querySelector('.filter-chips').addEventListener('change', update);
+    update();
+  }
+
+  // Lab tooling only (the demos themselves are pure CSS):
+  // each card's textarea is piped into its own <style> tag.
+  for (const demo of document.querySelectorAll('.demo')) {
+    const ta = demo.querySelector('textarea');
+    const style = document.createElement('style');
+    document.head.append(style);
+    const original = ta.value;
+    const apply = () => { style.textContent = ta.value; };
+    ta.addEventListener('input', apply);
+    ta.addEventListener('keydown', e => {
+      if (e.key !== 'Tab') return;
+      e.preventDefault();
+      ta.setRangeText('  ', ta.selectionStart, ta.selectionEnd, 'end');
+      apply();
+    });
+    demo.querySelector('[data-reset]').addEventListener('click', () => {
+      ta.value = original;
+      apply();
+    });
+    apply();
+
+    const pre = demo.querySelector('.tools pre');
+    const html = demo.querySelector('.preview').innerHTML;
+    const lines = html.split('\n').filter(l => l.trim());
+    const indent = Math.min(...lines.map(l => l.match(/^\s*/)[0].length));
+    pre.textContent = lines.map(l => l.slice(indent)).join('\n');
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,93 @@
+/* ARCADE: an 8-bit cabinet. Pixel headings, CRT scanlines, hard offset
+   shadows, cyan + hot pink. */
+@import url("_base.css");
+@import url("https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap");
+
+:root {
+  color-scheme: dark;
+  --bg: #0a0720;
+  --panel: #130f33;
+  --line: #3b2f8f;
+  --text: #e6f6ff;
+  --muted: #8f88d6;
+  --accent: #2ef2ff;
+  --accent-2: #ff3ea5;
+  --code-bg: #07051a;
+  --code-text: #bdf7ff;
+  --radius: 0px;
+  --font-heading: "Press Start 2P", monospace;
+  --font-body: "Space Mono", monospace;
+  --font-mono: "Space Mono", monospace;
+}
+
+body { font-size: 14px; }
+
+/* CRT scanlines over everything (clicks pass straight through) */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  background: repeating-linear-gradient(to bottom, #0000 0 2px, #0000003a 2px 3px);
+}
+
+header.site h1 {
+  font-size: clamp(1.4rem, 4vw, 2.4rem);
+  line-height: 1.5;
+  color: var(--accent);
+  text-shadow: 4px 4px 0 var(--accent-2);
+}
+header.site h1::before { content: "> "; color: var(--accent-2); }
+header.site h1::after { content: "_"; animation: blink 1s steps(1) infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+
+.filter-bar {
+  border: 3px solid var(--line);
+  box-shadow: 4px 4px 0 var(--accent-2);
+}
+.filter-bar input[type="search"] { border-width: 2px; border-radius: 0; }
+.filter-chips label { border-radius: 0; border-width: 2px; }
+.filter-chips input:checked + label { color: var(--bg); }
+.filter-chips label:active { translate: 2px 2px; }
+
+.demo {
+  border: 3px solid var(--line);
+  box-shadow: 6px 6px 0 var(--accent-2);
+}
+.demo > h2 {
+  font-size: 0.78rem;
+  line-height: 1.8;
+  color: var(--accent);
+  text-transform: uppercase;
+}
+.demo .tags code {
+  border-radius: 0;
+  border: 2px solid var(--accent-2);
+  color: var(--accent-2);
+  background: none;
+}
+.preview { border-block: 3px solid var(--line); }
+
+.tools button { border-width: 2px; border-radius: 0; }
+.tools button:active { translate: 2px 2px; }
+
+/* Opening a card: the CRT switches on (a bright line, then the picture) */
+.theme-menu-button { border-radius: 0; border: 2px solid var(--line); box-shadow: 3px 3px 0 var(--accent-2); font-family: var(--font-body); }
+.theme-menu-button:active { translate: 2px 2px; box-shadow: 1px 1px 0 var(--accent-2); }
+.theme-menu-pop { border-radius: 0; border: 3px solid var(--line); box-shadow: 6px 6px 0 var(--accent-2); }
+.theme-menu-list button[aria-pressed="true"]::after { content: none; }
+.theme-menu-list button[aria-pressed="true"]::before { content: "> "; color: var(--accent-2); }
+.card-modal { border: 3px solid var(--line); border-radius: 0; box-shadow: 8px 8px 0 var(--accent-2), 0 0 80px #2ef2ff22; }
+.card-modal::backdrop { background: #030111e6; }
+.card-modal[open] { animation: crt-on 0.6s ease-out; }
+@keyframes crt-on {
+  0%   { scale: 0.02 0.004; filter: brightness(6); }
+  35%  { scale: 1 0.006; filter: brightness(4); }
+  70%  { scale: 1 1; filter: brightness(1.6); }
+  100% { filter: none; }
+}
+.card-modal .demo > h2 { font-size: 1.1rem; line-height: 1.6; }
+.card-modal-close { border-radius: 0; border: 2px solid var(--accent-2); color: var(--accent-2); }
+.card-modal .instructions { border-radius: 0; border: 2px solid var(--accent-2); background: none; }
+.card-modal .instructions::before { content: "> PLAYER 1: "; color: var(--accent-2); }

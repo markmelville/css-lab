@@ -1,0 +1,11 @@
+[
+  {
+    "file": "sunflower.webp",
+    "title": "Sunflower (1777)",
+    "author": "18th-century botanical engraving (hand-coloured plate, \"Tab. 68\"); scan shared by Swallowtail Garden Seeds",
+    "source_url": "https://www.flickr.com/photos/97123293@N07/15441986307",
+    "license": "Public Domain Mark 1.0",
+    "license_url": "https://creativecommons.org/publicdomain/mark/1.0/",
+    "changes": "Cropped to the main flower head, cut out from the paper (chroma + darkness mask, circular crop, ImageMagick), seed centre filled, posterized to a six-colour 1970s print palette (chocolate, umber, burnt orange, mustard, golden yellow, olive), resized to 280px, WebP q80."
+  }
+]

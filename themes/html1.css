@@ -1,0 +1,65 @@
+/* HTML 1.0: the web around 1993. Browser defaults on a white page, blue
+   underlined links, rules between sections, and no layout to speak of.
+   - The theme menu sits under the heading and expands in place, pushing the
+     page down (it's a <details>, so this needs no positioning at all).
+   - Opening a card looks like following a link to a new page: it fills the
+     window, and the only way out is Back (the modal's "page" mode, which also
+     adds a real browser history entry, so the browser's Back button works). */
+
+:root {
+  --card-open: page;
+  --card-select: link;   /* only the "View this demo" link opens a card */
+  --link: #0000ee;
+  --visited: #551a8b;
+}
+
+/* White page with the roomier margins old browsers gave you */
+body { margin: 1em 1.5em; color: #000; background: #fff; }
+
+/* Links, the only interface there was */
+.demo-link { display: inline-block; margin-bottom: 0.5em; color: var(--link); }
+.card-modal .demo-link { display: none; }  /* already on its page */
+.theme-menu-list button,
+.theme-menu-customize,
+.card-modal-back {
+  padding: 0;
+  font: inherit;
+  color: var(--link);
+  background: none;
+  border: 0;
+  text-decoration: underline;
+  cursor: pointer;
+}
+.theme-menu-list button[aria-pressed="true"] { color: var(--visited); }
+.theme-menu-list button[aria-pressed="true"]::after { content: " (you are here)"; color: #000; text-decoration: none; display: inline-block; margin-left: 0.3em; }
+
+/* Theme menu under the heading, expanding in place */
+header.site { display: flex; flex-direction: column; align-items: flex-start; }
+header.site h1 { order: -2; }
+.theme-menu { order: -1; margin: 0 0 0.5em; }
+.theme-menu-button { cursor: pointer; }
+.theme-menu-pop { margin: 0.25em 0 0.5em 1.2em; }
+.theme-menu-list { margin: 0; padding-left: 1.2em; }
+.theme-menu-customize { margin-top: 0.4em; }
+
+/* A horizontal rule between sections */
+main.gallery .demo { margin-top: 1.5em; padding-top: 0.5em; border-top: 2px groove #f4f4f4; }
+
+/* The "new page" */
+.card-modal {
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 1em 1.5em;
+  color: #000;
+  background: #fff;
+  border: 0;
+  overflow: auto;
+}
+.card-modal::backdrop { background: #fff; }
+.card-modal-close { display: none; }
+.card-modal-back { display: inline; margin-bottom: 0.5em; }
+.card-modal .demo > h2 { font-size: 2em; }
+.card-modal .instructions::before { content: "Instructions: "; font-weight: bold; }

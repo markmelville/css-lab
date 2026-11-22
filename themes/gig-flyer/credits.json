@@ -1,0 +1,11 @@
+[
+  {
+    "file": "img/pole.webp",
+    "title": "Staples - Utility pole - Arlington, MA - 20200625 095620",
+    "author": "Daderot (Wikimedia Commons)",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Staples_-_Utility_pole_-_Arlington,_MA_-_20200625_095620.jpg",
+    "license": "CC0 1.0 (public domain dedication)",
+    "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "changes": "Cropped to the pole, converted to greyscale, lighting flattened (divided by a heavy blur), contrast raised, resized to 400px wide, made seamless by cross-fading rolled copies at the edges (ImageMagick), WebP q42. Darkened in CSS with a multiply blend."
+  }
+]

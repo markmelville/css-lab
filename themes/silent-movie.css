@@ -1,0 +1,618 @@
+/* SILENT MOVIE: a 1920s photoplay.
+   Mood (from an image search for "silent movie intertitle card"): black
+   intertitle cards with thin silver double rules, art-deco notched corners
+   and filigree flourishes, hand-lettered display type, "presents" in script,
+   "Passed by the National Board of Review" small print, film grain, dust,
+   scratches and the flicker of a hand-cranked projector.
+
+   - Every card is an intertitle: the ornate frame is ONE small SVG drawn as
+     a 9-slice border-image (data URI), so corners keep their shape at any size.
+   - The header is the film's opening title card (gently weaving in the gate).
+   - Each demo is "the scene" inside the card: tinted sepia like a nitrate
+     print until you hover the card, when it comes up in colour.
+   - Atmosphere is pure CSS on fixed overlays: dancing grain, dust, scratches
+     and projector flicker (all compositor-only: translate/opacity), plus
+     sprocket rails down the page sides on wide screens.
+   - Opening a card: a classic iris-in, a circle opening from black.
+   Keyframes are prefixed sm- because the demos' own unlayered @keyframes
+   (e.g. the neon sign's "flicker") would otherwise win over the theme's.
+   No images; nothing generated. */
+@import url("_base.css");
+@import url("https://fonts.googleapis.com/css2?family=Limelight&family=Federant&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Marcellus+SC&family=Pinyon+Script&family=Xanh+Mono&display=swap");
+
+:root {
+  color-scheme: dark;
+  --bg: #0a0908;          /* the dark of the picture house */
+  --panel: #0e0d0b;       /* the black of the title card */
+  --line: #5d574c;
+  --text: #ece3cf;        /* silver-cream lettering */
+  --muted: #a49b88;
+  --accent: #d9b672;      /* amber tint, as nitrate prints were dyed */
+  --code-bg: #050404;
+  --code-text: #e3dac4;
+  --radius: 4px;
+  --font-heading: "Federant", serif;
+  --font-body: "Cormorant Garamond", serif;
+  --font-mono: "Xanh Mono", monospace;
+  --font-title: "Limelight", serif;
+  --font-sc: "Marcellus SC", serif;
+  --font-script: "Pinyon Script", cursive;
+
+  /* The intertitle frame: double rule, notched art-deco corners, a diamond in
+     each notch and a leaf-and-tendril flourish. 144px tile, sliced at 48. */
+  --frame: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='144' height='144' viewBox='0 0 144 144' fill='none' stroke='%23e9dfc6'%3E %3Cdefs%3E%3Cg id='c'%3E %3Cpath d='M4 48V22A18 18 0 0 0 22 4H48' stroke-width='1.5'/%3E %3Cpath d='M10 48V30A20 20 0 0 0 30 10H48' stroke-width='.75'/%3E %3Cpath d='M9 2.5 15.5 9 9 15.5 2.5 9Z' fill='%23e9dfc6' stroke='none'/%3E %3Cpath d='M26 26Q36 27 42 38Q31 36 26 26Z' fill='%23e9dfc6' stroke='none'/%3E %3Cpath d='M26 26C29 20 34 16.5 41 17C45 17.5 46 21 43 22C41 22.6 40 20.6 41.5 19.8' stroke-width='.9'/%3E %3Cpath d='M26 26C20 29 16.5 34 17 41C17.5 45 21 46 22 43C22.6 41 20.6 40 19.8 41.5' stroke-width='.9'/%3E %3Ccircle cx='26' cy='26' r='2' fill='%23e9dfc6' stroke='none'/%3E %3C/g%3E%3C/defs%3E %3Cpath d='M48 4H96M4 48V96M140 48V96M48 140H96' stroke-width='1.5'/%3E %3Cpath d='M48 10H96M10 48V96M134 48V96M48 134H96' stroke-width='.75'/%3E %3Cuse href='%23c'/%3E %3Cuse href='%23c' transform='translate(144 0) scale(-1 1)'/%3E %3Cuse href='%23c' transform='translate(0 144) scale(1 -1)'/%3E %3Cuse href='%23c' transform='translate(144 144) scale(-1 -1)'/%3E %3C/svg%3E");
+  /* A centred rule ornament: a diamond between scrolls */
+  --rule: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='24' viewBox='0 0 240 24' fill='none' stroke='%23e9dfc6'%3E %3Cpath d='M8 12H92M148 12H232' stroke-width='1'/%3E %3Ccircle cx='4' cy='12' r='1.6' fill='%23e9dfc6' stroke='none'/%3E%3Ccircle cx='236' cy='12' r='1.6' fill='%23e9dfc6' stroke='none'/%3E %3Cpath d='M120 3 129 12 120 21 111 12Z' fill='%23e9dfc6' stroke='none'/%3E %3Cpath d='M111 12C106 12 103 6 98 6C94 6 93 10 96 11M111 12C106 12 103 18 98 18C94 18 93 14 96 13M129 12C134 12 137 6 142 6C146 6 147 10 144 11M129 12C134 12 137 18 142 18C146 18 147 14 144 13' stroke-width='1'/%3E %3C/svg%3E");
+  /* One frame of 35mm film edge: a sprocket hole in the film base */
+  --sprocket: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='26' viewBox='0 0 30 26'%3E%3Crect width='30' height='26' fill='%2317140f'/%3E%3Crect x='9' y='7' width='12' height='12' rx='2.5' fill='%23030302'/%3E%3C/svg%3E");
+  --card-frame: 54px;
+}
+
+::selection { background: var(--text); color: var(--bg); }
+
+/* ---------------- THE PICTURE HOUSE ---------------- */
+body {
+  font: 500 17px/1.5 var(--font-body);
+  background:
+    /* the projector's pool of light, darkening to the corners of the screen */
+    radial-gradient(ellipse 75% 70% at 50% 42%, #2a251d33, #0000 60%, #0000008c 100%) fixed,
+    var(--bg);
+}
+/* Sprocket rails down both sides, scrolling with the page like film through
+   the gate (only where there's room beside the cards) */
+@media (min-width: 1380px) {
+  body {
+    background:
+      radial-gradient(ellipse 75% 70% at 50% 42%, #2a251d33, #0000 60%, #0000008c 100%) fixed,
+      linear-gradient(to right, #0000 30px, #e9dfc614 30px 31px, #0000 31px calc(100% - 31px), #e9dfc614 calc(100% - 31px) calc(100% - 30px), #0000 0),
+      var(--sprocket) left top / 30px 26px repeat-y,
+      var(--sprocket) right top / 30px 26px repeat-y,
+      var(--bg);
+  }
+}
+
+/* Film grain: specks on prime-sized tiles (so the pattern never visibly
+   repeats), on an oversized layer that jumps a few pixels every frame */
+body::before {
+  content: "";
+  position: fixed;
+  inset: -60px;
+  z-index: 40;
+  pointer-events: none;
+  background:
+    radial-gradient(circle, #fff6e017 0.6px, #0000 1.1px) 0 0 / 13px 17px,
+    radial-gradient(circle, #fff6e012 0.8px, #0000 1.4px) 5px 9px / 19px 23px,
+    radial-gradient(circle, #fff6e01a 0.7px, #0000 1.2px) 11px 3px / 29px 31px,
+    radial-gradient(circle, #fff6e00f 1.1px, #0000 1.8px) 2px 14px / 41px 37px,
+    radial-gradient(circle, #00000017 0.8px, #0000 1.4px) 7px 2px / 11px 13px,
+    radial-gradient(circle, #00000014 1px, #0000 1.6px) 3px 8px / 31px 29px;
+  opacity: 0.6;
+}
+/* Projector flicker: the light breathes very slightly, never strobes */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 41;
+  pointer-events: none;
+  background: #fff4dc;
+  opacity: 0;
+}
+/* Dust and scratches: a hair, a couple of specks and a long vertical
+   scratch that come and go between frames */
+html::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 42;
+  pointer-events: none;
+  background:
+    linear-gradient(to right, #0000 calc(23% - 0.5px), #f4ead333 23%, #0000 calc(23% + 0.6px)),
+    linear-gradient(to right, #0000 calc(71% - 0.5px), #00000066 71%, #0000 calc(71% + 0.8px)),
+    radial-gradient(circle 2px at 64% 28%, #f4ead355, #0000),
+    radial-gradient(circle 1.4px at 18% 71%, #f4ead344, #0000),
+    radial-gradient(ellipse 9px 1px at 82% 58%, #0000004d, #0000),
+    radial-gradient(circle 1.6px at 41% 86%, #00000066, #0000);
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  body::before { animation: sm-grain 0.5s steps(1) infinite; }
+  body::after  { animation: sm-flicker 7s linear infinite; }
+  html::before { animation: sm-dust 5.3s steps(1) infinite; }
+}
+@keyframes sm-grain {
+  0%   { translate: 0 0; }
+  20%  { translate: -17px 9px; }
+  40%  { translate: 11px -23px; }
+  60%  { translate: -29px -7px; }
+  80%  { translate: 23px 19px; }
+}
+@keyframes sm-flicker {
+  0%, 100% { opacity: 0; }
+  7%  { opacity: 0.018; }
+  9%  { opacity: 0.004; }
+  23% { opacity: 0.012; }
+  24% { opacity: 0.026; }
+  26% { opacity: 0.006; }
+  51% { opacity: 0.015; }
+  53% { opacity: 0.003; }
+  71% { opacity: 0.02; }
+  72% { opacity: 0.008; }
+  88% { opacity: 0.016; }
+}
+@keyframes sm-dust {
+  0%   { opacity: 0; }
+  11%  { opacity: 1;   translate: 0 0; }
+  13%  { opacity: 0; }
+  37%  { opacity: 0.8; translate: -31vw 12vh; }
+  39%  { opacity: 0; }
+  58%  { opacity: 1;   translate: 13vw -20vh; }
+  59%  { opacity: 0.6; translate: 14vw -19vh; }
+  61%  { opacity: 0; }
+  83%  { opacity: 0.9; translate: -8vw 30vh; }
+  85%  { opacity: 0; }
+}
+
+/* ---------------- THE OPENING TITLE CARD ---------------- */
+header.site {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 880px) minmax(0, 1fr);
+  max-width: 1240px;
+  padding: 40px 20px 0;
+  text-align: center;
+}
+/* The frame of the title card (a grid item behind the title + tagline) */
+header.site::before {
+  content: "";
+  grid-column: 2;
+  grid-row: 1 / 3;
+  border: 84px solid;
+  border-image: var(--frame) 48 / 84px stretch;
+  background: radial-gradient(ellipse 70% 65% at 50% 45%, #1e1b16, #0d0c0a 75%);
+  box-shadow: 0 0 0 1px #000, 0 20px 60px #000c;
+}
+header.site h1 {
+  grid-column: 2;
+  grid-row: 1;
+  z-index: 1;
+  margin: 0;
+  padding: 74px 88px 0;
+  font: 400 clamp(3.4rem, 9vw, 6.8rem)/1 var(--font-title);
+  letter-spacing: 0.04em;
+  color: #f3ead6;
+  text-shadow: 0 0 18px #fff3d633;
+}
+/* "The Cascading Picture Corporation presents" */
+header.site h1::before {
+  content: "The Cascading Picture Corporation";
+  display: block;
+  margin-bottom: 2.3rem;
+  font: 400 0.8rem/1.3 var(--font-sc);
+  letter-spacing: 0.32em;
+  color: var(--muted);
+  text-shadow: none;
+}
+header.site h1::after {
+  content: "";
+  display: block;
+  height: 24px;
+  margin: 14px auto 0;
+  max-width: 240px;
+  background: var(--rule) center / contain no-repeat;
+}
+header.site p {
+  grid-column: 2;
+  grid-row: 2;
+  z-index: 1;
+  margin: 0;
+  padding: 10px 104px 84px;
+  font: italic 500 1.35rem/1.4 var(--font-body);
+  color: var(--text);
+  text-wrap: balance;
+}
+header.site p::after {
+  content: "\A\A Passed by the National Board of Review · A Photoplay in Twenty-Four Reels";
+  white-space: pre-line;
+  font: normal 400 0.66rem/1.2 var(--font-sc);
+  letter-spacing: 0.22em;
+  color: var(--muted);
+}
+/* "presents", in script, between the studio line and the title */
+header.site::after {
+  content: "presents";
+  grid-column: 2;
+  grid-row: 1;
+  align-self: start;
+  z-index: 1;
+  padding-top: calc(74px + 1.1rem);
+  font: 400 1.7rem/1 var(--font-script);
+  color: var(--text);
+}
+
+/* Gate weave: the title card drifts by a pixel, as film does in a projector */
+@media (prefers-reduced-motion: no-preference) {
+  header.site::before, header.site::after, header.site h1, header.site p { animation: sm-weave 6s steps(1) infinite; }
+}
+@keyframes sm-weave {
+  0%   { translate: 0 0; }
+  14%  { translate: 0.6px -0.4px; }
+  31%  { translate: -0.4px 0.5px; }
+  47%  { translate: 0.3px 0.8px; }
+  63%  { translate: -0.6px -0.2px; }
+  82%  { translate: 0.2px -0.6px; }
+}
+
+/* ---------------- THEME MENU: a little box-office ticket ---------------- */
+.theme-menu { top: 40px; right: 20px; }
+.theme-menu-button {
+  padding: 7px 16px;
+  color: var(--text);
+  background: var(--panel);
+  border: 3px double #e9dfc6aa;
+  border-radius: 2px;
+  font: 400 0.82rem var(--font-sc);
+  letter-spacing: 0.18em;
+}
+.theme-menu-button::before { content: "❦ "; color: var(--accent); }
+.theme-menu-button::after { content: " ▾"; color: var(--muted); }
+.theme-menu-button:hover { border-color: var(--text); }
+.theme-menu-pop {
+  min-width: 240px;
+  padding: 8px;
+  background: #0c0b09;
+  border: 3px double #e9dfc6aa;
+  border-radius: 2px;
+  box-shadow: 0 18px 50px #000e;
+  font: 500 1.05rem/1.3 var(--font-body);
+}
+.theme-menu-pop button { border-radius: 0; padding: 6px 10px; }
+.theme-menu-pop button:hover { background: #e9dfc614; }
+.theme-menu-list button[aria-pressed="true"] { color: var(--accent); font-weight: 600; }
+.theme-menu-list button[aria-pressed="true"]::after { content: " ◆"; font-size: 0.7em; vertical-align: 0.1em; }
+.theme-menu-list button.is-custom::after { font-style: italic; }
+.theme-menu-customize { border-top: 1px solid #e9dfc633 !important; font: 400 0.8rem var(--font-sc) !important; letter-spacing: 0.15em; }
+
+/* ---------------- FILTER BAR: the programme line ---------------- */
+.filter-bar {
+  grid-column: 1 / -1;
+  grid-row: 3;
+  justify-content: center;
+  gap: 12px 18px;
+  margin: 30px auto 0;
+  width: 100%;
+  max-width: 1200px;
+  padding: 12px 6px;
+  background: none;
+  border: 0;
+  border-block: 1px solid #e9dfc633;
+  border-radius: 0;
+  color: var(--muted);
+  font: 400 0.8rem var(--font-sc);
+  letter-spacing: 0.14em;
+}
+.filter-bar input[type="search"] {
+  flex: 0 1 260px;
+  padding: 5px 4px;
+  color: var(--text);
+  background: none;
+  border: 0;
+  border-bottom: 1px solid #e9dfc666;
+  border-radius: 0;
+  font: italic 500 1.05rem var(--font-body);
+  letter-spacing: 0.02em;
+}
+.filter-bar input[type="search"]::placeholder { color: #a49b8899; }
+.filter-bar input[type="search"]:focus { outline: 0; border-bottom-color: var(--accent); }
+.filter-chips { order: 3; flex-basis: 100%; justify-content: center; gap: 6px; }
+.filter-chips label {
+  padding: 3px 12px;
+  color: var(--muted);
+  border: 1px solid #e9dfc626;
+  border-radius: 2px;
+  transition: color 0.2s, border-color 0.2s;
+}
+.filter-chips label:hover { color: var(--text); border-color: #e9dfc680; }
+/* The chosen reel: inverted, cream card with black lettering */
+.filter-chips input:checked + label { color: #0c0b09; background: var(--text); border-color: var(--text); }
+.filter-chips input:focus-visible + label { outline: 1px solid var(--accent); outline-offset: 3px; }
+.filter-count { margin-left: 0; font: italic 500 1rem var(--font-body); letter-spacing: 0.02em; }
+.filter-count::before { content: "— "; }
+.filter-count::after { content: " —"; }
+
+/* Narrow header: the reels collapse to a one-line dropdown */
+@container site (width < 960px) {
+  .filter-chips {
+    order: 0;
+    flex-basis: auto;
+    position: relative;
+    z-index: 6;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    gap: 0;
+    width: 13em;
+    height: 2.05em;
+    overflow: visible;
+  }
+  .filter-chips label { display: none; padding: 4px 12px; white-space: nowrap; text-align: left; background: #0c0b09; border-radius: 0; }
+  .filter-chips label + input + label { border-top-width: 0; }
+  .filter-chips input:checked + label { display: block; }
+  .filter-chips input:checked + label::before { content: "Reel: "; opacity: 0.6; }
+  .filter-chips input:checked + label::after { content: "▾"; float: right; margin-left: 10px; }
+  .filter-chips:is(:hover, :has(input:focus-visible)) label { display: block; border-color: #e9dfc640; box-shadow: 0 12px 30px #000c; }
+  .filter-chips:is(:hover, :has(input:focus-visible)) input:checked + label::before { content: none; }
+  .filter-chips:is(:hover, :has(input:focus-visible)) input:checked + label::after { content: "◆"; }
+}
+
+/* ---------------- THE GALLERY: a programme of intertitles ---------------- */
+main.gallery {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 500px), 1fr));
+  gap: 34px 30px;
+  max-width: 1240px;
+  padding: 34px 20px 90px;
+  counter-reset: scene;
+}
+main.gallery::after {
+  content: "The End";
+  grid-column: 1 / -1;
+  justify-self: center;
+  margin-top: 30px;
+  padding: 30px 70px 34px;
+  border: 40px solid;
+  border-image: var(--frame) 48 / 40px stretch;
+  background: radial-gradient(ellipse at 50% 45%, #1e1b16, #0c0b09 75%);
+  font: 400 2.4rem/1 var(--font-title);
+  letter-spacing: 0.06em;
+  color: #f3ead6;
+}
+
+/* Each card is an intertitle card: black, framed, lettering centred */
+.demo {
+  position: relative;
+  overflow: visible;
+  text-align: center;
+  background: radial-gradient(ellipse 80% 70% at 50% 40%, #1c1915, #0c0b09 74%);
+  border: var(--card-frame) solid;
+  border-image: var(--frame) 48 / var(--card-frame) stretch;
+  border-radius: 0;
+  box-shadow: 0 0 0 1px #000, 0 14px 40px #000a;
+  counter-increment: scene;
+  transition: box-shadow 0.5s;
+}
+/* A cartouche breaking the top rule: Scene I, Scene II … */
+.demo::before {
+  content: "Scene " counter(scene, upper-roman);
+  position: absolute;
+  top: calc(var(--card-frame) * -1 + var(--card-frame) * 0.15);
+  left: 50%;
+  translate: -50% -50%;
+  padding: 1px 12px;
+  background: #0d0c0a;
+  border: 1px solid #e9dfc659;
+  font: 400 0.68rem/1.4 var(--font-sc);
+  letter-spacing: 0.24em;
+  white-space: nowrap;
+  color: var(--muted);
+}
+.demo > h2 {
+  padding: 2px 10px 0;
+  font: 400 clamp(1.7rem, 3vw, 2.15rem)/1.1 var(--font-heading);
+  color: #f3ead6;
+  text-wrap: balance;
+}
+/* the small rule ornament under every title */
+.demo > h2::after {
+  content: "";
+  display: block;
+  height: 14px;
+  max-width: 150px;
+  margin: 8px auto 4px;
+  background: var(--rule) center / contain no-repeat;
+  opacity: 0.8;
+}
+/* "featuring": the tags as the billed cast */
+.demo .tags { justify-content: center; align-items: baseline; gap: 2px 0; padding: 0 10px 2px; }
+.demo .tags::before {
+  content: "featuring";
+  flex-basis: 100%;
+  font: 400 1.25rem/1 var(--font-script);
+  color: var(--muted);
+}
+.demo .tags code {
+  padding: 0;
+  font: 400 0.95rem var(--font-mono);
+  color: var(--text);
+  background: none;
+  border: 0;
+  border-radius: 0;
+}
+.demo .tags code + code::before { content: "\00a0·\00a0"; color: var(--muted); }
+.demo .credit {
+  padding: 4px 10px 14px;
+  font: italic 500 0.98rem var(--font-body);
+  color: var(--muted);
+}
+.demo .credit a { color: var(--text); text-decoration-color: #e9dfc666; }
+.demo .credit a:hover { color: var(--accent); }
+
+/* The scene: the live demo in a rounded film gate. Tinted like a nitrate
+   print until the card is hovered or focused, then it comes up in colour. */
+.preview {
+  margin: 0 4px 2px;
+  border: 1px solid #e9dfc659;
+  border-radius: 14px / 12px;
+  box-shadow: 0 0 0 4px #050404, 0 0 0 5px #e9dfc62e;
+  filter: sepia(0.8) saturate(0.75) contrast(1.06) brightness(0.92);
+  transition: filter 0.9s ease;
+}
+/* vignette over the scene (purely visual; clicks pass through) */
+.preview::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  border-radius: inherit;
+  background:
+    radial-gradient(ellipse 75% 70% at 50% 50%, #0000 55%, #0000008c 100%);
+  transition: opacity 0.9s ease;
+}
+main.gallery .demo:is(:hover, :focus-within) .preview { filter: none; }
+main.gallery .demo:is(:hover, :focus-within) .preview::after { opacity: 0.35; }
+main.gallery .demo:hover { box-shadow: 0 0 0 1px #000, 0 14px 40px #000a, 0 0 60px #fff1d014; }
+main.gallery .demo:focus-visible { outline: 1px solid var(--accent); outline-offset: 6px; }
+
+/* Cards fade up from black as they come into view, like a fade-in shot */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    main.gallery .demo {
+      animation: sm-fade-in-shot linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 60%;
+    }
+  }
+}
+@keyframes sm-fade-in-shot { from { opacity: 0; } }
+
+/* Filtered or searched: no nth-child layout to break, but keep the grid's
+   columns from stretching a lone card across the whole programme */
+body:has(#feat-all:not(:checked)) main.gallery,
+main.gallery:has(> .demo[hidden]) {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 480px), 555px));
+  justify-content: center;
+}
+
+/* ---------------- NARROW SCREENS ---------------- */
+@media (max-width: 1240px) {
+  header.site { padding-top: 72px; }
+  .theme-menu { top: 18px; }
+}
+@media (max-width: 1000px) {
+  header.site { grid-template-columns: 0 minmax(0, 1fr) 0; }
+}
+@media (max-width: 640px) {
+  :root { --card-frame: 34px; }
+  header.site { padding-inline: 12px; }
+  header.site::before { border-width: 44px; border-image-width: 44px; }
+  header.site h1 { padding: 40px 40px 0; font-size: clamp(2.6rem, 13vw, 3.6rem); }
+  header.site h1::before { font-size: 0.62rem; letter-spacing: 0.2em; }
+  header.site p { padding: 8px 46px 46px; font-size: 1.1rem; }
+  header.site p::after { content: "\A\A Passed by the National Board of Review"; }
+  header.site::after { padding-top: calc(40px + 1rem); font-size: 1.4rem; }
+  header.site h1::before { margin-bottom: 2rem; }
+  main.gallery { padding-inline: 12px; gap: 26px; }
+  main.gallery::after { padding: 16px 30px 18px; border-width: 30px; border-image-width: 30px; font-size: 1.8rem; }
+  .demo > h2 { font-size: 1.6rem; }
+  .demo::before { font-size: 0.6rem; letter-spacing: 0.16em; }
+  .preview { margin-inline: 0; }
+}
+
+/* ---------------- THE FULL VIEW: iris in ---------------- */
+.card-modal {
+  width: min(1060px, 94vw);
+  max-height: 94vh;
+  padding: 18px;
+  color: var(--text);
+  background: #070605;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+.card-modal::backdrop { background: #000; backdrop-filter: none; }
+/* A circle opens from black, as the old cameras' iris diaphragm did */
+@media (prefers-reduced-motion: no-preference) {
+  .card-modal[open] { animation: sm-iris-in 1.2s cubic-bezier(0.45, 0, 0.3, 1) backwards; }
+  .card-modal[open]::backdrop { animation: sm-to-black 0.35s ease-out both; }
+  .card-modal[open] .demo { animation: sm-projector-warmup 1.1s ease-out both; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .card-modal[open] { animation: sm-to-black 0.3s ease-out; }
+}
+@keyframes sm-iris-in {
+  from { clip-path: circle(0% at 50% 42%); }
+  to   { clip-path: circle(110% at 50% 42%); }
+}
+@keyframes sm-to-black { from { opacity: 0; } }
+/* the lamp comes up as the iris opens: a little brighter, then settles */
+@keyframes sm-projector-warmup {
+  0%   { filter: brightness(0.4); }
+  55%  { filter: brightness(1.25); }
+  62%  { filter: brightness(0.95); }
+  70%  { filter: brightness(1.1); }
+  100% { filter: none; }
+}
+
+/* The opened card keeps its intertitle frame (_base.css removes card borders here) */
+.card-modal .demo {
+  border: var(--card-frame) solid;
+  border-image: var(--frame) 48 / var(--card-frame) stretch;
+  background: radial-gradient(ellipse 80% 60% at 50% 30%, #1e1b16, #0c0b09 74%);
+  overflow: visible;
+  cursor: auto;
+}
+.card-modal .demo::before { content: "Now Showing"; }
+.card-modal .demo > h2 { padding: 4px 50px 0; font-size: clamp(2rem, 4.5vw, 3.1rem); }
+.card-modal .preview,
+.card-modal .demo:hover .preview { min-height: 400px; filter: none; }
+.card-modal .preview::after { opacity: 0.3; }
+
+/* Instructions: a dialogue title card, in quotes */
+.card-modal .instructions {
+  max-width: 62ch;
+  margin: 0 auto 18px;
+  padding: 0 16px;
+  background: none;
+  border: 0;
+  border-radius: 0;
+  font: italic 500 1.2rem/1.45 var(--font-body);
+  color: var(--text);
+  text-wrap: balance;
+}
+.card-modal .instructions::before {
+  content: "Try it";
+  display: block;
+  margin-bottom: 2px;
+  font: normal 400 0.72rem var(--font-sc);
+  letter-spacing: 0.28em;
+  color: var(--accent);
+}
+
+.card-modal-close {
+  top: 12px;
+  margin: 4px 4px -44px 0;
+  width: 40px;
+  height: 40px;
+  color: var(--text);
+  background: #0c0b09;
+  border: 3px double #e9dfc6aa;
+  font: 400 1rem var(--font-sc);
+}
+.card-modal-close:hover { color: var(--accent); border-color: var(--accent); }
+
+/* Editing tools: projectionist's notes */
+.tools { padding: 14px 6px 4px; text-align: left; }
+.tools summary {
+  width: max-content;
+  color: var(--muted);
+  font: 400 0.8rem var(--font-sc);
+  letter-spacing: 0.2em;
+}
+.tools summary:hover { color: var(--text); }
+.tools textarea, .tools pre {
+  background: var(--code-bg);
+  color: var(--code-text);
+  border: 1px solid #e9dfc633;
+  border-radius: 2px;
+  font: 13.5px/1.5 var(--font-mono);
+}
+.tools textarea:focus { outline: 1px solid #e9dfc680; }
+.tools button {
+  color: var(--muted);
+  background: #0c0b09;
+  border: 1px solid #e9dfc659;
+  border-radius: 2px;
+  font: 400 0.72rem var(--font-sc);
+  letter-spacing: 0.14em;
+}
+.tools button:hover { color: var(--text); border-color: var(--text); }

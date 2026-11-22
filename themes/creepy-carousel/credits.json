@@ -1,0 +1,20 @@
+[
+  {
+    "file": "img/horse-mask.webp",
+    "title": "Carousel Horse (c. 1941), Index of American Design",
+    "author": "John W. Kelleher (National Gallery of Art, NGA 20307)",
+    "source_url": "https://commons.wikimedia.org/w/index.php?curid=82097866",
+    "license": "CC0 1.0 (public domain dedication by the National Gallery of Art)",
+    "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "changes": "Background paper removed by flood fill from the edges (ImageMagick, fuzz 16%), small specks removed, converted to a solid black silhouette with alpha for use as a CSS mask-image, trimmed, resized to 420px, lossless WebP."
+  },
+  {
+    "file": "img/ghost-horse.webp",
+    "title": "Carousel Horse (c. 1938), Index of American Design",
+    "author": "Henry Murphy (National Gallery of Art, NGA 29195)",
+    "source_url": "https://commons.wikimedia.org/w/index.php?curid=82168690",
+    "license": "CC0 1.0 (public domain dedication by the National Gallery of Art)",
+    "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "changes": "Background paper removed (edge flood fill + removal of paper-coloured pixels, ImageMagick), converted to greyscale, contrast raised, tinted teal, trimmed, resized to 640px, WebP q72."
+  }
+]

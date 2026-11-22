@@ -1,0 +1,20 @@
+[
+  {
+    "file": "img/treeline.webp",
+    "title": "Pale treeline (Unsplash)",
+    "author": "Cole Patrick",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Pale_treeline_(Unsplash).jpg",
+    "license": "CC0 1.0",
+    "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "changes": "Cropped to the treeline, converted to greyscale and inverted, levels raised so the sky drops out and the far trees stay part-transparent, used as the alpha channel of a solid near-black fill; resized to 1100px and joined to a mirrored copy so it tiles; WebP with alpha."
+  },
+  {
+    "file": "img/dead-tree.webp",
+    "title": "Lodgepole pine silhouetted in morning fog at Pebble Creek",
+    "author": "NPS / Jim Peaco (Yellowstone National Park)",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Lodgepole_pine_silhouetted_in_morning_fog_at_Pebble_Creek_(302ba736-cec2-4a2b-9c7b-4fb3c71ec561).jpg",
+    "license": "Public domain (work of the U.S. National Park Service)",
+    "license_url": "https://commons.wikimedia.org/wiki/Template:PD-USGov-NPS",
+    "changes": "Cropped to the tree, greyscale, the fog removed by subtracting a blurred copy (high-pass) and levelling, used as the alpha channel of a solid near-black fill, faded out at the top and towards the ground; resized to 420px; WebP with alpha."
+  }
+]

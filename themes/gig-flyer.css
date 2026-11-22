@@ -1,0 +1,855 @@
+/* GIG FLYER: a telephone pole on a Friday night, 1988.
+   Mood from an image search for "punk gig flyer xerox": photocopied black
+   and white flyers on coloured stock, one fluoro spot colour, cut-out
+   ransom-note lettering, marker scrawl, typed details, tape and staples,
+   everything layered on a pole full of old staples.
+
+   - The wall: a real stapled utility pole (CC0 photo, greyscale, tiled),
+     darkened with a multiply blend.
+   - Flyers: each card is a different flyer (white / fluoro pink / black /
+     over-toned grey stock), tilted, taped or stapled on, torn at the bottom
+     (clip-path), with toner grain in pure CSS and a different band-name
+     lettering per flyer. Hover straightens a flyer so its demo is easy to use.
+   - Ransom-note title: the title font is monospaced, so each letter sits in
+     a 1ch cell; a cut-out box is drawn behind each cell (::before) and each
+     letter gets its own ink colour (background-clip: text).
+   - Dates and tear-off footers come from a CSS counter and a custom
+     @counter-style of weekdays ("SAT 08").
+   - Opening a flyer slaps it onto the wall: it drops fast, overshoots,
+     thuds flat, and the staples punch in. */
+@import url("_base.css");
+@import url("https://fonts.googleapis.com/css2?family=Rubik+Mono+One&family=Rubik+Dirt&family=Permanent+Marker&family=Archivo+Narrow:ital,wght@0,400;0,600;0,700;1,400&family=Special+Elite&family=Courier+Prime:wght@400;700&family=Bowlby+One+SC&family=UnifrakturCook:wght@700&family=Big+Shoulders+Stencil+Display:wght@900&display=swap");
+
+:root {
+  color-scheme: light;
+  --bg: #4a4845;          /* the pole, before the photo darkens it */
+  --panel: #f2f0e9;       /* photocopy paper */
+  --line: #121212;
+  --text: #121212;        /* toner */
+  --muted: #4f4c47;
+  --accent: #ff2e88;      /* the one spot colour: fluoro pink */
+  --code-bg: #faf8f2;
+  --code-text: #121212;
+  --radius: 0px;
+  --font-heading: "Rubik Dirt", "Bowlby One SC", sans-serif;
+  --font-body: "Archivo Narrow", sans-serif;
+  --font-mono: "Courier Prime", monospace;
+  --font-ransom: "Rubik Mono One", sans-serif;
+  --font-marker: "Permanent Marker", cursive;
+  --font-typed: "Special Elite", monospace;
+
+  /* Toner grain + photocopy edge shadow, for dark ink on light paper.
+     Prime-sized tiles so the specks never visibly repeat. */
+  --toner:
+    radial-gradient(circle, #00000017 0.6px, #0000 1.2px) 0 0 / 7px 11px,
+    radial-gradient(circle, #00000014 0.9px, #0000 1.5px) 3px 4px / 13px 17px,
+    radial-gradient(circle, #00000030 1.1px, #0000 1.7px) 5px 9px / 29px 23px,
+    radial-gradient(circle, #00000026 0.8px, #0000 1.4px) 17px 6px / 53px 43px,
+    radial-gradient(ellipse 0.8px 7px, #00000024, #0000) 0 0 / 41px 37px,
+    radial-gradient(circle, #00000047 1.4px, #0000 2px) 11px 2px / 89px 61px,
+    linear-gradient(90deg, #0000 0 61%, #00000008 61.3% 61.6%, #0000 62%),
+    linear-gradient(to right, #00000033, #0000 3.5%, #0000 97%, #0000001a),
+    linear-gradient(to bottom, #0000001f, #0000 2.5%);
+  /* The same for a reversed (black) flyer: dust and paper showing through */
+  --toner-light:
+    radial-gradient(circle, #ffffff21 0.6px, #0000 1.2px) 0 0 / 7px 11px,
+    radial-gradient(circle, #ffffff17 0.9px, #0000 1.5px) 3px 4px / 13px 17px,
+    radial-gradient(circle, #ffffff2e 1.1px, #0000 1.7px) 5px 9px / 29px 23px,
+    radial-gradient(ellipse 0.8px 7px, #ffffff1c, #0000) 0 0 / 41px 37px,
+    linear-gradient(90deg, #0000 0 38%, #ffffff0d 38.3% 38.6%, #0000 39%),
+    linear-gradient(to right, #ffffff14, #0000 3%);
+  /* Masking tape: translucent, a few fibres */
+  --tape:
+    repeating-linear-gradient(90deg, #ffffff12 0 1px, #0000 1px 5px),
+    linear-gradient(#f1e7cbd0, #e4d7b2c8);
+}
+
+/* Weekday names for the dates on each flyer: counter(gig, gigday) */
+@counter-style gigday {
+  system: cyclic;
+  symbols: "FRI" "SAT" "SUN" "MON" "TUE" "WED" "THU";
+}
+
+/* ---------------- THE WALL ---------------- */
+body {
+  font-size: 16px;
+  background:
+    /* a street light from above, falling off at the sides */
+    radial-gradient(ellipse 70% 60% at 50% 0%, #ffffff1a, #0000 70%) fixed,
+    radial-gradient(ellipse 120% 90% at 50% 40%, #0000 55%, #0000008c) fixed,
+    url("gig-flyer/img/pole.webp") 0 0 / 400px auto,
+    var(--bg);
+  background-blend-mode: normal, normal, multiply, normal;
+}
+::selection { background: var(--accent); color: #121212; }
+
+/* ---------------- HEADER ---------------- */
+header.site {
+  z-index: 10;   /* above the tilted flyers (each is its own stacking context) */
+  isolation: isolate;
+  overflow-x: clip;
+  max-width: 1360px;
+  padding: 44px 30px 6px;
+}
+/* An old council stencil on the pole behind everything */
+header.site::before {
+  content: "POST NO BILLS" / "";
+  position: absolute;
+  z-index: -2;
+  top: 14px;
+  right: 230px;
+  font: 900 clamp(3rem, 8vw, 6.5rem)/0.9 "Big Shoulders Stencil Display", sans-serif;
+  letter-spacing: 0.04em;
+  color: #ffffff17;
+  rotate: -1deg;
+  pointer-events: none;
+}
+
+/* Ransom-note title. Each letter is a 1ch cell (monospaced font) plus
+   letter-spacing; ::before cuts out a paper box per cell, and the h1's own
+   background is clipped to the text so each letter gets its own ink. */
+header.site h1 {
+  --a: calc(1ch + 0.16em);   /* one letter's advance */
+  position: relative;
+  width: fit-content;
+  margin: 0 0 0 4px;
+  padding: 0.12em 0.1em 0.1em 0.12em;
+  font: 400 clamp(2.6rem, 7.4vw, 5.6rem)/1 var(--font-ransom);
+  letter-spacing: 0.16em;
+  white-space: nowrap;
+  color: transparent;
+  background:
+    linear-gradient(#121212 0 0) calc(var(--a) * 0) 0 / var(--a) 100% no-repeat,
+    linear-gradient(var(--accent) 0 0) calc(var(--a) * 1) 0 / var(--a) 100% no-repeat,
+    linear-gradient(#f2f0e9 0 0) calc(var(--a) * 2) 0 / var(--a) 100% no-repeat,
+    linear-gradient(#121212 0 0) calc(var(--a) * 4) 0 / var(--a) 100% no-repeat,
+    linear-gradient(#121212 0 0) calc(var(--a) * 5) 0 / var(--a) 100% no-repeat,
+    linear-gradient(#f2f0e9 0 0) calc(var(--a) * 6) 0 / var(--a) 100% no-repeat;
+  background-origin: content-box;
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+/* The cut-out boxes: each a different paper, size and offset */
+header.site h1::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  padding: inherit;
+  background:
+    var(--toner),
+    linear-gradient(#f2f0e9 0 0) calc(var(--a) * 0 - 0.1em) 0.03em / calc(var(--a) + 0.02em) 1.12em no-repeat,
+    linear-gradient(#121212 0 0) calc(var(--a) * 1 - 0.06em) 0.11em / calc(var(--a) - 0.04em) 1.02em no-repeat,
+    linear-gradient(#121212 0 0) calc(var(--a) * 2 - 0.08em) -0.05em / calc(var(--a) + 0.04em) 1.22em no-repeat,
+    linear-gradient(var(--accent) 0 0) calc(var(--a) * 4 - 0.1em) 0.06em / calc(var(--a) - 0.02em) 1.1em no-repeat,
+    linear-gradient(#cfccc4 0 0) calc(var(--a) * 5 - 0.07em) 0.15em / calc(var(--a) - 0.02em) 0.98em no-repeat,
+    linear-gradient(#121212 0 0) calc(var(--a) * 6 - 0.09em) 0 / calc(var(--a) + 0.03em) 1.16em no-repeat;
+  background-origin: content-box;
+  /* scissor-cut edges: a slightly ragged outline */
+  clip-path: polygon(0 3%, 12% 0, 31% 4%, 52% 0, 74% 3%, 100% 1%, 99% 52%, 100% 97%, 81% 100%, 60% 96%, 38% 100%, 17% 97%, 1% 100%, 0 50%);
+}
+/* Marker scrawl next to the title */
+header.site h1::after {
+  content: "live! no JS!" / "";
+  position: absolute;
+  left: calc(100% + 0.2em);
+  bottom: -0.15em;
+  font: 400 0.32em/1 var(--font-marker);
+  letter-spacing: 0;
+  white-space: nowrap;
+  color: var(--accent);
+  rotate: -9deg;
+  text-shadow: 1px 1px 0 #0008;
+}
+
+/* Tagline: a strip of typed paper with a bit of tape */
+header.site p {
+  position: relative;
+  width: fit-content;
+  max-width: min(100%, 640px);
+  margin: 18px 0 0 10px;
+  padding: 8px 14px 7px;
+  color: #121212;
+  background: var(--toner), #f2f0e9;
+  font: 400 1.02rem/1.4 var(--font-typed);
+  rotate: 0.7deg;
+  box-shadow: 1px 3px 6px #0007;
+}
+header.site p::before {
+  content: "";
+  position: absolute;
+  top: -9px;
+  left: -14px;
+  width: 64px;
+  height: 22px;
+  background: var(--tape);
+  rotate: -28deg;
+  clip-path: polygon(0 8%, 8% 0, 14% 12%, 22% 0, 100% 0, 94% 30%, 100% 55%, 93% 100%, 0 100%, 5% 60%);
+}
+
+/* ---------------- FILTER BAR: a strip of gaffer tape with a set list on it ---------------- */
+.filter-bar {
+  position: relative;
+  gap: 10px 22px;
+  margin: 26px 8px 0;
+  padding: 10px 22px;
+  color: #f2f0e9;
+  background:
+    repeating-linear-gradient(0deg, #ffffff07 0 1px, #0000 1px 3px),
+    repeating-linear-gradient(90deg, #ffffff06 0 1px, #0000 1px 4px),
+    linear-gradient(#ffffff12, #0000 40%, #00000040),
+    #1b1b1b;
+  border: 0;
+  border-radius: 0;
+  box-shadow: 0 3px 8px #0009;
+  rotate: -0.4deg;
+  font: 400 0.95rem var(--font-typed);
+}
+/* torn tape ends (zigzags drawn outside the bar, so nothing is clipped) */
+.filter-bar::before,
+.filter-bar::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 5px;
+  pointer-events: none;
+}
+.filter-bar::before { right: 100%; background: conic-gradient(from 45deg at 0 50%, #1b1b1b 90deg, #0000 0) 0 0 / 10px 9px repeat-y; }
+.filter-bar::after { left: 100%; background: conic-gradient(from 225deg at 100% 50%, #1b1b1b 90deg, #0000 0) 100% 0 / 10px 9px repeat-y; }
+
+/* Search: a strip of masking tape you write on in marker */
+.filter-bar input[type="search"] {
+  flex: 0 1 240px;
+  max-width: 260px;
+  padding: 5px 12px;
+  color: #121212;
+  background: var(--tape);
+  border: 0;
+  border-radius: 0;
+  font: 400 1.05rem/1.2 var(--font-marker);
+  rotate: 0.8deg;
+  clip-path: polygon(0 6%, 3% 0, 97% 4%, 100% 0, 98% 48%, 100% 100%, 4% 96%, 0 100%, 2% 50%);
+}
+.filter-bar input[type="search"]::placeholder { color: #121212a0; }
+.filter-bar input[type="search"]:focus { outline: none; background: linear-gradient(var(--accent) 0 0) 0 100% / 100% 3px no-repeat, var(--tape); }
+
+/* The set list gets its own line on the tape; search + count sit above it */
+.filter-chips { order: 3; flex-basis: 100%; gap: 4px 14px; padding-top: 2px; border-top: 1px dashed #f2f0e930; }
+.filter-chips label {
+  padding: 2px 6px;
+  color: #f2f0e9;
+  border: 2px solid #0000;
+  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+  font: 400 1.08rem/1.2 var(--font-marker);
+  letter-spacing: 0.01em;
+}
+.filter-chips label:hover { color: var(--accent); border-color: #0000; }
+/* The chosen song: circled in pink marker */
+.filter-chips input:checked + label {
+  color: #f2f0e9;
+  background: none;
+  border-color: var(--accent);
+  rotate: -2deg;
+}
+.filter-chips input:focus-visible + label { outline: 2px dashed var(--accent); outline-offset: 3px; }
+.filter-count {
+  margin-left: auto;
+  color: #f2f0e9b8;
+  font: 400 0.85rem var(--font-typed);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* Narrow header: the set list becomes a pick-one dropdown on its own tape */
+@container site (width < 1050px) {
+  .filter-chips {
+    order: 0;
+    flex-basis: auto;
+    padding-top: 0;
+    border-top: 0;
+    position: relative;
+    z-index: 6;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    gap: 0;
+    width: 11em;
+    height: 2.2em;
+    overflow: visible;
+  }
+  .filter-chips label {
+    display: none;
+    padding: 5px 12px;
+    white-space: nowrap;
+    color: #f2f0e9;
+    background: #1b1b1b;
+    border: 0;
+    border-radius: 0;
+    rotate: none;
+  }
+  .filter-chips input:checked + label {
+    display: block;
+    color: #f2f0e9;
+    background: #1b1b1b;
+    border: 2px solid var(--accent);
+    border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+    rotate: none;
+  }
+  .filter-chips input:checked + label::after { content: "▾"; float: right; margin-left: 10px; color: var(--accent); }
+  .filter-chips:is(:hover, :has(input:focus-visible)) label {
+    display: block;
+    border: 0;
+    border-radius: 0;
+    box-shadow: 0 10px 18px #0007;
+  }
+  .filter-chips:is(:hover, :has(input:focus-visible)) label + input + label { border-top: 1px dashed #f2f0e930; }
+  .filter-chips:is(:hover, :has(input:focus-visible)) input:checked + label { color: var(--accent); }
+  .filter-chips:is(:hover, :has(input:focus-visible)) input:checked + label::after { content: "✓"; }
+}
+
+/* ---------------- THEME MENU: a ticket stub, opening to a set list ---------------- */
+.theme-menu { top: 30px; right: 30px; }
+.theme-menu-button {
+  position: relative;
+  display: block;
+  padding: 8px 16px 8px 22px;
+  color: #121212;
+  background:
+    var(--toner),
+    var(--accent);
+  border: 0;
+  border-radius: 0;
+  font: 400 1rem/1.1 var(--font-ransom);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  rotate: 3deg;
+  box-shadow: 2px 4px 8px #0008;
+  /* perforated left edge (punched holes) */
+  -webkit-mask: radial-gradient(circle 3.5px at 0 50%, #0000 97%, #000) 0 0 / 100% 10px;
+  mask: radial-gradient(circle 3.5px at 0 50%, #0000 97%, #000) 0 0 / 100% 10px;
+}
+.theme-menu-button::before {
+  content: "Admit one · " / "";
+  display: block;
+  margin-bottom: 2px;
+  font: 400 0.62rem var(--font-typed);
+  letter-spacing: 0.14em;
+}
+.theme-menu-button::after { content: " ▾"; color: #121212; }
+.theme-menu-button:hover { border: 0; background: var(--toner), #ff5aa3; }
+.theme-menu[open] .theme-menu-button { rotate: 0deg; }
+.theme-menu-button:focus-visible { outline: 3px dashed #f2f0e9; outline-offset: 3px; }
+
+.theme-menu-pop {
+  top: calc(100% + 10px);
+  min-width: 250px;
+  padding: 16px 12px 12px;
+  color: #121212;
+  background:
+    /* ruled lines of a torn-out notebook page */
+    repeating-linear-gradient(#0000 0 31px, #2b6cb030 31px 32px) 0 44px / 100% auto,
+    var(--toner),
+    #f6f4ee;
+  border: 0;
+  border-radius: 0;
+  box-shadow: 3px 8px 20px #000a;
+  rotate: -1deg;
+  font: 400 1.1rem/1.2 var(--font-marker);
+}
+.theme-menu-pop::before {
+  content: "";
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  width: 90px;
+  height: 24px;
+  translate: -50% 0;
+  rotate: 3deg;
+  background: var(--tape);
+}
+.theme-menu-list { counter-reset: song; }
+.theme-menu-list::before {
+  content: "SET LIST" / "";
+  display: block;
+  margin: 0 0 6px 10px;
+  font: 400 0.8rem var(--font-ransom);
+  letter-spacing: 0.12em;
+}
+.theme-menu-pop button {
+  padding: 4px 10px;
+  border-radius: 0;
+  line-height: 24px;
+}
+.theme-menu-list li { counter-increment: song; }
+.theme-menu-list button::before { content: counter(song) ". "; color: var(--muted); }
+.theme-menu-pop button:hover { background: none; color: var(--accent); }
+/* Tonight's song: highlighted in pink */
+.theme-menu-list button[aria-pressed="true"] {
+  font-weight: 400;
+  color: #121212;
+  background: linear-gradient(#0000 12%, #ff2e8899 12% 88%, #0000 88%);
+}
+.theme-menu-list button[aria-pressed="true"]::after { content: " ★"; }
+.theme-menu-list button.is-custom::after { content: " (yours)"; color: var(--muted); }
+.theme-menu-list button.is-custom[aria-pressed="true"]::after { content: " (yours) ★"; }
+.theme-menu-customize {
+  margin-top: 6px;
+  border-top: 2px dashed #121212 !important;
+  color: #121212 !important;
+  font: 400 0.95rem var(--font-typed) !important;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.theme-menu-customize::before { content: "Encore → "; color: var(--accent); }
+
+/* ---------------- THE POLE: flyers ---------------- */
+main.gallery {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 400px), 1fr));
+  grid-auto-flow: dense;
+  align-items: start;
+  gap: 58px 36px;
+  max-width: 1360px;
+  padding: 46px 30px 90px;
+  counter-reset: gig 6;
+  overflow-x: clip;   /* tape overhanging the outer flyers never scrolls the page sideways */
+}
+
+/* Every flyer: paper, ink and a highlight colour it can swap */
+.demo {
+  --paper: #f2f0e9;
+  --ink: #121212;
+  --hi: var(--accent);
+  --on-hi: #121212;
+  --grain: var(--toner);
+  --tilt: -1.2deg;
+  position: relative;
+  overflow: visible;
+  color: var(--ink);
+  background: var(--grain), var(--paper);
+  border: 0;
+  border-radius: 0;
+}
+main.gallery .demo {
+  counter-increment: gig;
+  rotate: var(--tilt);
+  translate: 0 var(--drop, 0px);
+  box-shadow: 2px 5px 12px #000a, 0 1px 2px #0008;
+  /* torn along the bottom; the polygon reaches past the top and sides so
+     tape and the shadow still show */
+  clip-path: var(--torn);
+  --torn: polygon(-30px -40px, calc(100% + 30px) -40px, calc(100% + 30px) calc(100% - 4px), 97% calc(100% - 3px), 93% calc(100% - 9px), 88% calc(100% - 2px), 84% calc(100% - 7px), 79% 100%, 74% calc(100% - 6px), 70% calc(100% - 1px), 65% calc(100% - 8px), 60% calc(100% - 3px), 55% calc(100% - 7px), 50% calc(100% - 1px), 45% calc(100% - 6px), 40% 100%, 35% calc(100% - 8px), 30% calc(100% - 2px), 25% calc(100% - 6px), 20% 100%, 15% calc(100% - 7px), 10% calc(100% - 2px), 5% calc(100% - 9px), 0% calc(100% - 3px), -30px calc(100% - 3px));
+  transition: rotate 0.25s ease-out, translate 0.25s ease-out, box-shadow 0.25s;
+}
+/* Some have a corner torn off instead */
+main.gallery .demo:nth-child(3n+2) {
+  --torn: polygon(-30px -40px, calc(100% + 30px) -40px, calc(100% + 30px) calc(100% - 66px), 100% calc(100% - 64px), calc(100% - 7px) calc(100% - 52px), calc(100% - 15px) calc(100% - 47px), calc(100% - 21px) calc(100% - 33px), calc(100% - 31px) calc(100% - 26px), calc(100% - 38px) calc(100% - 13px), calc(100% - 48px) calc(100% - 9px), calc(100% - 55px) 100%, calc(100% - 55px) calc(100% + 30px), -30px calc(100% + 30px));
+}
+/* ...and some are whole sheets */
+main.gallery .demo:nth-child(3n) {
+  --torn: polygon(-30px -40px, calc(100% + 30px) -40px, calc(100% + 30px) calc(100% + 30px), -30px calc(100% + 30px));
+}
+
+/* Stock: white copies, fluoro pink, a reversed black one, an over-toned grey */
+main.gallery .demo:nth-child(7n+2),
+main.gallery .demo:nth-child(7n+6) { --paper: #ff7db7; --hi: #121212; --on-hi: #ff7db7; }
+main.gallery .demo:nth-child(7n+4) {
+  --paper: #171717;
+  --ink: #f2f0e9;
+  --on-hi: #121212;
+  --grain: var(--toner-light);
+}
+main.gallery .demo:nth-child(7n) { --paper: #cfccc4; }
+
+/* Tilts and a little vertical scatter */
+main.gallery .demo:nth-child(5n+1) { --tilt: -1.4deg; }
+main.gallery .demo:nth-child(5n+2) { --tilt: 1.1deg; --drop: 14px; }
+main.gallery .demo:nth-child(5n+3) { --tilt: -0.5deg; --drop: -6px; }
+main.gallery .demo:nth-child(5n+4) { --tilt: 1.7deg; --drop: 8px; }
+main.gallery .demo:nth-child(5n)   { --tilt: -0.9deg; --drop: 20px; }
+
+/* Picked up to look at: straightens and lifts off the pole */
+main.gallery .demo:is(:hover, :focus-within) {
+  rotate: 0deg;
+  translate: 0 calc(var(--drop, 0px) - 4px);
+  box-shadow: 4px 12px 22px #000b, 0 1px 2px #0008;
+  z-index: 2;
+}
+main.gallery .demo:focus-visible { outline: 3px dashed var(--accent); outline-offset: 6px; }
+
+/* Headliners: some flyers are bigger (wide screens, unfiltered only) */
+@media (min-width: 1350px) {
+  main.gallery > .demo:nth-child(7n+1) { grid-column: span 2; }
+}
+/* Filtered or searched: the nth-child mix no longer lines up, so every
+   flyer goes back to one column wide (dense packing keeps the wall full) */
+body:has(#feat-all:not(:checked)) main.gallery > .demo,
+main.gallery:has(> .demo[hidden]) > .demo { grid-column: auto; }
+
+/* ---- how each flyer is stuck up (::before) ---- */
+main.gallery .demo::before {
+  content: "";
+  position: absolute;
+  z-index: 3;
+  pointer-events: none;
+  /* default: a strip of masking tape across the top */
+  top: -13px;
+  left: 50%;
+  width: 118px;
+  height: 30px;
+  translate: -50% 0;
+  rotate: -3deg;
+  background: var(--tape);
+  clip-path: polygon(0 10%, 5% 0, 9% 14%, 14% 2%, 100% 0, 96% 22%, 100% 40%, 95% 62%, 100% 84%, 97% 100%, 0 100%, 4% 76%, 0 52%, 5% 32%);
+}
+/* two corner tapes */
+main.gallery .demo:nth-child(4n+2)::before {
+  top: -14px;
+  left: -20px;
+  right: -20px;
+  width: auto;
+  height: 74px;
+  translate: none;
+  rotate: none;
+  clip-path: none;
+  background:
+    linear-gradient(135deg, #0000 33%, #efe4c6c8 33% 63%, #0000 63%) 0 0 / 74px 74px no-repeat,
+    linear-gradient(45deg, #0000 37%, #e9ddbcc8 37% 66%, #0000 66%) 100% 0 / 74px 74px no-repeat;
+}
+/* staples */
+main.gallery .demo:nth-child(4n+3)::before {
+  top: 12px;
+  left: 16px;
+  right: 16px;
+  width: auto;
+  height: 8px;
+  translate: none;
+  rotate: -1deg;
+  clip-path: none;
+  background:
+    linear-gradient(#00000080 0 0) 2px 4px / 30px 4px no-repeat,
+    linear-gradient(#ffffff, #a8a8a8 55%, #555) 0 1px / 30px 4px no-repeat,
+    linear-gradient(#00000080 0 0) calc(100% - 2px) 5px / 30px 4px no-repeat,
+    linear-gradient(#ffffff, #a8a8a8 55%, #555) 100% 2px / 30px 4px no-repeat;
+}
+/* duct tape across a corner */
+main.gallery .demo:nth-child(4n)::before {
+  top: -6px;
+  left: -26px;
+  width: 112px;
+  height: 34px;
+  translate: none;
+  rotate: -38deg;
+  background:
+    repeating-linear-gradient(90deg, #ffffff14 0 1px, #0000 1px 3px),
+    repeating-linear-gradient(0deg, #00000014 0 1px, #0000 1px 4px),
+    linear-gradient(#c5c5c2, #8e8e8b);
+  clip-path: polygon(0 0, 100% 0, 96% 14%, 100% 30%, 95% 48%, 100% 66%, 96% 84%, 100% 100%, 0 100%, 4% 82%, 0 64%, 3% 46%, 0 28%, 4% 12%);
+}
+
+/* ---- the flyer's contents ---- */
+.demo > h2 { order: 1; }
+.demo .preview { order: 2; }
+.demo .tags { order: 3; }
+.demo .credit { order: 4; }
+.demo .instructions { order: 5; }
+.demo .tools { order: 6; }
+
+/* Band name */
+.demo > h2 {
+  margin: 0;
+  padding: 26px 20px 12px;
+  color: var(--ink);
+  font: 400 clamp(1.7rem, 2.6vw, 2.15rem)/0.98 var(--font-heading);
+  letter-spacing: 0.005em;
+  text-wrap: balance;
+}
+/* ransom-note first letter, cut out of a different magazine */
+main.gallery .demo:is(:nth-child(6n+1), :nth-child(6n+3), :nth-child(6n)) > h2::first-letter {
+  padding: 0 0.09em;
+  margin-right: 0.06em;
+  color: var(--on-hi);
+  background: var(--hi);
+  font-family: "Bowlby One SC", sans-serif;
+}
+/* hand-lettered in marker */
+main.gallery .demo:nth-child(6n+2) > h2 {
+  font-family: var(--font-marker);
+  font-size: clamp(1.7rem, 2.6vw, 2.2rem);
+  rotate: -1.5deg;
+}
+/* reversed out of a black bar */
+main.gallery .demo:nth-child(6n+4) > h2 {
+  margin: 22px 16px 10px;
+  padding: 8px 10px 6px;
+  color: var(--paper);
+  background: var(--ink);
+  font-family: "Bowlby One SC", sans-serif;
+  font-size: clamp(1.4rem, 2.1vw, 1.75rem);
+  line-height: 1.05;
+}
+/* metal show */
+main.gallery .demo:nth-child(6n+5) > h2 {
+  font-family: "UnifrakturCook", serif;
+  font-weight: 700;
+  font-size: clamp(1.9rem, 2.9vw, 2.4rem);
+  line-height: 1.05;
+}
+
+/* Photo: printed in toner until you pick the flyer up */
+.demo .preview {
+  margin: 4px 16px 0;
+  border: 3px solid var(--ink);
+}
+main.gallery .demo .preview {
+  filter: grayscale(1) contrast(1.25) brightness(1.04);
+  transition: filter 0.4s;
+}
+/* on coloured stock the copier prints onto the colour */
+main.gallery .demo:is(:nth-child(7n+2), :nth-child(7n+6)) .preview { mix-blend-mode: multiply; }
+main.gallery .demo:is(:hover, :focus-within) .preview { filter: none; mix-blend-mode: normal; }
+
+/* Support acts: "w/" then typed, cut-out strips */
+.demo .tags {
+  align-items: center;
+  gap: 6px 6px;
+  padding: 14px 18px 4px;
+}
+.demo .tags::before {
+  content: "w/" / "";
+  margin-right: 2px;
+  color: var(--ink);
+  font: 400 1.2rem/1 var(--font-marker);
+}
+.demo .tags code {
+  padding: 2px 7px 1px;
+  color: var(--paper);
+  background: var(--ink);
+  border: 0;
+  border-radius: 0;
+  font: 400 0.82rem/1.3 var(--font-typed);
+  letter-spacing: 0.02em;
+  rotate: -1deg;
+}
+.demo .tags code:nth-child(2n) { rotate: 1.2deg; translate: 0 1px; }
+.demo .tags code:nth-child(3n) { rotate: -0.4deg; }
+
+/* Idea credit: typed small print */
+.demo .credit {
+  margin: 0;
+  padding: 6px 18px 4px;
+  color: var(--ink);
+  font: 400 0.82rem/1.4 var(--font-typed);
+  opacity: 0.85;
+}
+.demo .credit a { color: var(--ink); text-decoration: underline 1px; text-underline-offset: 2px; }
+.demo .credit a:hover { color: var(--ink); text-decoration: underline 3px var(--hi); }
+
+/* Tear-off footer: a cut line and the date + small print (CSS counter) */
+main.gallery .demo::after {
+  content: "✂ " counter(gig, gigday) " " counter(gig, decimal-leading-zero) " · all ages · no js · $0" / "";
+  order: 9;
+  margin: 12px 0 0;
+  padding: 9px 18px 16px;
+  border-top: 2px dashed var(--ink);
+  color: var(--ink);
+  font: 400 0.78rem var(--font-typed);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+main.gallery .demo:nth-child(3n+2)::after { padding-bottom: 22px; }
+
+main.gallery .demo { cursor: pointer; }
+main.gallery .demo .preview { cursor: auto; }
+
+/* ---------------- THE FULL VIEW: slapped onto the pole ---------------- */
+.card-modal {
+  width: min(980px, 94vw);
+  max-width: none;
+  max-height: 92vh;
+  padding: 0;
+  color: #121212;
+  background: var(--toner), #f2f0e9;
+  border: 0;
+  border-radius: 0;
+  box-shadow: 4px 18px 50px #000d, 0 2px 4px #0009;
+  overflow: auto;
+}
+.card-modal::backdrop {
+  background:
+    radial-gradient(ellipse 60% 55% at 50% 45%, #0000, #000000b3),
+    #0d0d0dad;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .card-modal[open] { animation: gf-slap 0.46s cubic-bezier(0.55, 0, 0.75, 0.4) both; }
+  .card-modal[open]::backdrop { animation: gf-thud 0.46s ease-out both; }
+}
+/* Comes in from above the wall, hits it, squashes, settles flat */
+@keyframes gf-slap {
+  0%   { opacity: 0; transform: translateY(-30px) scale(1.45) rotate(-7deg); }
+  30%  { opacity: 1; }
+  62%  { transform: scale(0.975) rotate(0.8deg); animation-timing-function: cubic-bezier(0.2, 0.7, 0.3, 1); }
+  78%  { transform: scale(1.012) rotate(-0.3deg); }
+  100% { opacity: 1; transform: none; }
+}
+/* The wall darkens on impact */
+@keyframes gf-thud {
+  0%   { opacity: 0; }
+  62%  { opacity: 1; background-color: #000000d0; }
+  100% { opacity: 1; }
+}
+/* Staples punch in once it lands */
+.card-modal::before {
+  content: "";
+  position: absolute;
+  z-index: 4;
+  top: 12px;
+  left: 18px;
+  right: 18px;
+  height: 7px;
+  pointer-events: none;
+  background:
+    linear-gradient(#0000006b 0 0) 1px 3px / 28px 3px no-repeat,
+    linear-gradient(#f4f4f4, #9c9c9c 60%, #5d5d5d) 0 1px / 28px 3px no-repeat,
+    linear-gradient(#0000006b 0 0) calc(100% - 1px) 4px / 28px 3px no-repeat,
+    linear-gradient(#f4f4f4, #9c9c9c 60%, #5d5d5d) 100% 2px / 28px 3px no-repeat;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .card-modal[open]::before { animation: gf-staple 0.12s 0.3s steps(1, start) both; }
+}
+@keyframes gf-staple { from { opacity: 0; } }
+
+.card-modal .demo {
+  --paper: #f2f0e9;
+  --ink: #121212;
+  --hi: var(--accent);
+  --on-hi: #121212;
+  margin: 0;
+  padding: 18px 26px 26px;
+  background: none;
+  border: 0;
+  cursor: auto;
+}
+.card-modal .demo > h2 {
+  padding: 22px 60px 10px 0;
+  font-size: clamp(2.4rem, 5.4vw, 4rem);
+  line-height: 0.95;
+}
+.card-modal .demo > h2::first-letter {
+  padding: 0 0.08em;
+  margin-right: 0.05em;
+  color: #121212;
+  background: var(--accent);
+  font-family: "Bowlby One SC", sans-serif;
+}
+.card-modal .demo .preview {
+  min-height: 400px;
+  margin: 6px 0 0;
+  filter: none;
+  mix-blend-mode: normal;
+}
+.card-modal .demo .tags { padding: 16px 0 4px; }
+.card-modal .demo .credit { padding: 6px 0 10px; }
+
+/* Try it: a fluoro pink slip, typed, with a marker arrow */
+.card-modal .instructions {
+  margin: 8px 0 14px;
+  padding: 10px 16px;
+  color: #121212;
+  background: var(--toner), #ff7db7;
+  border: 0;
+  border-radius: 0;
+  font: 400 1rem/1.45 var(--font-typed);
+  rotate: -0.4deg;
+  box-shadow: 1px 3px 6px #0004;
+}
+.card-modal .instructions::before {
+  content: "Try it → ";
+  color: #121212;
+  font: 400 1.15rem var(--font-marker);
+}
+
+/* Editor: typed onto a clean sheet, labels on gaffer tape */
+.card-modal .tools { padding: 6px 0 0; }
+.tools summary {
+  display: inline-block;
+  padding: 4px 14px;
+  color: #f2f0e9;
+  background: #1b1b1b;
+  font: 400 0.9rem var(--font-typed);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.tools summary::before { content: "▸ "; }
+.tools details[open] > summary::before { content: "▾ "; }
+.tools summary:hover { color: var(--accent); }
+.tools details[open] > summary { color: var(--accent); }
+.tools textarea, .tools pre {
+  color: #121212;
+  background: #fbfaf6;
+  border: 2px solid #121212;
+  border-radius: 0;
+  font: 400 13.5px/1.5 var(--font-mono);
+}
+.tools textarea:focus { outline: 3px solid var(--accent); outline-offset: 0; }
+/* Reset: a round pink sticker */
+.tools button {
+  color: #121212;
+  background: var(--accent);
+  border: 2px solid #121212;
+  border-radius: 999px;
+  font: 400 0.75rem/1 var(--font-ransom);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 6px 12px;
+  rotate: 4deg;
+}
+.tools button:hover { color: #f2f0e9; background: #121212; border-color: #121212; }
+
+/* Close: a black sticker with a marker X */
+.card-modal-close {
+  position: sticky;
+  top: 14px;
+  float: right;
+  z-index: 5;
+  margin: 26px 18px -72px 0;
+  width: 46px;
+  height: 46px;
+  cursor: pointer;
+  color: #f2f0e9;
+  background: #121212;
+  border: 0;
+  border-radius: 50%;
+  font: 400 1.5rem/1 var(--font-marker);
+  rotate: -8deg;
+  box-shadow: 1px 3px 6px #0006;
+}
+.card-modal-close:hover { color: #121212; background: var(--accent); border: 0; }
+.card-modal-close:focus-visible { outline: 3px dashed var(--accent); outline-offset: 3px; }
+
+/* ---------------- NARROW ---------------- */
+@media (max-width: 760px) {
+  header.site { padding: 28px 16px 4px; }
+  header.site::before { right: auto; left: 10px; top: 120px; }
+  .theme-menu { position: relative; top: auto; right: auto; display: block; width: fit-content; margin: 0 0 22px auto; }
+  header.site h1::after { left: auto; right: -0.1em; bottom: -0.65em; }
+  .filter-bar { margin-inline: 8px; padding: 10px 14px; }
+  .filter-bar input[type="search"] { flex: 1 1 100%; max-width: none; }
+  .filter-count { margin-left: 0; }
+  main.gallery { padding: 36px 16px 70px; gap: 46px; }
+  main.gallery .demo { --drop: 0px; }
+  main.gallery .demo:nth-child(n) { --tilt: 0.6deg; }
+  main.gallery .demo:nth-child(2n) { --tilt: -0.6deg; }
+  .demo > h2 { padding-inline: 16px; }
+  .demo .preview { margin-inline: 12px; }
+  .card-modal .demo { padding: 12px 16px 20px; }
+  .card-modal .demo .preview { min-height: 320px; }
+}
+
+/* ---------------- REDUCED MOTION ---------------- */
+@media (prefers-reduced-motion: reduce) {
+  main.gallery .demo,
+  main.gallery .demo .preview { transition: none; }
+  .card-modal[open] { animation: gf-fade-in 0.2s ease-out both; }
+}
+@keyframes gf-fade-in { from { opacity: 0; } }
