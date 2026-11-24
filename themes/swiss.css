@@ -1,0 +1,362 @@
+/* SWISS POSTER: the International Typographic Style (Zürich and Basel,
+   1950s–60s). One grotesque in heavy and regular weights, set flush left. A
+   12-column grid you can faintly see, red, black and paper white, big numerals,
+   and an asymmetric rhythm of wide and narrow cards. Geometry instead of
+   decoration: the header's red disc and rings are plain boxes. */
+@import url("_base.css");
+@import url("https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900&family=IBM+Plex+Mono:wght@400;600&display=swap");
+
+:root {
+  color-scheme: light;
+  --bg: #f3f1ec;
+  --panel: #f3f1ec;
+  --line: #cfcac0;
+  --text: #111111;
+  --muted: #5f5b55;
+  --accent: #e3000f;
+  --code-bg: #ffffff;
+  --code-text: #111111;
+  --radius: 0px;
+  --font-heading: "Archivo", sans-serif;
+  --font-body: "Archivo", sans-serif;
+  --font-mono: "IBM Plex Mono", monospace;
+  --swiss-gap: 20px;
+  /* The layout grid, drawn faintly the way a designer's grid sheet is: hairlines
+     in non-photo blue at each column's edges, sized to whatever box draws them */
+  --swiss-col: calc((100% - 11 * var(--swiss-gap)) / 12);
+  --swiss-guide: #5fb7d455;
+  --swiss-cols: repeating-linear-gradient(to right,
+    var(--swiss-guide) 0 1px, transparent 1px calc(var(--swiss-col) - 1px),
+    var(--swiss-guide) calc(var(--swiss-col) - 1px) var(--swiss-col),
+    transparent var(--swiss-col) calc(var(--swiss-col) + var(--swiss-gap)));
+}
+
+body { font-size: 16px; line-height: 1.5; font-variation-settings: "wdth" 100; }
+a { color: var(--text); text-decoration-color: var(--accent); text-decoration-thickness: 2px; text-underline-offset: 3px; }
+::selection { background: var(--accent); color: #fff; }
+
+/* ---------- header: a poster ---------- */
+header.site {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--swiss-gap);
+  align-items: end;
+  padding: 36px 20px 0;
+  overflow-x: clip; /* the disc and rings may run past the edge, never the page */
+}
+/* The red disc and its rings: one box, the rings are box-shadow spreads,
+   which follow the border-radius, so they come out as perfect circles */
+header.site::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  top: -36px;
+  right: 8%;
+  width: min(30vw, 330px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow:
+    0 0 0 22px var(--bg), 0 0 0 24px var(--text),
+    0 0 0 50px var(--bg), 0 0 0 51px var(--text),
+    0 0 0 82px var(--bg), 0 0 0 83px var(--text);
+  pointer-events: none;
+}
+header.site h1 {
+  position: relative;
+  z-index: 1;
+  grid-column: 1 / 9;
+  grid-row: 1;
+  width: min-content; /* "CSS" over "Lab", stacked like a poster */
+  margin: 0 0 0 -0.04em;
+  font-size: clamp(5.5rem, 17vw, 13.5rem);
+  font-weight: 800;
+  font-variation-settings: "wdth" 88;
+  line-height: 0.8;
+  letter-spacing: -0.055em;
+  color: var(--text);
+}
+header.site p {
+  position: relative;
+  z-index: 1;
+  grid-column: 1 / 6;
+  grid-row: 2;
+  margin: 34px 0 0;
+  font-size: 1.15rem;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--text);
+}
+/* Swiss posters speak three languages: the small type block on the right */
+header.site::after {
+  content: "Ohne JavaScript\A Sans JavaScript\A Senza JavaScript";
+  white-space: pre;
+  position: relative;
+  z-index: 1;
+  grid-column: 9 / 13;
+  grid-row: 2;
+  margin-top: 34px;
+  padding-left: 14px;
+  border-left: 6px solid var(--accent);
+  font: 600 0.82rem/1.35 var(--font-body);
+  color: var(--text);
+}
+
+/* ---------- filter bar: a ruled strip under the poster ---------- */
+.filter-bar {
+  position: relative;
+  z-index: 2;
+  grid-column: 1 / -1;
+  grid-row: 3;
+  margin-top: 30px;
+  padding: 12px 0;
+  gap: 10px 24px;
+  background: none;
+  border: 0;
+  border-radius: 0;
+  border-top: 8px solid var(--text);
+  border-bottom: 1px solid var(--text);
+  font: 600 13px var(--font-body);
+  color: var(--text);
+}
+.filter-bar input[type="search"] {
+  flex: 0 1 220px;
+  padding: 5px 0;
+  font: 500 15px var(--font-body);
+  background: none;
+  border: 0;
+  border-bottom: 2px solid var(--text);
+  border-radius: 0;
+}
+.filter-bar input[type="search"]:focus { outline: none; border-bottom-color: var(--accent); }
+.filter-bar input[type="search"]::placeholder { color: var(--muted); }
+.filter-chips { gap: 2px; }
+.filter-chips label {
+  padding: 4px 9px;
+  border: 0;
+  border-radius: 0;
+  color: var(--text);
+}
+.filter-chips label:hover { color: var(--accent); }
+.filter-chips input:checked + label { background: var(--accent); color: #fff; }
+.filter-chips input:focus-visible + label { outline: 2px solid var(--text); outline-offset: 1px; }
+.filter-count { font: 500 12px var(--font-mono); color: var(--muted); font-variant-numeric: tabular-nums; }
+@container site (width < 1000px) {
+  .filter-chips { width: 12em; }
+  .filter-chips label { background: var(--bg); border: 1px solid var(--text); }
+  .filter-chips input:checked + label { background: var(--accent); border-color: var(--accent); }
+}
+
+/* ---------- theme menu: a black block ---------- */
+.theme-menu { top: 20px; right: 20px; }
+.theme-menu-button {
+  border: 0;
+  border-radius: 0;
+  padding: 7px 12px;
+  background: var(--text);
+  color: #fff;
+  font: 600 13px var(--font-body);
+}
+.theme-menu-button::after { content: " ↓"; color: #fff; }
+.theme-menu-button:hover { background: var(--accent); }
+.theme-menu[open] .theme-menu-button { background: var(--accent); }
+.theme-menu-pop {
+  top: 100%;
+  padding: 0;
+  border: 2px solid var(--text);
+  border-radius: 0;
+  background: var(--bg);
+  box-shadow: none;
+  font: 500 14px var(--font-body);
+}
+.theme-menu-pop button { border-radius: 0; padding: 8px 12px; }
+.theme-menu-pop button:hover { background: var(--text); color: #fff; }
+.theme-menu-list li + li button { border-top: 1px solid var(--line); }
+.theme-menu-list button[aria-pressed="true"] { color: var(--accent); font-weight: 700; }
+.theme-menu-list button[aria-pressed="true"]::after { content: ""; float: right; width: 0.6em; height: 0.6em; margin-top: 0.35em; background: var(--accent); }
+.theme-menu-list button[aria-pressed="true"]:hover { color: #fff; }
+.theme-menu-customize { border-top: 2px solid var(--text) !important; color: var(--text) !important; }
+.theme-menu-customize:hover { color: #fff !important; }
+
+/* ---------- gallery: the grid, rows of a wide and a narrow card ---------- */
+main.gallery {
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 72px var(--swiss-gap);
+  padding: 56px 20px 96px;
+  background: var(--swiss-cols) content-box;
+}
+/* Each row is a wide card and a narrow one, swapping sides every row:
+   wide | narrow, then narrow | wide. Worked out from the card's position
+   among the VISIBLE cards (site.js numbers them), so it holds for any count
+   and when filtered. side = 0 left / 1 right, row = 0 / 1 alternating;
+   the card is wide when they match. */
+main.gallery > .demo {
+  --swiss-big: 8;
+  --swiss-side: mod(var(--vis-k, 0), 2);
+  --swiss-row: mod(round(down, var(--vis-k, 0) / 2, 1), 2);
+  --swiss-wide: calc(1 - (var(--swiss-side) + var(--swiss-row) - 2 * var(--swiss-side) * var(--swiss-row)));
+  grid-column: span calc(12 - var(--swiss-big) + (2 * var(--swiss-big) - 12) * var(--swiss-wide));
+  /* the pair in a row share their row lines, so title, tags, demo and
+     credit line up across the row whatever the title's length */
+  grid-row: span 4;
+  display: grid;
+  grid-template-rows: subgrid;
+  grid-template-columns: auto minmax(0, 1fr);
+  row-gap: 0;
+  column-gap: 14px;
+  align-content: start;
+  background: none;
+  border: 0;
+  border-top: 5px solid var(--text);
+  border-radius: 0;
+  overflow: visible;
+  transition: border-color 0.2s;
+}
+/* An odd one out at the end gets the whole row */
+main.gallery > .demo[data-vis-parity="odd"][data-vis-end="1"] { grid-column: 1 / -1; border-top-width: 12px; }
+@media (max-width: 1100px) { main.gallery > .demo { --swiss-big: 7; } }
+
+main.gallery > .demo:hover { border-top-color: var(--accent); }
+main.gallery > .demo:focus-visible { outline: 3px solid var(--accent); outline-offset: 6px; }
+
+/* Card number: its place among the cards showing, "01", "02"… It sits on the
+   card (--vis-k), so an opened card keeps its number in the full view too */
+.demo { counter-set: swiss-n calc(var(--vis-k, 0) + 1); }
+.demo::before {
+  content: counter(swiss-n, decimal-leading-zero);
+  grid-column: 1;
+  grid-row: 1 / 3;
+  padding-top: 8px;
+  font: 800 3.4rem/0.85 var(--font-heading);
+  font-variation-settings: "wdth" 80;
+  letter-spacing: -0.04em;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+}
+.demo > h2 {
+  grid-column: 2;
+  grid-row: 1;
+  padding: 10px 0 4px;
+  font-size: 1.45rem;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.015em;
+}
+.demo .tags { grid-column: 2; grid-row: 2; align-self: start; gap: 0; padding: 0 0 18px; }
+.demo .tags code {
+  font: 400 12px/1.5 var(--font-mono);
+  color: var(--muted);
+  background: none;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+}
+.demo .tags code:not(:last-child)::after { content: "\00a0/\00a0"; color: var(--accent); }
+.demo .preview { grid-column: 1 / -1; grid-row: 3; border: 0; }
+.demo .credit { grid-column: 1 / -1; grid-row: 4; padding: 10px 0 0; font-size: 12px; color: var(--muted); }
+.demo .credit a { text-decoration: underline; text-decoration-color: var(--accent); }
+.demo .credit a:hover { color: var(--accent); }
+.demo .credit a::after { content: " →"; }
+
+/* ---------- full view: a poster sheet pasted up on the grid ---------- */
+.card-modal {
+  width: min(1100px, 94vw);
+  max-height: 94vh;
+  background: var(--bg);
+  border: 0;
+  border-top: 14px solid var(--accent);
+  border-radius: 0;
+  box-shadow: none;
+}
+/* The backdrop is the designer's grid: paper with the 12 columns in red */
+.card-modal::backdrop {
+  background:
+    repeating-linear-gradient(to right,
+      #e3000f50 0 1px, transparent 1px calc(var(--swiss-col) - 1px),
+      #e3000f50 calc(var(--swiss-col) - 1px) var(--swiss-col),
+      transparent var(--swiss-col) calc(var(--swiss-col) + var(--swiss-gap)))
+      center / min(calc(100vw - 40px), 1160px) 100% no-repeat,
+    #f3f1ecf2;
+  backdrop-filter: grayscale(1) blur(2px);
+}
+/* Entrance: the sheet is wiped on from the left, like a poster being pasted,
+   and its number rises into place */
+.card-modal[open] { animation: swiss-paste 0.5s cubic-bezier(0.65, 0, 0.2, 1); }
+@keyframes swiss-paste { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
+.card-modal[open] .demo::before { animation: swiss-rise 0.55s 0.2s cubic-bezier(0.2, 0.8, 0.2, 1) backwards; }
+@keyframes swiss-rise { from { translate: 0 0.5em; opacity: 0; } }
+
+.card-modal .demo {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  column-gap: 22px;
+  padding: 30px 40px 40px;
+}
+.card-modal .demo::before { font-size: clamp(5rem, 12vw, 9rem); grid-row: 1 / 3; padding-top: 4px; }
+.card-modal .demo > h2 {
+  grid-column: 2;
+  padding: 6px 56px 6px 0;
+  font-size: clamp(2.2rem, 5vw, 3.8rem);
+  font-weight: 800;
+  line-height: 0.95;
+  letter-spacing: -0.035em;
+}
+.card-modal .demo .tags { grid-column: 2; padding-bottom: 26px; }
+.card-modal .demo > :is(.instructions, .preview, .credit, .tools) { grid-column: 1 / -1; grid-row: auto; }
+/* instructions, then the demo, then its credit as a caption under it */
+.card-modal .demo > .credit { order: 1; }
+.card-modal .demo > .tools { order: 2; }
+.card-modal .instructions {
+  margin: 0 0 22px;
+  padding: 10px 0 0;
+  border: 0;
+  border-top: 3px solid var(--text);
+  border-radius: 0;
+  background: none;
+  font-size: 1.05rem;
+  font-weight: 500;
+}
+.card-modal .instructions::before { content: "Try it →\00a0\00a0"; color: var(--accent); font-weight: 800; }
+.card-modal .preview { min-height: 420px; }
+.card-modal .credit { padding: 12px 0 0; font-size: 13px; }
+.tools { padding: 26px 0 0; }
+.tools summary { font: 700 14px var(--font-body); color: var(--text); padding: 8px 0; border-top: 1px solid var(--text); }
+.tools summary:hover { color: var(--accent); }
+.tools textarea, .tools pre { border-radius: 0; border-color: var(--text); }
+.tools button { border-radius: 0; border-color: var(--text); color: var(--text); background: var(--bg); font-weight: 600; }
+.tools button:hover { background: var(--text); color: #fff; border-color: var(--text); }
+.card-modal-close {
+  border: 0;
+  border-radius: 0;
+  background: var(--text);
+  color: #fff;
+  font-size: 18px;
+}
+.card-modal-close:hover { background: var(--accent); }
+
+/* ---------- narrower ---------- */
+@media (max-width: 860px) {
+  main.gallery > .demo,
+  main.gallery > .demo[data-vis-parity="odd"][data-vis-end="1"] { grid-column: 1 / -1; }
+  main.gallery { row-gap: 56px; }
+  header.site::before { width: 40vw; top: 70px; right: 4%; box-shadow: 0 0 0 14px var(--bg), 0 0 0 15px var(--text), 0 0 0 32px var(--bg), 0 0 0 33px var(--text); }
+  header.site p { grid-column: 1 / 8; }
+  header.site::after { grid-column: 8 / 13; }
+}
+@media (max-width: 560px) {
+  header.site { padding-top: 64px; }
+  header.site h1 { grid-column: 1 / -1; font-size: 30vw; }
+  header.site::before { width: 46vw; top: 96px; right: -8vw; }
+  header.site p { grid-column: 1 / -1; }
+  header.site::after { grid-column: 1 / -1; grid-row: 3; margin-top: 18px; }
+  .filter-bar { grid-row: 4; }
+  main.gallery { background: none; }
+  .demo::before { font-size: 2.6rem; }
+  .card-modal .demo { padding: 22px 18px 28px; column-gap: 14px; }
+  .card-modal .preview { min-height: 320px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card-modal[open],
+  .card-modal[open] .demo::before { animation: none; }
+}

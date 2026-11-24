@@ -1,4 +1,4 @@
-/* Shared look for the built-in themes (Darkroom, Editorial, Arcade, Extra!).
+/* Shared look for the built-in themes (Darkroom, Swiss Poster, Arcade and others).
    Built entirely on variables that each theme sets; themes @import this file
    first, then set their variables and override anything they like.
    Default imports it too; HTML 1.0 does NOT. */

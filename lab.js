@@ -14,7 +14,7 @@
   const THEMES = [
     { id: 'default',   name: 'Default',        fonts: { heading: 'system UI', body: 'system UI', code: 'system mono' }, sw: ['#fafafa', '#1b1b1f', '#2f5bea'] },
     { id: 'darkroom',  name: 'Darkroom',       fonts: { heading: 'Bricolage Grotesque', body: 'Instrument Sans', code: 'JetBrains Mono' }, sw: ['#0e0f12', '#ece8df', '#ffb454'] },
-    { id: 'editorial', name: 'Editorial',      fonts: { heading: 'Fraunces', body: 'Newsreader', code: 'IBM Plex Mono' }, sw: ['#f2ece1', '#1c1915', '#b3301c'] },
+    { id: 'swiss',     name: 'Swiss Poster',   fonts: { heading: 'Archivo', body: 'Archivo', code: 'IBM Plex Mono' }, sw: ['#f3f1ec', '#111111', '#e3000f'] },
     { id: 'arcade',    name: 'Arcade',         fonts: { heading: 'Press Start 2P', body: 'Space Mono', code: 'Space Mono' }, sw: ['#0a0720', '#e6f6ff', '#ff3ea5'] },
     { id: 'extra',     name: 'Extra! Extra!',    fonts: { heading: 'Anton', body: 'Old Standard TT', code: 'Courier Prime' }, sw: ['#ece7dc', '#1c1814', '#ad1f18'] },
     { id: 'creepy-carousel', name: 'Something Wicked', fonts: { heading: 'Rye', body: 'IM Fell English', code: 'Cutive Mono' }, sw: ['#120d11', '#ecdcb8', '#b3342c'] },
@@ -33,8 +33,10 @@
     // (in progress) { id: 'alaska', name: 'Alaska', fonts: { heading: 'TBD', body: 'TBD', code: 'TBD' }, sw: ['#888888', '#111111', '#555555'] },
   ];
   const DEFAULT_THEME = 'default';
-  // "Blank" was renamed "Default": anything saved under the old id carries over
-  const renamed = id => (id === 'blank' ? 'default' : id);
+  // Retired or renamed themes: anything saved under the old id carries over
+  // ("Blank" became "Default"; "Editorial" was replaced by "Swiss Poster")
+  const RENAMED = { blank: 'default', editorial: 'swiss' };
+  const renamed = id => RENAMED[id] ?? id;
   // Generic fallback per catalog category: Sans Serif, Serif, Display, Handwriting, Monospace
   const FALLBACK = ['sans-serif', 'serif', 'sans-serif', 'cursive', 'monospace'];
   const KEY = 'css-lab:prefs';
@@ -47,7 +49,9 @@
     p.overrides ??= {};
     p.custom ??= [];
     if (p.theme) p.theme = renamed(p.theme);
-    if (p.overrides.blank) { p.overrides.default ??= p.overrides.blank; delete p.overrides.blank; }
+    for (const [from, to] of Object.entries(RENAMED)) {
+      if (p.overrides[from]) { p.overrides[to] ??= p.overrides[from]; delete p.overrides[from]; }
+    }
     for (const c of p.custom) c.base = renamed(c.base);
     // Older shape: {heading, body} applied to every theme → move onto the current theme
     for (const slot of ['heading', 'body']) {
