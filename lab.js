@@ -76,6 +76,21 @@
     return (prefs.overrides[current().id] ??= {});
   }
 
+  // ---------- the theme in the URL ----------
+  // ?theme=<id> opens the page in that theme (a link or bookmark), and it
+  // becomes your saved theme too. The URL follows every theme change, so the
+  // address bar is always a link to what you're looking at. A custom theme
+  // only exists in your browser, so its link only works for you.
+  const known = id => builtin(id) || prefs.custom.some(t => t.id === id);
+  const urlTheme = renamed(new URLSearchParams(location.search).get('theme') || '');
+  if (urlTheme && known(urlTheme) && urlTheme !== prefs.theme) { prefs.theme = urlTheme; write(); }
+  function syncUrl() {
+    const url = new URL(location.href);
+    if (url.searchParams.get('theme') === current().id) return;
+    url.searchParams.set('theme', current().id);
+    try { history.replaceState(history.state, '', url); } catch {}
+  }
+
   // ---------- fonts ----------
   const loaded = new Set();
   function loadFont(family, weights = [400]) {
@@ -208,6 +223,7 @@
     } else {
       finish();
     }
+    syncUrl();
     document.dispatchEvent(new CustomEvent('lab:change'));
   }
 

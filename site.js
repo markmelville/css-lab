@@ -47,7 +47,10 @@ document.addEventListener('DOMContentLoaded', () => {
   let open = null; // { card, placeholder, mode }
   const modeOf = () => getComputedStyle(modal).getPropertyValue('--card-open').trim();
   const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
-  const slug = card => card.querySelector('h2').textContent.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  // Each card's bookmark name is its "View this demo" link (#neon-sign), fixed
+  // in the HTML so renaming a demo doesn't break old links.
+  const slug = card => card.querySelector('.demo-link').getAttribute('href').slice(1);
+  const cardFor = id => id && [...gallery.querySelectorAll('.demo:not(.demo-placeholder)')].find(c => slug(c) === id);
 
   for (const card of gallery.querySelectorAll('.demo')) {
     card.tabIndex = 0;
@@ -96,7 +99,10 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  function openCard(card) {
+  // An open card is in the URL (#neon-sign), in every theme, so it can be
+  // bookmarked or shared. Opening adds a history entry: Back closes the card.
+  // push: false when the URL already names the card (a link, Back/Forward).
+  function openCard(card, { push = true, animate = true } = {}) {
     if (open) return;
     const mode = modeOf();
     const from = card.getBoundingClientRect();
@@ -113,8 +119,8 @@ document.addEventListener('DOMContentLoaded', () => {
     open = { card, placeholder, mode };
     modal.showModal();
     modal.scrollTop = 0;
-    if (mode === 'zoom' && !reduceMotion.matches) flip(card, from, card.getBoundingClientRect());
-    if (mode === 'page') history.pushState({ cssLabCard: slug(card) }, '', '#' + slug(card));
+    if (mode === 'zoom' && animate && !reduceMotion.matches) flip(card, from, card.getBoundingClientRect());
+    if (push) history.pushState({ cssLabCard: slug(card) }, '', '#' + slug(card));
   }
 
   async function closeCard() {
@@ -135,6 +141,8 @@ document.addEventListener('DOMContentLoaded', () => {
     card.getAnimations().forEach(a => { if (!(a instanceof CSSAnimation)) a.cancel(); });
     placeholder.replaceWith(card);
     numberVisible();
+    // Closed without going back (e.g. it was opened from a link): drop the #card
+    if (location.hash === '#' + slug(card)) history.replaceState(null, '', location.pathname + location.search);
     card.querySelectorAll('.tools details').forEach(d => { d.open = false; }); // editor starts closed next time
     card.setAttribute('aria-label', `Open ${card.querySelector('h2').textContent}`);
     (selectByLink() ? card.querySelector('.demo-link') : card).focus({ preventScroll: true });
@@ -174,15 +182,29 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // "page" mode closes through history, like navigating back
-  const goBack = () => (open?.mode === 'page' ? history.back() : closeCard());
-  window.addEventListener('popstate', () => { if (open?.mode === 'page') modal.close(); });
+  // Closing goes back through history when opening added an entry, so Back
+  // and the close button agree; otherwise (opened from a link) it just closes.
+  const goBack = () => (history.state?.cssLabCard ? history.back() : closeCard());
+  // Back/Forward, or a #card typed into the address bar
+  window.addEventListener('popstate', () => {
+    const want = location.hash.slice(1);
+    if (open) { if (slug(open.card) !== want) open.mode === 'page' ? modal.close() : closeCard(); }
+    else if (cardFor(want)) openCard(cardFor(want), { push: false });
+  });
 
-  modal.querySelector('.card-modal-close').addEventListener('click', closeCard);
+  modal.querySelector('.card-modal-close').addEventListener('click', goBack);
   modal.querySelector('.card-modal-back').addEventListener('click', goBack);
   // Click on the backdrop (the dialog box itself, outside the card) closes it,
   // except in "page" mode, where only Back does
-  modal.addEventListener('click', e => { if (e.target === modal && open?.mode !== 'page') closeCard(); });
+  modal.addEventListener('click', e => { if (e.target === modal && open?.mode !== 'page') goBack(); });
   modal.addEventListener('cancel', e => { e.preventDefault(); goBack(); }); // Esc
   modal.addEventListener('close', restoreCard);
+
+  // A link to a card (…?theme=fight-night#neon-sign) opens it straight away,
+  // with the gallery behind scrolled to it, so closing lands you there.
+  const linked = cardFor(location.hash.slice(1));
+  if (linked) {
+    linked.scrollIntoView({ block: 'center', behavior: 'instant' });
+    openCard(linked, { push: false, animate: false });
+  }
 });
